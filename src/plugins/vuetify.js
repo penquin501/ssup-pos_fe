@@ -29,9 +29,9 @@ const messages = {
   })
   
 export default new Vuetify({
-    lang: {
-        t: (key, ...params) => i18n.t(key, params),
-      },
+    // lang: {
+    //     t: (key, ...params) => i18n.t(key, params),
+    //   },
     // lang: {
     //     // locales,
     //     current: settings.locale,
