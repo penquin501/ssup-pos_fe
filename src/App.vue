@@ -2,7 +2,7 @@
   <v-app>
     <div v-show="$store.state.is_login">
       <v-navigation-drawer v-model="drawer" app>
-        <About></About>
+        <Sidebar />
       </v-navigation-drawer>
 
       <v-app-bar app>
@@ -12,9 +12,8 @@
           </div>
           <div v-else><i class="fa fa-indent" aria-hidden="true"></i></div>
         </v-app-bar-nav-icon>
-        <v-toolbar-title>
-          <div>account</div>
-        </v-toolbar-title>
+        <v-toolbar-title> </v-toolbar-title>
+        <Header />
       </v-app-bar>
 
       <v-main>
@@ -28,11 +27,14 @@
 </template>
 
 <script>
-import About from "@/views/layout/Menu-sidebar.vue";
+import Sidebar from "@/views/layout/Menu-sidebar.vue";
+import Header from "@/views/layout/Header-navbar.vue";
+
 export default {
   name: "App",
   components: {
-    About,
+    Sidebar,
+    Header,
   },
   data: () => ({
     drawer: null,
