@@ -17,9 +17,9 @@
 
                   <v-overlay :absolute="absolute" :value="overlay">
                     <v-card style="background-color: white; color: black; width: 100vw; height: 100vh; margin: 0;">
-                      <v-card-title style="color: black; padding-bottom: 0px; padding-top: 0px;">
+                      <!-- <v-card-title style="color: black; padding-bottom: 0px; padding-top: 0px;">
                         <span class="text-h5">บิลเงินสด</span>
-                      </v-card-title>
+                      </v-card-title> -->
 
                       <v-card-text style="background-color: lightgreen; color: black">
                         <v-row no-gutters>
@@ -78,11 +78,13 @@
                               <v-card-title style="padding-top: 0px;">
                                 <v-text-field style="padding-top: 0px;" v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details></v-text-field>
                               </v-card-title>
-                              <b-table :items="items" :fields="productfields" :current-page="currentPage" :per-page="5" :filter="search" :filter-included-fields="filterOn" :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" :sort-direction="sortDirection" stacked="md" show-empty small @filtered="onFiltered">
-                                <template #cell(actions)="row">
-                                  <b-button size="sm" @click="deleteItem(row.item, row.index, $event.target)" class="mr-1"><v-icon small >mdi-delete</v-icon></b-button>
-                                </template>
-                              </b-table>
+                              <div class="item-table">
+                                <b-table :items="items" :fields="productfields" :current-page="currentPage" :per-page="5" :filter="search" :filter-included-fields="filterOn" :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" :sort-direction="sortDirection" stacked="md" show-empty small @filtered="onFiltered">
+                                  <template #cell(actions)="row">
+                                    <b-button size="sm" @click="deleteItem(row.item, row.index, $event.target)" class="mr-1"><v-icon small >mdi-delete</v-icon></b-button>
+                                  </template>
+                                </b-table>
+                              </div>
                             </b-row>
                             <b-row>
                               <b-col cols="8" style="padding-top: 0px; padding-bottom: 0px;">
@@ -93,16 +95,22 @@
                                 </b-row>
                                 <b-row>
                                   <b-col cols="12" style="text-align: center; padding-top: 0px; padding-bottom: 0px;">
-                                    <v-btn color="success" class="form-control ma-2 white--text">
+                                    <v-btn color="success" class="form-control ma-2 white--text" @click.prevent="showPayment()">
                                       <v-icon>mdi-play</v-icon>Payment(F10)
                                     </v-btn>
                                   </b-col>
                                 </b-row>
                                 <b-row>
                                   <b-col cols="12" style="text-align: center; padding-top: 0px; padding-bottom: 0px;">
-                                    <v-btn color="warning" class="ma-2 white--text"><v-icon>mdi-restore</v-icon>Rework</v-btn>
-                                    <v-btn color="yellow" class="ma-2 white--text"><v-icon>mdi-pause</v-icon>Pause(F9)</v-btn>
-                                    <v-btn color="error" class="ma-2 white--text"><v-icon>mdi-delete</v-icon>Delete(F8)</v-btn>
+                                    <!-- <v-btn color="warning" class="ma-2 white--text" v-if="pause" disabled><v-icon>mdi-restore</v-icon>Rework</v-btn> -->
+                                    <v-btn color="warning" class="ma-2 white--text" @click.prevent="reworkOrder()">
+                                      <v-badge :content="$store.state.lastOrder.length" :value="$store.state.lastOrder.length" color="green">
+                                        <v-icon>mdi-restore</v-icon>Rework
+                                      </v-badge>
+                                    </v-btn>
+
+                                    <v-btn color="yellow" class="ma-2 white--text" @click.prevent="pauseOrder()"><v-icon>mdi-pause</v-icon>Pause(F9)</v-btn>
+                                    <v-btn color="error" class="ma-2 white--text" @click.prevent="cancelOrder()"><v-icon>mdi-delete</v-icon>Delete(F8)</v-btn>
                                   </b-col>
                                 </b-row>
                               </b-col>
@@ -191,6 +199,19 @@
                     </v-card-actions>
                   </v-card>
                 </v-dialog>
+
+                <v-dialog v-model="dialogCancelOrder" max-width="500px">
+                  <v-card>
+                    <v-card-title class="text-h5">ต้องการยกเลิกรายการสินค้าทั้งหมด ใช่หรือไม่?</v-card-title>
+                    <v-card-actions>
+                      <v-spacer></v-spacer>
+                      <v-btn color="blue darken-1" text @click="closeDialogCancelOrder">Cancel</v-btn>
+                      <v-btn color="blue darken-1" text @click="confirmCancelOrder">OK</v-btn>
+                      <v-spacer></v-spacer>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
+
               </v-toolbar>
             </template>
             <template v-slot:item.actions="{ item }">
@@ -212,11 +233,14 @@ import dayjs from "dayjs";
 export default {
   data() {
     return {
-      dialog: true,
+      dialog: false,
       absolute: true,
-      overlay: true,
+      overlay: false,
       search: "",
       dialogDelete: false,
+      dialogCancelOrder: false,
+      invoiceNo: "",
+      pause: false,
       saleDate: dayjs().format("YYYY-MM-DD"),
       headers: [
         {
@@ -282,7 +306,7 @@ export default {
       pointsNet: 0,
       saleTotal: 0,
       discountTotal: 0,
-      net: 0,
+      net: 0,      
     };
   },
   mounted: function () {
@@ -298,6 +322,7 @@ export default {
       });
     } else {
       this.empName = this.$store.state.userInfo.name;
+      this.generateNewInvoice();
     }
   },
   watch: {
@@ -392,6 +417,8 @@ export default {
       this.closeDelete();
     },
     close() {
+      /* TODO: เมื่อปิด dialog ที่ทำรายการหน้าร้านแล้ว ให้เรียกข้อมูลบิลมาแสดงที่หน้ารวมรายการในแต่ละวัน */
+
       // this.dialog = false;
       // this.$nextTick(() => {
       //   this.editedItem = Object.assign({}, this.defaultItem);
@@ -405,17 +432,107 @@ export default {
       //   this.editedIndex = -1;
       // });
     },
+    generateNewInvoice() {
+      this.invoiceNo = "temp" + parseInt(this.$store.state.lastOrder.length +1);
+    },
+    showPayment() {
+      /* 
+        1.แสดงข้อมูลทั้งหมดของรายการปัจจุบัน ใน dialog
+          1.1 วิธีการชำระเงิน
+          1.2 การรับเงิน/การทอนเงิน
+          1.3 ปุ่มปริ้นใบเสร็จ
+        2.บันทึกข้อมูลทั้งหมด
+        3.แสดงข้อมูลในตารางการขาย  
+      */
+    },
     pauseOrder() {
-      let order = {
+      if(this.items.length == 0) {
+        alert("ไม่มีรายการซื้อสินค้า");
+      } else {
 
-      };
-      
-      this.commit('lastOrder', order);
+        let order = {
+          invoiceNo: this.invoiceNo,
+          userInfo: this.$store.state.userInfo,
+          memberInfo: this.memberInfo,
+          orderInfo: this.items,
+          points: this.points,
+          pointsUsed: this.pointsUsed,
+          pointsNet: this.pointsNet,
+          status: "hold"
+        };
+
+        if(this.$store.state.lastOrder.length > 0) {
+          let selectOrder = this.$store.state.lastOrder.find(
+            (ele) => ele.invoiceNo == this.invoiceNo
+          );
+          if(selectOrder) {
+            selectOrder.orderInfo = this.items;
+          } else {
+            this.$store.state.lastOrder.push(order);
+            this.$store.commit('lastOrder', this.$store.state.lastOrder);
+          }
+        } else {
+          this.$store.state.lastOrder.push(order);
+          this.$store.commit('lastOrder', this.$store.state.lastOrder);
+        }
+
+        this.items = [];
+        this.memberInfo = {};
+
+        this.points = 0;
+        this.pointsUsed = 0;
+        this.pointsNet = 0;
+
+        this.saleTotal = 0;
+        this.discountTotal = 0;
+        this.net = 0;
+
+        this.generateNewInvoice();
+      }
+
     },
     reworkOrder() {
-      // this.commit('lastOrder', this.order);
+      if(this.$store.state.lastOrder.length == 0) {
+        alert("ไม่มีรายการค้างอยู่");
+      } else {
+        /* TODO:
+           ถ้ามี รายการที่ค้างอยู่ 1 รายการ 
+           ให้เอารายการนั้นขึ้นมา โชว์ เป็นรายการปัจจุบันได้เลย
+           
+           ถ้ามี รายการที่ค้างอยู่ มากกว่า 1 รายการ ต้องมี dialog แสดงเลข invoice ให้ user เลือกก่อน
+           แล้ว ให้เอารายการที่ user เลือก มาแสดงเป็นรายการปัจจุบัน
+
+           // this.items = this.$store.state.lastOrder.orderInfo;
+        */
+        
+      }
+    },
+    cancelOrder() {
+      this.dialogCancelOrder = true;
+    },
+    confirmCancelOrder() {
+      /* 
+        TODO: ต้องเช็คด้วยว่า invoice นี้ มีอยู่ใน pause ด้วยรึเปล่า 
+        ถ้ามี เก็บ index ที่อยู่ใน list ให้เอา รายการออกจาก Pause ด้วย
+
+        this.editedIndex = this.items.indexOf(item);
+        this.$store.state.lastOrder.splice(this.editedIndex, 1);
+      */
+      this.items = [];
+      this.pointsUsed = 0;
+
+      this.calSaleTotal();
+      this.calPoints();
+      this.redeemPoints();
+      this.dialogCancelOrder = false;
+    },
+    closeDialogCancelOrder() {
+      this.dialogCancelOrder = false;
     },
     save() {
+      /* 
+        TODO: บันทึกเข้าไปใน store เก็บข้อมูล
+      */
       // if (this.editedIndex > -1) {
       //   Object.assign(this.desserts[this.editedIndex], this.editedItem);
       // } else {
@@ -449,5 +566,8 @@ export default {
 </script>
 
 <style>
-
+  .item-table{
+    height: 25vh;
+    overflow-y: scroll;
+  }
 </style>
