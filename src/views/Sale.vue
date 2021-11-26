@@ -3,23 +3,23 @@
     <b-card>
       <b-tabs content-class="mt-3">
         <b-tab title="บิลขาย" active>
-          <v-data-table :headers="headers" :items="desserts" :footer-props="{pageText: 'total', 'items-per-page-text':'products per page'}" sort-by="calories" class="elevation-1">
+          <v-data-table :headers="headers" :items="desserts" :footer-props="{ pageText: 'total', 'items-per-page-text':'products per page'}" sort-by="calories" class="elevation-1">
             <template v-slot:top>
               <v-toolbar flat>
                 <v-toolbar-title>My CRUD</v-toolbar-title>
                 <v-divider class="mx-4" inset vertical></v-divider>
                 <v-spacer></v-spacer>
 
-                <v-dialog v-model="dialog" max-width="500px">
+                <v-dialog v-model="dialog" max-width="500px" :retain-focus="false">
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn color="primary" class="mb-2" v-bind="attrs" v-on="on" @click="overlay = !overlay">เปิดบิล+</v-btn>
                   </template>
 
-                  <v-overlay :absolute="absolute" :value="overlay" responsive>
+                  <v-overlay :absolute="absolute" :value="overlay">
                     <v-card style="background-color: white; color: black; width: 100vw; height: 100vh; margin: 0;">
-                      <v-card-title style="color: black; padding-bottom: 0px; padding-top: 0px;">
+                      <!-- <v-card-title style="color: black; padding-bottom: 0px; padding-top: 0px;">
                         <span class="text-h5">บิลเงินสด</span>
-                      </v-card-title>
+                      </v-card-title> -->
 
                       <v-card-text style="background-color: lightgreen; color: black">
                         <v-row no-gutters>
@@ -46,7 +46,9 @@
                                 <b-col cols="1" style="text-align: right; padding-left: 0px; padding-right: 0px;">จำนวน:</b-col>
                                 <b-col cols="1"><b-form-input id="input-small" size="sm" v-model="saleQty"></b-form-input></b-col>
                                 <b-col cols="1" style="text-align: right; padding-left: 0px; padding-right: 0px;">รหัสสินค้า:</b-col>
-                                <b-col cols="3"><b-form-input id="input-small" size="sm"></b-form-input></b-col>
+                                <b-col cols="3">
+                                  <b-form-input id="input-small" size="sm" v-model="productInput" ref="productInput" @change="addItem()"></b-form-input>
+                                </b-col>
                               </b-row>
                             </v-card>
                           </b-col>
@@ -54,10 +56,10 @@
                             <v-card style="background-color: green">
                               <b-row style="text-align: center">
                                 <b-col cols="2" style="text-align: right">รหัสสมาชิก:</b-col>
-                                <b-col cols="4"><b-form-input id="input-small" size="sm" v-model="memberInfo.memberId"></b-form-input></b-col>
-                                <b-col cols="1"><button @click.prevent="getMemberInfo"><v-icon>mdi-book-open</v-icon></button></b-col>
+                                <b-col cols="4"><b-form-input id="input-small" size="sm" @change="getMemberInfo()" v-model="memberInfo.memberId"></b-form-input></b-col>
+                                <b-col cols="1"><button @click.prevent="getMemberInfo()"><v-icon>mdi-book-open</v-icon></button></b-col>
                                 <b-col cols="1"><i class="fa fa-star" aria-hidden="true"></i></b-col>
-                                <b-col cols="3"><b-form-input id="input-small" size="sm" v-model="saleDate"></b-form-input></b-col>
+                                <b-col cols="3"><b-form-input style="text-align: center;" id="input-small" size="sm" v-model="saleDate" readonly></b-form-input></b-col>
                               </b-row>
                               <b-row style="text-align: center;">
                                 <b-col cols="2" style="text-align: right">ประเภท:</b-col>
@@ -76,60 +78,65 @@
                               <v-card-title style="padding-top: 0px;">
                                 <v-text-field style="padding-top: 0px;" v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details></v-text-field>
                               </v-card-title>
-                              <b-table :items="items" :fields="productfields" :current-page="currentPage" :per-page="5" :filter="search" :filter-included-fields="filterOn" :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" :sort-direction="sortDirection" stacked="md" show-empty small @filtered="onFiltered">
-                                <template #cell(name)="row">{{ row.value.first }} {{ row.value.last }}</template>
-
-                                <template #cell(actions)="row">
-                                  <b-button size="sm" @click="info(row.item, row.index, $event.target)" class="mr-1"><v-icon small @click="deleteItem(item)">mdi-delete</v-icon></b-button>
-                                  <!-- <v-icon small @click="deleteItem(item)">mdi-delete</v-icon> -->
-                                </template>
-                              </b-table>
+                              <div class="item-table">
+                                <b-table :items="items" :fields="productfields" :current-page="currentPage" :per-page="5" :filter="search" :filter-included-fields="filterOn" :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" :sort-direction="sortDirection" stacked="md" show-empty small @filtered="onFiltered">
+                                  <template #cell(actions)="row">
+                                    <b-button size="sm" @click="deleteItem(row.item, row.index, $event.target)" class="mr-1"><v-icon small >mdi-delete</v-icon></b-button>
+                                  </template>
+                                </b-table>
+                              </div>
                             </b-row>
                             <b-row>
                               <b-col cols="8" style="padding-top: 0px; padding-bottom: 0px;">
                                 <b-row>
                                   <b-col cols="12" style="text-align: center; padding-top: 0px; padding-bottom: 0px;">
-                                    <b-form-input class="form-control ma-2" style="text-align: center; font-size: 17px;" v-model="msgText"></b-form-input>
+                                    <b-form-input class="form-control ma-2" style="text-align: center; font-size: 17px;" readonly v-model="net"></b-form-input>
                                   </b-col>
                                 </b-row>
                                 <b-row>
                                   <b-col cols="12" style="text-align: center; padding-top: 0px; padding-bottom: 0px;">
-                                    <v-btn color="success" class="form-control ma-2 white--text">
+                                    <v-btn color="success" class="form-control ma-2 white--text" @click.prevent="showPayment()">
                                       <v-icon>mdi-play</v-icon>Payment(F10)
                                     </v-btn>
                                   </b-col>
                                 </b-row>
                                 <b-row>
                                   <b-col cols="12" style="text-align: center; padding-top: 0px; padding-bottom: 0px;">
-                                    <v-btn color="warning" class="ma-2 white--text"><v-icon>mdi-restore</v-icon>Rework</v-btn>
-                                    <v-btn color="yellow" class="ma-2 white--text"><v-icon>mdi-pause</v-icon>Pause(F9)</v-btn>
-                                    <v-btn color="error" class="ma-2 white--text"><v-icon>mdi-delete</v-icon>Delete(F8)</v-btn>
+                                    <!-- <v-btn color="warning" class="ma-2 white--text" v-if="pause" disabled><v-icon>mdi-restore</v-icon>Rework</v-btn> -->
+                                    <v-btn color="warning" class="ma-2 white--text" @click.prevent="reworkOrder()">
+                                      <v-badge :content="$store.state.lastOrder.length" :value="$store.state.lastOrder.length" color="green">
+                                        <v-icon>mdi-restore</v-icon>Rework
+                                      </v-badge>
+                                    </v-btn>
+
+                                    <v-btn color="yellow" class="ma-2 white--text" @click.prevent="pauseOrder()"><v-icon>mdi-pause</v-icon>Pause(F9)</v-btn>
+                                    <v-btn color="error" class="ma-2 white--text" @click.prevent="cancelOrder()"><v-icon>mdi-delete</v-icon>Delete(F8)</v-btn>
                                   </b-col>
                                 </b-row>
                               </b-col>
                               <b-col cols="4" style="padding-top: 0px; padding-bottom: 0px;">
                                 <b-row style="margin-bottom: 0px;">
                                   <b-col cols="6" style="padding-top: 0px; padding-left: 0px; padding-bottom: 0px; padding-right: 0px;">
-                                    <v-text-field class="font-10" style="margin-bottom: 0px; padding-top: 0px; padding-bottom: 0px;" label="Point:" outlined v-model="empName"></v-text-field>
+                                    <v-text-field class="font-10" style="margin-bottom: 0px; padding-top: 0px; padding-bottom: 0px;" label="Points:" outlined v-model="points" readonly></v-text-field>
                                   </b-col>
                                   <b-col cols="6" style="padding-top: 0px; padding-left: 0px; padding-bottom: 0px; padding-right: 0px;">
-                                    <v-text-field style="margin-bottom: 0px; padding-top: 0px; padding-bottom: 0px;" label="Total Money:" outlined v-model="empName"></v-text-field>
-                                  </b-col>
-                                </b-row>
-                                <b-row style="margin-top: 0px; margin-bottom: 0px;">
-                                  <b-col cols="6" style="padding-top: 0px; padding-left: 0px; padding-bottom: 0px; padding-right: 0px;">
-                                    <v-text-field label="Point User:" outlined v-model="empName"></v-text-field>
-                                  </b-col>
-                                  <b-col cols="6" style="padding-top: 0px; padding-left: 0px; padding-bottom: 0px; padding-right: 0px;">
-                                    <v-text-field label="Discount:" outlined v-model="empName"></v-text-field>
+                                    <v-text-field style="margin-bottom: 0px; padding-top: 0px; padding-bottom: 0px;" label="Total Money:" outlined v-model="saleTotal" readonly></v-text-field>
                                   </b-col>
                                 </b-row>
                                 <b-row style="margin-top: 0px; margin-bottom: 0px;">
                                   <b-col cols="6" style="padding-top: 0px; padding-left: 0px; padding-bottom: 0px; padding-right: 0px;">
-                                    <v-text-field label="Point Net:" outlined v-model="empName"></v-text-field>
+                                    <v-text-field label="Points Used:" outlined v-model="pointsUsed" @change="redeemPoints()"></v-text-field>
                                   </b-col>
                                   <b-col cols="6" style="padding-top: 0px; padding-left: 0px; padding-bottom: 0px; padding-right: 0px;">
-                                    <v-text-field label="Net:" outlined v-model="empName"></v-text-field>
+                                    <v-text-field label="Discount:" outlined v-model="discountTotal" readonly></v-text-field>
+                                  </b-col>
+                                </b-row>
+                                <b-row style="margin-top: 0px; margin-bottom: 0px;">
+                                  <b-col cols="6" style="padding-top: 0px; padding-left: 0px; padding-bottom: 0px; padding-right: 0px;">
+                                    <v-text-field label="Points Net:" outlined v-model="pointsNet" readonly></v-text-field>
+                                  </b-col>
+                                  <b-col cols="6" style="padding-top: 0px; padding-left: 0px; padding-bottom: 0px; padding-right: 0px;">
+                                    <v-text-field label="Net:" outlined v-model="net" readonly></v-text-field>
                                   </b-col>
                                 </b-row>
                               </b-col>
@@ -183,7 +190,7 @@
 
                 <v-dialog v-model="dialogDelete" max-width="500px">
                   <v-card>
-                    <v-card-title class="text-h5">Are you sure you want to delete this item?</v-card-title>
+                    <v-card-title class="text-h5">ต้องการลบสินค้า ใช่หรือไม่?</v-card-title>
                     <v-card-actions>
                       <v-spacer></v-spacer>
                       <v-btn color="blue darken-1" text @click="closeDelete">Cancel</v-btn>
@@ -192,15 +199,25 @@
                     </v-card-actions>
                   </v-card>
                 </v-dialog>
+
+                <v-dialog v-model="dialogCancelOrder" max-width="500px">
+                  <v-card>
+                    <v-card-title class="text-h5">ต้องการยกเลิกรายการสินค้าทั้งหมด ใช่หรือไม่?</v-card-title>
+                    <v-card-actions>
+                      <v-spacer></v-spacer>
+                      <v-btn color="blue darken-1" text @click="closeDialogCancelOrder">Cancel</v-btn>
+                      <v-btn color="blue darken-1" text @click="confirmCancelOrder">OK</v-btn>
+                      <v-spacer></v-spacer>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
+
               </v-toolbar>
             </template>
             <template v-slot:item.actions="{ item }">
-              <v-icon small class="mr-2" @click="editItem(item)">mdi-pencil</v-icon>
-              <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
+              <!-- <v-icon small class="mr-2" @click="editItem(item)">mdi-pencil</v-icon> -->
+              <!-- <v-icon small @click="deleteItem(item)">mdi-delete</v-icon> -->
             </template>
-            <!-- <template v-slot:no-data> -->
-              <!-- <v-btn color="primary" @click="initialize">Reset</v-btn> -->
-            <!-- </template> -->
           </v-data-table>
         </b-tab>
         <!-- <b-tab title="Second"><p>I'm the second tab</p></b-tab> -->
@@ -216,18 +233,15 @@ import dayjs from "dayjs";
 export default {
   data() {
     return {
-      dialog: true,
+      dialog: false,
       absolute: true,
-      overlay: true,
+      overlay: false,
       search: "",
       dialogDelete: false,
+      dialogCancelOrder: false,
+      invoiceNo: "",
+      pause: false,
       saleDate: dayjs().format("YYYY-MM-DD"),
-      items: [
-          { productId: 40, productName: 'Dickerson0', pricePerItem: '100', discount:"100"  },
-          { productId: 41, productName: 'Dickerson1', pricePerItem: '100', discount:"100"  },
-          { productId: 42, productName: 'Dickerson2', pricePerItem: '150', discount:"100"  },
-          { productId: 43, productName: 'Dickerson3', pricePerItem: '200', discount:"100"  },
-        ],
       headers: [
         {
           text: "Dessert (100g serving)",
@@ -241,103 +255,16 @@ export default {
         { text: "Protein (g)", value: "protein" },
         { text: "Iron (%)", value: "iron" },
       ],
-      desserts: [
-        {
-          name: "Frozen Yogurt",
-          calories: 159,
-          fat: 6.0,
-          carbs: 24,
-          protein: 4.0,
-          iron: "1%",
-        },
-        {
-          name: "Ice cream sandwich",
-          calories: 237,
-          fat: 9.0,
-          carbs: 37,
-          protein: 4.3,
-          iron: "1%",
-        },
-        {
-          name: "Eclair",
-          calories: 262,
-          fat: 16.0,
-          carbs: 23,
-          protein: 6.0,
-          iron: "7%",
-        },
-        {
-          name: "Cupcake",
-          calories: 305,
-          fat: 3.7,
-          carbs: 67,
-          protein: 4.3,
-          iron: "8%",
-        },
-        {
-          name: "Gingerbread",
-          calories: 356,
-          fat: 16.0,
-          carbs: 49,
-          protein: 3.9,
-          iron: "16%",
-        },
-        {
-          name: "Jelly bean",
-          calories: 375,
-          fat: 0.0,
-          carbs: 94,
-          protein: 0.0,
-          iron: "0%",
-        },
-        {
-          name: "Lollipop",
-          calories: 392,
-          fat: 0.2,
-          carbs: 98,
-          protein: 0,
-          iron: "2%",
-        },
-        {
-          name: "Honeycomb",
-          calories: 408,
-          fat: 3.2,
-          carbs: 87,
-          protein: 6.5,
-          iron: "45%",
-        },
-        {
-          name: "Donut",
-          calories: 452,
-          fat: 25.0,
-          carbs: 51,
-          protein: 4.9,
-          iron: "22%",
-        },
-        {
-          name: "KitKat",
-          calories: 518,
-          fat: 26.0,
-          carbs: 65,
-          protein: 7,
-          iron: "6%",
-        },
+      desserts: [],
+      productfields: [
+        { key: 'productId', label: 'รหัสสินค้า', sortable: true, sortDirection: 'desc' },
+        { key: 'productName', label: 'รายละเอียดสินค้า', sortable: true, class: 'text-center' },
+        { key: 'saleQty', label: 'จำนวน', sortable: true, class: 'text-center' },
+        { key: 'pricePerItem', label: 'ราคา/หน่วย', sortable: true, class: 'text-center' },
+        { key: 'total', label: 'จำนวนเงิน', class: 'text-center' },
+        { key: 'actions', label: 'Actions' }
       ],
-      editedIndex: -1,
-      editedItem: {
-        name: "",
-        calories: 0,
-        fat: 0,
-        carbs: 0,
-        protein: 0,
-      },
-      defaultItem: {
-        name: "",
-        calories: 0,
-        fat: 0,
-        carbs: 0,
-        protein: 0,
-      },
+      items: [],
       selectedPlayPromo: 1,
       optionsPromotion: [
         { value: 1, text: "เล่นโปรโมชั่น" },
@@ -365,104 +292,258 @@ export default {
         birthdayDate: dayjs("01/10/2564").format("YYYY-MM-DD"),
         opsDate: dayjs("01/10/2564").format("YYYY-MM-DD"),
       },
-      items: [],
-      productfields: [
-          { key: 'productId', label: 'รหัสสินค้า', sortable: true, sortDirection: 'desc' },
-          { key: 'productName', label: 'รายละเอียดสินค้า', sortable: true, class: 'text-center' },
-          { key: 'saleQty', label: 'จำนวน', sortable: true, class: 'text-center' },
-          { key: 'pricePerItem', label: 'ราคา', sortable: true, class: 'text-center' },
-          { key: 'total', label: 'จำนวนเงิน', class: 'text-center' },
-          { key: 'discount', label: 'ส่วนลด', class: 'text-center' },
-          { key: 'amount', label: 'รวมเงิน', class: 'text-center' },
-          { key: 'actions', label: 'Actions' }
-        ],
-        totalRows: 1,
-        currentPage: 1,
-        perPage: 5,
-        sortBy: '',
-        sortDesc: false,
-        sortDirection: 'asc',
-        filter: null,
-        filterOn: [],
-        infoModal: {
-          id: 'info-modal',
-          title: '',
-          content: ''
-        },
-        saleQty: 1
+      totalRows: 1,
+      currentPage: 1,
+      sortBy: '',
+      sortDesc: false,
+      sortDirection: 'asc',
+      filter: null,
+      filterOn: [],
+      saleQty: 1,
+      productInput: "",
+      points: 0,
+      pointsUsed: 0,
+      pointsNet: 0,
+      saleTotal: 0,
+      discountTotal: 0,
+      net: 0,      
     };
   },
   mounted: function () {
     if (this.$store.state.is_login == false) {
-      this.$router.push({ name: "Home" });
+      // this.$router.push({ name: "Home" });
+      this.$router.push({ name: "Home" }).catch((error) => {
+        if (
+          error.name !== 'NavigationDuplicated' &&
+          !error.message.includes('Avoided redundant navigation to current location')
+        ) {
+          console.log(error)
+        }
+      });
     } else {
       this.empName = this.$store.state.userInfo.name;
+      this.generateNewInvoice();
     }
   },
   watch: {
-    dialog(val) {
-      val || this.close();
+    dialogAlert(val) {
+      // val || this.close();
     },
-    dialogDelete(val) {
-      val || this.closeDelete();
+    dialogDeleteAlert(val) {
+      // val || this.closeDelete();
     },
   },
   methods: {
-    editItem(item) {
-      this.editedIndex = this.desserts.indexOf(item);
-      this.editedItem = Object.assign({}, item);
-      this.dialog = true;
-    },
+    addItem() {
+      /* TODO: ยิง api เพื่อรับข้อมูลสินค้า */
+      let data = { 
+        productId: this.productInput, 
+        productName: 'Dickerson'+ this.productInput, 
+        pricePerItem: '100', 
+        discount:"5",
+        point: 10  
+      };
+      /******************************/
+      if (this.items.length !== 0) {
+        let selectProduct = this.items.find(
+          (ele) => ele.productId == this.productInput
+        );
+        if (selectProduct) {
+          let qty = parseInt(selectProduct.saleQty);
+          qty = this.saleQty==1? qty+1: parseInt(this.saleQty);
+          selectProduct.saleQty = qty;
+          selectProduct.total = parseInt(selectProduct.pricePerItem) * parseInt(qty);
+        } else {
+          this.items.push(
+            { 
+              ...data, 
+              saleQty: parseInt(this.saleQty),
+              total: parseInt(data.pricePerItem) * parseInt(this.saleQty),
+            }
+          );
+        }
+      } else {
+        this.items.push(
+          { 
+            ...data, 
+            saleQty: parseInt(this.saleQty),
+            total: parseInt(data.pricePerItem) * parseInt(this.saleQty),
+          }
+        );
+      }
+      this.calSaleTotal();
+      this.calPoints();
 
-    deleteItem(item) {
-      this.editedIndex = this.desserts.indexOf(item);
-      this.editedItem = Object.assign({}, item);
+      this.productInput = "";
+      this.$refs.productInput.focus();
+    },
+    calSaleTotal() {
+      this.saleTotal = 0;
+      this.discountTotal = 0;
+      this.net = 0;
+
+      this.items.forEach( e => {
+        this.saleTotal += parseInt(e.total);
+        this.discountTotal += parseInt(e.discount);
+      });
+
+      this.net = this.saleTotal - this.discountTotal;
+    },
+    calPoints() {
+      this.points = 0;
+      this.pointsUsed = 0;
+
+      this.items.forEach( e => {
+        this.points += parseInt(e.point);
+      });
+      this.redeemPoints();
+    },
+    redeemPoints() {
+      this.pointsNet = this.points - this.pointsUsed;
+    },    
+    editItem(item) {
+      // this.editedIndex = this.desserts.indexOf(item);
+      // this.editedItem = Object.assign({}, item);
+      // this.dialog = true;
+    },
+    deleteItem(item, index, event) {
+      this.editedIndex = this.items.indexOf(item);
+      // this.editedItem = Object.assign({}, item);
       this.dialogDelete = true;
     },
-
     deleteItemConfirm() {
-      this.desserts.splice(this.editedIndex, 1);
+      this.items.splice(this.editedIndex, 1);
+      this.calSaleTotal();
       this.closeDelete();
     },
-
     close() {
-      this.dialog = false;
-      this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
-      });
-    },
+      /* TODO: เมื่อปิด dialog ที่ทำรายการหน้าร้านแล้ว ให้เรียกข้อมูลบิลมาแสดงที่หน้ารวมรายการในแต่ละวัน */
 
+      // this.dialog = false;
+      // this.$nextTick(() => {
+      //   this.editedItem = Object.assign({}, this.defaultItem);
+      //   this.editedIndex = -1;
+      // });
+    },
     closeDelete() {
       this.dialogDelete = false;
-      this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
-      });
+      // this.$nextTick(() => {
+      //   this.editedItem = Object.assign({}, this.defaultItem);
+      //   this.editedIndex = -1;
+      // });
     },
-
-    save() {
-      if (this.editedIndex > -1) {
-        Object.assign(this.desserts[this.editedIndex], this.editedItem);
+    generateNewInvoice() {
+      this.invoiceNo = "temp" + parseInt(this.$store.state.lastOrder.length +1);
+    },
+    showPayment() {
+      /* 
+        1.แสดงข้อมูลทั้งหมดของรายการปัจจุบัน ใน dialog
+          1.1 วิธีการชำระเงิน
+          1.2 การรับเงิน/การทอนเงิน
+          1.3 ปุ่มปริ้นใบเสร็จ
+        2.บันทึกข้อมูลทั้งหมด
+        3.แสดงข้อมูลในตารางการขาย  
+      */
+    },
+    pauseOrder() {
+      if(this.items.length == 0) {
+        alert("ไม่มีรายการซื้อสินค้า");
       } else {
-        this.desserts.push(this.editedItem);
+
+        let order = {
+          invoiceNo: this.invoiceNo,
+          userInfo: this.$store.state.userInfo,
+          memberInfo: this.memberInfo,
+          orderInfo: this.items,
+          points: this.points,
+          pointsUsed: this.pointsUsed,
+          pointsNet: this.pointsNet,
+          status: "hold"
+        };
+
+        if(this.$store.state.lastOrder.length > 0) {
+          let selectOrder = this.$store.state.lastOrder.find(
+            (ele) => ele.invoiceNo == this.invoiceNo
+          );
+          if(selectOrder) {
+            selectOrder.orderInfo = this.items;
+          } else {
+            this.$store.state.lastOrder.push(order);
+            this.$store.commit('lastOrder', this.$store.state.lastOrder);
+          }
+        } else {
+          this.$store.state.lastOrder.push(order);
+          this.$store.commit('lastOrder', this.$store.state.lastOrder);
+        }
+
+        this.items = [];
+        this.memberInfo = {};
+
+        this.points = 0;
+        this.pointsUsed = 0;
+        this.pointsNet = 0;
+
+        this.saleTotal = 0;
+        this.discountTotal = 0;
+        this.net = 0;
+
+        this.generateNewInvoice();
       }
-      this.close();
+
     },
-    info(item, index, button) {
-      alert(item);
-      // this.infoModal.title = `Row index: ${index}`;
-      // this.infoModal.content = JSON.stringify(item, null, 2);
-      // this.$root.$emit('bv::show::modal', this.infoModal.id, button);
+    reworkOrder() {
+      if(this.$store.state.lastOrder.length == 0) {
+        alert("ไม่มีรายการค้างอยู่");
+      } else {
+        /* TODO:
+           ถ้ามี รายการที่ค้างอยู่ 1 รายการ 
+           ให้เอารายการนั้นขึ้นมา โชว์ เป็นรายการปัจจุบันได้เลย
+           
+           ถ้ามี รายการที่ค้างอยู่ มากกว่า 1 รายการ ต้องมี dialog แสดงเลข invoice ให้ user เลือกก่อน
+           แล้ว ให้เอารายการที่ user เลือก มาแสดงเป็นรายการปัจจุบัน
+
+           // this.items = this.$store.state.lastOrder.orderInfo;
+        */
+        
+      }
     },
-    resetInfoModal() {
-        this.infoModal.title = ''
-        this.infoModal.content = ''
+    cancelOrder() {
+      this.dialogCancelOrder = true;
+    },
+    confirmCancelOrder() {
+      /* 
+        TODO: ต้องเช็คด้วยว่า invoice นี้ มีอยู่ใน pause ด้วยรึเปล่า 
+        ถ้ามี เก็บ index ที่อยู่ใน list ให้เอา รายการออกจาก Pause ด้วย
+
+        this.editedIndex = this.items.indexOf(item);
+        this.$store.state.lastOrder.splice(this.editedIndex, 1);
+      */
+      this.items = [];
+      this.pointsUsed = 0;
+
+      this.calSaleTotal();
+      this.calPoints();
+      this.redeemPoints();
+      this.dialogCancelOrder = false;
+    },
+    closeDialogCancelOrder() {
+      this.dialogCancelOrder = false;
+    },
+    save() {
+      /* 
+        TODO: บันทึกเข้าไปใน store เก็บข้อมูล
+      */
+      // if (this.editedIndex > -1) {
+      //   Object.assign(this.desserts[this.editedIndex], this.editedItem);
+      // } else {
+      //   this.desserts.push(this.editedItem);
+      // }
+      // this.close();
     },
     onFiltered(filteredItems) {
-        // Trigger pagination to update the number of buttons/pages due to filtering
-      this.totalRows = filteredItems.length
-      this.currentPage = 1
+    //     // Trigger pagination to update the number of buttons/pages due to filtering
+    //   this.totalRows = filteredItems.length
+    //   this.currentPage = 1
     },
     getMemberInfo() {
       this.memberInfo= {
@@ -485,12 +566,8 @@ export default {
 </script>
 
 <style>
-  @media screen and (max-height: 450px) {
-  .overlay a {font-size: 20px}
-  .overlay .closebtn {
-  font-size: 40px;
-  top: 15px;
-  right: 35px;
+  .item-table{
+    height: 25vh;
+    overflow-y: scroll;
   }
-}
 </style>

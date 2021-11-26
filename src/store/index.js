@@ -7,7 +7,8 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     is_login: false,
-    userInfo: null
+    userInfo: null,
+    lastOrder: []
   },
   mutations: {
     doLogin(state, data) {
@@ -17,6 +18,9 @@ export default new Vuex.Store({
     doLogout(state) {
       state.is_login = false,
       state.userInfo = null
+    },
+    lastOrder(state, data) {
+      state.lastOrder = data
     }
   },
   actions: {
