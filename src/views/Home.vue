@@ -85,32 +85,6 @@ export default {
         this.$refs.password.focus();
         return;
       }
-    },
-    methods: {
-      login() {
-        if (this.loginForm.password == "") {
-          this.$refs.password.focus();
-          return;
-        }
-        
-        axios
-          .post(this.url + "/api/login", this.loginForm)
-          .then(res => {
-            if (res.status == 201) {
-              this.$store.commit("doLogin", JSON.stringify(res.data));
-            } else {
-              alert("ไม่สามารถใช้ username/password ได้ในตอนนี้, กรุณาติดต่อเจ้าหน้าที่");
-              this.loginForm.username = "";
-              this.loginForm.password = "";
-            }
-          })
-          .catch(err => {
-            console.log("login error = ", err);
-            if(err.response.status !== 201){
-              alert("username/password ไม่ถูกต้อง, กรุณากรอกให้ถูกต้อง");
-              this.loginForm.username = "";
-              this.loginForm.password = "";
-
       axios
         .post(this.url + "/api/login", this.loginForm)
         .then((res) => {
