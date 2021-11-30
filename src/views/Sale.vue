@@ -155,7 +155,7 @@
                                 <b-col cols="2"></b-col>
 
                                 <b-col cols="3">
-                                  <v-btn @click="close">
+                                  <v-btn @click.prevent="close">
                                     <v-icon>mdi mdi-home</v-icon>
                                   </v-btn></b-col
                                 >
@@ -620,173 +620,30 @@ export default {
       dialog: false,
       absolute: true,
       overlay: false,
-      search: "",
+      search: null,
+      searchInvoice: "",
       dialogDelete: false,
-      saleDate: dayjs().format("YYYY-MM-DD"),
-      items: [
-        {
-          productId: 40,
-          productName: "Dickerson0",
-          pricePerItem: "100",
-          discount: "100",
-        },
-        {
-          productId: 41,
-          productName: "Dickerson1",
-          pricePerItem: "100",
-          discount: "100",
-        },
-        {
-          productId: 42,
-          productName: "Dickerson2",
-          pricePerItem: "150",
-          discount: "100",
-        },
-        {
-          productId: 43,
-          productName: "Dickerson3",
-          pricePerItem: "200",
-          discount: "100",
-        },
-      ],
+      dialogCancelOrder: false,
+      dialogLastOrder: false,
+      dialogCancelInvoicePauseOrder: false,
+      dialogConfirmInvoice: false,
+      invoiceNo: "",
+      pause: false,
+      today: dayjs().format("DD-MM-YYYY"),
+      saleDate: dayjs().format("YYYY-MM-DD HH:mm:ss"),
       headers: [
-        {
-          text: "Dessert (100g serving)",
-          align: "start",
-          filterable: false,
-          value: "name",
-        },
-        { text: "Calories", value: "calories" },
-        { text: "Fat (g)", value: "fat" },
-        { text: "Carbs (g)", value: "carbs" },
-        { text: "Protein (g)", value: "protein" },
-        { text: "Iron (%)", value: "iron" },
+        { text: "Invoice No", value: "invoiceNo" },
+        { text: "Order Date", sortable: true, value: "orderDate" },
+        { text: "amount", value: "amount" },
+        { text: "discount", value: "discountTotal" },
+        { text: "net", value: "net" },
+        { text: "points", value: "points" },
+        { text: "Payment Method", value: "paymentMethod" },
+        { text: "Received", value: "received" },
+        { text: "change", value: "change" },
       ],
-      desserts: [
-        {
-          name: "Frozen Yogurt",
-          calories: 159,
-          fat: 6.0,
-          carbs: 24,
-          protein: 4.0,
-          iron: "1%",
-        },
-        {
-          name: "Ice cream sandwich",
-          calories: 237,
-          fat: 9.0,
-          carbs: 37,
-          protein: 4.3,
-          iron: "1%",
-        },
-        {
-          name: "Eclair",
-          calories: 262,
-          fat: 16.0,
-          carbs: 23,
-          protein: 6.0,
-          iron: "7%",
-        },
-        {
-          name: "Cupcake",
-          calories: 305,
-          fat: 3.7,
-          carbs: 67,
-          protein: 4.3,
-          iron: "8%",
-        },
-        {
-          name: "Gingerbread",
-          calories: 356,
-          fat: 16.0,
-          carbs: 49,
-          protein: 3.9,
-          iron: "16%",
-        },
-        {
-          name: "Jelly bean",
-          calories: 375,
-          fat: 0.0,
-          carbs: 94,
-          protein: 0.0,
-          iron: "0%",
-        },
-        {
-          name: "Lollipop",
-          calories: 392,
-          fat: 0.2,
-          carbs: 98,
-          protein: 0,
-          iron: "2%",
-        },
-        {
-          name: "Honeycomb",
-          calories: 408,
-          fat: 3.2,
-          carbs: 87,
-          protein: 6.5,
-          iron: "45%",
-        },
-        {
-          name: "Donut",
-          calories: 452,
-          fat: 25.0,
-          carbs: 51,
-          protein: 4.9,
-          iron: "22%",
-        },
-        {
-          name: "KitKat",
-          calories: 518,
-          fat: 26.0,
-          carbs: 65,
-          protein: 7,
-          iron: "6%",
-        },
-      ],
-      editedIndex: -1,
-      editedItem: {
-        name: "",
-        calories: 0,
-        fat: 0,
-        carbs: 0,
-        protein: 0,
-      },
-      defaultItem: {
-        name: "",
-        calories: 0,
-        fat: 0,
-        carbs: 0,
-        protein: 0,
-      },
-      selectedPlayPromo: 1,
-      optionsPromotion: [
-        { value: 1, text: "เล่นโปรโมชั่น" },
-        { value: 2, text: "ไม่เล่นโปรโมชั่น" },
-      ],
-      selectSale: null,
-      optionsSale: [
-        { value: null, text: "ช่องทางการขาย" },
-        { value: 1, text: "Grab" },
-        { value: 2, text: "Panda Rider" },
-      ],
-      empName: "",
-      msgText: "test",
-      memberInfo: {
-        memberId: "12324",
-        memberType: "Exclusive CARD",
-        memberName: "Test Test",
-        memberAddress: "12/345",
-        memberPhone: "081-123-4567",
-        point: "100",
-        memberlevel: "99",
-        memberDiscount: "5",
-        registerDate: dayjs("01/11/2564").format("YYYY-MM-DD"),
-        expiredDate: dayjs("01/10/2564").format("YYYY-MM-DD"),
-        birthdayDate: dayjs("01/10/2564").format("YYYY-MM-DD"),
-        opsDate: dayjs("01/10/2564").format("YYYY-MM-DD"),
-      },
-      items: [],
+
+      listInvoice: [],
       productfields: [
         {
           key: "productId",
@@ -808,103 +665,434 @@ export default {
         },
         {
           key: "pricePerItem",
-          label: "ราคา",
+          label: "ราคา/หน่วย",
           sortable: true,
           class: "text-center",
         },
         { key: "total", label: "จำนวนเงิน", class: "text-center" },
-        { key: "discount", label: "ส่วนลด", class: "text-center" },
-        { key: "amount", label: "รวมเงิน", class: "text-center" },
         { key: "actions", label: "Actions" },
       ],
+      lastOrderfields: [
+        "selected",
+        { key: "invoiceNo", label: "เลขที่บิล", class: "text-center" },
+        { key: "timeRecord", label: "เวลา", class: "text-center" },
+        { key: "actions", label: "Actions" },
+      ],
+      selectedRework: [],
+      items: [],
+      selectedPlayPromo: 1,
+      optionsPromotion: [
+        { value: 1, text: "เล่นโปรโมชั่น" },
+        { value: 2, text: "ไม่เล่นโปรโมชั่น" },
+      ],
+      selectSale: null,
+      optionsSale: [
+        { value: null, text: "ช่องทางการขาย" },
+        { value: 1, text: "Grab" },
+        { value: 2, text: "Panda Rider" },
+      ],
+      msgText: "test",
+      memberInfo: {
+        memberId: "12324",
+        memberType: "Exclusive CARD",
+        memberName: "Test Test",
+        memberAddress: "12/345",
+        memberPhone: "081-123-4567",
+        point: "100",
+        memberlevel: "99",
+        memberDiscount: "5",
+        registerDate: dayjs("01/11/2564").format("YYYY-MM-DD"),
+        expiredDate: dayjs("01/10/2564").format("YYYY-MM-DD"),
+        birthdayDate: dayjs("01/10/2564").format("YYYY-MM-DD"),
+        opsDate: dayjs("01/10/2564").format("YYYY-MM-DD"),
+      },
       totalRows: 1,
       currentPage: 1,
-      perPage: 5,
       sortBy: "",
       sortDesc: false,
       sortDirection: "asc",
-      filter: null,
-      filterOn: [],
-      infoModal: {
-        id: "info-modal",
-        title: "",
-        content: "",
-      },
       saleQty: 1,
+      productInput: "",
+      points: 0,
+      pointsUsed: 0,
+      pointsNet: 0,
+      saleTotal: 0,
+      discountTotal: 0,
+      net: 0,
+      cashIn: 0,
+      remark: "",
+      selectCancelInvoiceIndex: 0,
+      userInfo: {},
+      paymentMethod: undefined,
     };
   },
   mounted: function () {
     if (this.$store.state.is_login == false) {
-      this.$router.push({ name: "Home" });
+      this.$router.push({ name: "Home" }).catch((error) => {
+        if (
+          error.name !== "NavigationDuplicated" &&
+          !error.message.includes(
+            "Avoided redundant navigation to current location"
+          )
+        ) {
+          console.log(error);
+        }
+      });
     } else {
-      this.empName = this.$store.state.userInfo.name;
+      if (this.$store.state.listInvoice !== []) {
+        this.listInvoice = this.$store.state.listInvoice;
+      }
+      if (this.$store.state.currentOrder !== null) {
+        let currentOrder = JSON.parse(this.$store.state.currentOrder);
+        this.invoiceNo = currentOrder.invoiceNo;
+        this.items = currentOrder.orderInfo;
+        this.memberInfo = currentOrder.memberInfo;
+        this.points = currentOrder.points;
+        this.pointsNet = currentOrder.pointsNet;
+        this.pointsUsed = currentOrder.pointsUsed;
+
+        this.calSaleTotal();
+        this.calPoints();
+      }
+      this.userInfo = JSON.parse(this.$store.state.userInfo);
+      this.generateNewInvoice();
     }
   },
-  watch: {
-    dialog(val) {
-      val || this.close();
-    },
-    dialogDelete(val) {
-      val || this.closeDelete();
-    },
-  },
   methods: {
-    editItem(item) {
-      this.editedIndex = this.desserts.indexOf(item);
-      this.editedItem = Object.assign({}, item);
-      this.dialog = true;
-    },
+    addItem() {
+      /* TODO: ยิง api เพื่อรับข้อมูลสินค้า */
+      let data = {
+        productId: this.productInput,
+        productName: "Dickerson" + this.productInput,
+        pricePerItem: "100",
+        discount: "5",
+        point: 10,
+      };
+      /******************************/
+      if (this.items.length !== 0) {
+        let selectProduct = this.items.find(
+          (ele) => ele.productId == this.productInput
+        );
+        if (selectProduct) {
+          let qty = parseInt(selectProduct.saleQty);
+          qty = this.saleQty == 1 ? qty + 1 : parseInt(this.saleQty);
+          selectProduct.saleQty = qty;
+          selectProduct.total =
+            parseInt(selectProduct.pricePerItem) * parseInt(qty);
+        } else {
+          this.items.push({
+            ...data,
+            saleQty: parseInt(this.saleQty),
+            total: parseInt(data.pricePerItem) * parseInt(this.saleQty),
+          });
+        }
+      } else {
+        this.items.push({
+          ...data,
+          saleQty: parseInt(this.saleQty),
+          total: parseInt(data.pricePerItem) * parseInt(this.saleQty),
+        });
+      }
+      this.calSaleTotal();
+      this.calPoints();
 
-    deleteItem(item) {
-      this.editedIndex = this.desserts.indexOf(item);
-      this.editedItem = Object.assign({}, item);
+      this.productInput = "";
+      this.$refs.productInput.focus();
+      this.currentOrder();
+    },
+    calSaleTotal() {
+      this.saleTotal = 0;
+      this.discountTotal = 0;
+      this.net = 0;
+
+      this.items.forEach((e) => {
+        this.saleTotal += parseInt(e.total);
+        this.discountTotal += parseInt(e.discount);
+      });
+
+      this.net = this.saleTotal - this.discountTotal;
+    },
+    calPoints() {
+      this.points = 0;
+      this.pointsUsed = 0;
+
+      this.items.forEach((e) => {
+        this.points += parseInt(e.point);
+      });
+      this.redeemPoints();
+    },
+    redeemPoints() {
+      this.pointsNet = this.points - this.pointsUsed;
+    },
+    deleteItem(item, index, event) {
+      this.editedIndex = this.items.indexOf(item);
+      // this.editedItem = Object.assign({}, item);
       this.dialogDelete = true;
     },
-
     deleteItemConfirm() {
-      this.desserts.splice(this.editedIndex, 1);
+      this.items.splice(this.editedIndex, 1);
+      this.calSaleTotal();
       this.closeDelete();
     },
-
-    close() {
-      console.log("close dialog");
-      this.dialog = false;
-      this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
-      });
-    },
-
     closeDelete() {
       this.dialogDelete = false;
-      this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
-      });
+      // this.$nextTick(() => {
+      //   this.editedItem = Object.assign({}, this.defaultItem);
+      //   this.editedIndex = -1;
+      // });
     },
+    generateNewInvoice() {
+      let generateInvNo = "" + (Math.floor(Math.random() * 10000) + 1);
+      let tempInvoiceNo =
+        "INV" +
+        generateInvNo.padStart(5, "0") +
+        dayjs().format("YYYYMMDDhhmmss");
 
-    save() {
-      if (this.editedIndex > -1) {
-        Object.assign(this.desserts[this.editedIndex], this.editedItem);
+      let checkInvoice = this.$store.state.listInvoice.find(
+        (ele) => ele.invoiceNo == tempInvoiceNo
+      );
+
+      if (checkInvoice) {
+        this.generateNewInvoice();
       } else {
-        this.desserts.push(this.editedItem);
+        this.invoiceNo = tempInvoiceNo;
       }
-      this.close();
     },
-    info(item, index, button) {
-      alert(item);
-      // this.infoModal.title = `Row index: ${index}`;
-      // this.infoModal.content = JSON.stringify(item, null, 2);
-      // this.$root.$emit('bv::show::modal', this.infoModal.id, button);
+    currentOrder() {
+      let data = {
+        invoiceNo: this.invoiceNo,
+        userInfo: this.userInfo,
+        memberInfo: this.memberInfo,
+        orderInfo: this.items,
+        points: this.points,
+        pointsUsed: this.pointsUsed,
+        pointsNet: this.pointsNet,
+        timeRecord: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+      };
+      this.$store.commit("currentOrder", JSON.stringify(data));
     },
-    resetInfoModal() {
-      this.infoModal.title = "";
-      this.infoModal.content = "";
+    showPayment() {
+      if (this.items.length == 0) {
+        alert("ไม่มีรายการสินค้า");
+      } else {
+        this.dialogConfirmInvoice = true;
+      }
     },
-    onFiltered(filteredItems) {
-      // Trigger pagination to update the number of buttons/pages due to filtering
-      this.totalRows = filteredItems.length;
-      this.currentPage = 1;
+    pauseOrder() {
+      if (this.items.length == 0) {
+        alert("ไม่มีรายการซื้อสินค้า");
+      } else {
+        let order = {
+          invoiceNo: this.invoiceNo,
+          userInfo: this.userInfo,
+          memberInfo: this.memberInfo,
+          orderInfo: this.items,
+          points: this.points,
+          pointsUsed: this.pointsUsed,
+          pointsNet: this.pointsNet,
+          timeRecord: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+          status: "hold",
+        };
+
+        if (this.$store.state.lastOrder.length > 0) {
+          let selectOrder = this.$store.state.lastOrder.find(
+            (ele) => ele.invoiceNo == this.invoiceNo
+          );
+          if (selectOrder) {
+            selectOrder.orderInfo = this.items;
+          } else {
+            this.$store.state.lastOrder.push(order);
+            this.$store.commit("lastOrder", this.$store.state.lastOrder);
+          }
+        } else {
+          this.$store.state.lastOrder.push(order);
+          this.$store.commit("lastOrder", this.$store.state.lastOrder);
+        }
+
+        this.items = [];
+        this.memberInfo = {};
+
+        this.points = 0;
+        this.pointsUsed = 0;
+        this.pointsNet = 0;
+
+        this.saleTotal = 0;
+        this.discountTotal = 0;
+        this.net = 0;
+
+        this.$store.commit("currentOrder", null);
+        this.generateNewInvoice();
+      }
+    },
+    onRowSelected(items) {
+      this.selectedRework = items;
+    },
+    deletePauseInvoice(item, index, event) {
+      this.dialogCancelInvoicePauseOrder = true;
+      this.selectCancelInvoiceIndex = this.$store.state.lastOrder.indexOf(item);
+    },
+    closeDialogCancelInvoicePauseOrder() {
+      this.dialogCancelInvoicePauseOrder = false;
+    },
+    confirmCancelInvoicePauseOrder() {
+      var selectedIndex = this.$store.state.lastOrder.indexOf(
+        this.selectCancelInvoiceIndex
+      );
+      this.$store.state.lastOrder.splice(selectedIndex, 1);
+
+      this.$store.commit("lastOrder", this.$store.state.lastOrder);
+
+      if (this.selectedRework.length !== 0) {
+        this.dialogLastOrder = false;
+      } else {
+        this.reworkOrder();
+      }
+
+      this.dialogCancelInvoicePauseOrder = false;
+    },
+    reworkOrder() {
+      if (this.items.length !== 0) {
+        alert(
+          "ไม่สามารถเลือกรายการที่ค้างมาทำรายการได้ในขณะนี้, กรุณาทำรายการปัจจุบันให้สำเร็จก่อน"
+        );
+      } else {
+        if (this.$store.state.lastOrder.length == 0) {
+          alert("ไม่มีรายการค้างอยู่");
+        } else {
+          if (this.$store.state.lastOrder.length == 1) {
+            this.invoiceNo = this.$store.state.lastOrder[0].invoiceNo;
+            this.items = this.$store.state.lastOrder[0].orderInfo;
+            this.memberInfo = this.$store.state.lastOrder[0].memberInfo;
+            this.points = this.$store.state.lastOrder[0].points;
+            this.pointsNet = this.$store.state.lastOrder[0].pointsNet;
+            this.pointsUsed = this.$store.state.lastOrder[0].pointsUsed;
+
+            this.currentOrder();
+            var selectedIndex = this.$store.state.lastOrder.indexOf(
+              this.$store.state.lastOrder[0]
+            );
+            this.$store.state.lastOrder.splice(selectedIndex, 1);
+
+            this.$store.commit("lastOrder", this.$store.state.lastOrder);
+          } else {
+            this.dialogLastOrder = true;
+          }
+
+          this.calSaleTotal();
+          this.calPoints();
+        }
+      }
+    },
+    confirmLastOrder() {
+      this.invoiceNo = this.selectedRework[0].invoiceNo;
+      this.items = this.selectedRework[0].orderInfo;
+      this.memberInfo = this.selectedRework[0].memberInfo;
+      this.points = this.selectedRework[0].points;
+      this.pointsNet = this.selectedRework[0].pointsNet;
+      this.pointsUsed = this.selectedRework[0].pointsUsed;
+
+      this.calSaleTotal();
+      this.calPoints();
+      var selectedIndex = this.$store.state.lastOrder.indexOf(
+        this.selectedRework[0]
+      );
+      this.$store.state.lastOrder.splice(selectedIndex, 1);
+
+      this.$store.commit("lastOrder", this.$store.state.lastOrder);
+      this.dialogLastOrder = false;
+
+      this.currentOrder();
+    },
+    cancelOrder() {
+      this.dialogCancelOrder = true;
+    },
+    confirmCancelOrder() {
+      this.items = [];
+      this.pointsUsed = 0;
+
+      this.calSaleTotal();
+      this.calPoints();
+      this.redeemPoints();
+      this.dialogCancelOrder = false;
+    },
+    closeDialogCancelOrder() {
+      this.dialogCancelOrder = false;
+    },
+    closeDialogLastOrder() {
+      this.dialogLastOrder = false;
+    },
+    saveOrder() {
+      if (this.userInfo == "") {
+        this.$router.push({ name: "Home" }).catch((error) => {
+          if (
+            error.name !== "NavigationDuplicated" &&
+            !error.message.includes(
+              "Avoided redundant navigation to current location"
+            )
+          ) {
+            console.log(error);
+          }
+        });
+      } else if (this.items.length == 0) {
+        alert("ไม่พบข้อมูล, รายการซื้อสินค้า");
+      } else if (this.paymentMethod == undefined) {
+        alert("ไม่พบข้อมูลวิธีการชำระเงิน");
+      } else if (
+        this.paymentMethod == "cash" &&
+        (this.cashIn == 0 || this.cashIn == "")
+      ) {
+        alert("กรุณาใส่จำนวนรับเงิน ให้ถูกต้อง");
+      } else {
+        let billOrder = {
+          invoiceNo: this.invoiceNo,
+          orderDate: dayjs(this.saleDate).format("YYYY-MM-DD HH:mm:ss"),
+          userInfo: this.userInfo,
+          memberInfo:
+            this.memberInfo == null ? "Walk-in customer" : this.memberInfo,
+          orderInfo: this.items,
+          qty: this.items.length,
+          paymentMethod: this.paymentMethod,
+          amount: this.saleTotal,
+          discountTotal: this.discountTotal,
+          net: this.net,
+          received: this.paymentMethod == "cash" ? this.cashIn : this.net,
+          change: this.paymentMethod == "cash" ? this.cashIn - this.net : 0,
+          points: this.points,
+          pointsUsed: this.pointsUsed,
+          pointsNet: this.pointsNet,
+          remark: this.remark,
+          createdAt: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+        };
+
+        if (this.$store.state.listInvoice.length !== 0) {
+          this.$store.state.listInvoice.push(billOrder);
+          this.$store.commit("addListInvoice", this.$store.state.listInvoice);
+        } else {
+          this.listInvoice.push(billOrder);
+          this.$store.commit("addListInvoice", this.listInvoice);
+        }
+
+        this.items = [];
+        this.memberInfo = {};
+
+        this.points = 0;
+        this.pointsUsed = 0;
+        this.pointsNet = 0;
+
+        this.saleTotal = 0;
+        this.discountTotal = 0;
+        this.net = 0;
+
+        this.cashIn = 0;
+
+        this.$store.commit("currentOrder", null);
+        this.dialogConfirmInvoice = false;
+        this.generateNewInvoice();
+      }
+    },
+    closePosDialog() {
+      this.dialog = false;
+      this.overlay = false;
     },
     getMemberInfo() {
       this.memberInfo = {
