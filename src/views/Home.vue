@@ -85,7 +85,6 @@ export default {
         this.$refs.password.focus();
         return;
       }
-
       axios
         .post(this.url + "/api/login", this.loginForm)
         .then((res) => {
