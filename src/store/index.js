@@ -14,21 +14,21 @@ export default new Vuex.Store({
   },
   mutations: {
     doLogin(state, data) {
-      state.is_login = true,
-      state.userInfo = data
+      state.is_login = true;
+      state.userInfo = data;
     },
     doLogout(state) {
-      state.is_login = false,
-      state.userInfo = null
+      state.is_login = false;
+      state.userInfo = "";
     },
     currentOrder(state, data) {
-      state.currentOrder = data
+      state.currentOrder = data;
     },
     lastOrder(state, data) {
-      state.lastOrder = data
+      state.lastOrder = data;
     },
     addListInvoice(state, data) {
-      state.listInvoice = data
+      state.listInvoice = data;
     }
   },
   actions: {

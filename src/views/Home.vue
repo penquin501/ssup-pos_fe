@@ -68,7 +68,7 @@ export default {
       },
       state: "login",
       showMain: false,
-      url: "http://localhost:8000",
+      url: "http://localhost:8100",
     };
   },
   mounted: function () {
@@ -89,7 +89,7 @@ export default {
         .post(this.url + "/api/login", this.loginForm)
         .then((res) => {
           if (res.status == 201) {
-            this.$store.commit("doLogin", res.data);
+            this.$store.commit("doLogin", JSON.stringify(res.data));
           } else {
             alert(
               "ไม่สามารถใช้ username/password ได้ในตอนนี้, กรุณาติดต่อเจ้าหน้าที่"
