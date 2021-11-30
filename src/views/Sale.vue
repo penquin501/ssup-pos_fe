@@ -3,7 +3,6 @@
     <b-card>
       <b-tabs content-class="mt-3">
         <b-tab title="บิลขาย" active>
-<<<<<<< HEAD
           <v-data-table
             :headers="headers"
             :items="desserts"
@@ -14,19 +13,25 @@
             sort-by="calories"
             class="elevation-1"
           >
-=======
-          <v-data-table :headers="headers" :items="listInvoice" :footer-props="{ pageText: 'total', 'items-per-page-text':'products per page'}" sort-by="orderDate" :search="searchInvoice" class="elevation-1">
-            
->>>>>>> oil
             <template v-slot:top>
               <v-toolbar flat>
                 <v-toolbar-title>รายการขายสินค้า {{ today }}</v-toolbar-title>
                 <v-divider class="mx-4" inset vertical></v-divider>
                 <v-spacer></v-spacer>
-                <v-text-field v-model="searchInvoice" append-icon="mdi-magnify" label="ใส่เลข Invoice No" single-line hide-details ></v-text-field>
+                <v-text-field
+                  v-model="searchInvoice"
+                  append-icon="mdi-magnify"
+                  label="ใส่เลข Invoice No"
+                  single-line
+                  hide-details
+                ></v-text-field>
                 <v-spacer></v-spacer>
 
-                <v-dialog v-model="dialog" max-width="500px" :retain-focus="false">
+                <v-dialog
+                  v-model="dialog"
+                  max-width="500px"
+                  :retain-focus="false"
+                >
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn
                       color="primary"
@@ -194,7 +199,6 @@
                             </v-card>
                           </b-col>
                         </v-row>
-<<<<<<< HEAD
                       </div>
                       <div class="bottom">
                         <div class="left-bottom">
@@ -329,72 +333,6 @@
                                       <v-icon> mdi-delete </v-icon>
                                       Delete (F8)</v-btn
                                     >
-=======
-                        <v-row>
-                          <b-col cols="8" style="padding-top: 0px; padding-bottom: 0px;">
-                            <b-row no-gutters>
-                              <v-card-title style="padding-top: 0px;">
-                                <v-text-field style="padding-top: 0px;" v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details></v-text-field>
-                              </v-card-title>
-                              <div class="item-table">
-                                <b-table :items="items" :fields="productfields" :current-page="currentPage" :per-page="5" :filter="search" stacked="md" show-empty small>
-                                  <template #cell(actions)="row">
-                                    <b-button size="sm" @click="deleteItem(row.item, row.index, $event.target)" class="mr-1"><v-icon small >mdi-delete</v-icon></b-button>
-                                  </template>
-                                </b-table>
-                              </div>
-                            </b-row>
-                            <b-row>
-                              <b-col cols="8" style="padding-top: 0px; padding-bottom: 0px;">
-                                <b-row>
-                                  <b-col cols="12" style="text-align: center; padding-top: 0px; padding-bottom: 0px;">
-                                    <b-form-input class="form-control ma-2" style="text-align: center; font-size: 17px;" readonly v-model="net"></b-form-input>
-                                  </b-col>
-                                </b-row>
-                                <b-row>
-                                  <b-col cols="12" style="text-align: center; padding-top: 0px; padding-bottom: 0px;">
-                                    <v-btn color="success" class="form-control ma-2 white--text" @click.prevent="showPayment()">
-                                      <v-icon>mdi-play</v-icon>Payment(F10)
-                                    </v-btn>
-                                  </b-col>
-                                </b-row>
-                                <b-row>
-                                  <b-col cols="12" style="text-align: center; padding-top: 0px; padding-bottom: 0px;">
-                                    <v-btn color="warning" class="ma-2 white--text" @click.prevent="reworkOrder()">
-                                      <v-badge :content="$store.state.lastOrder.length" :value="$store.state.lastOrder.length" color="green">
-                                        <v-icon>mdi-restore</v-icon>Rework
-                                      </v-badge>
-                                    </v-btn>
-
-                                    <v-btn color="yellow" class="ma-2 white--text" @click.prevent="pauseOrder()"><v-icon>mdi-pause</v-icon>Pause(F9)</v-btn>
-                                    <v-btn color="error" class="ma-2 white--text" @click.prevent="cancelOrder()"><v-icon>mdi-delete</v-icon>Delete(F8)</v-btn>
-                                  </b-col>
-                                </b-row>
-                              </b-col>
-                              <b-col cols="4" style="padding-top: 0px; padding-bottom: 0px;">
-                                <b-row style="margin-bottom: 0px;">
-                                  <b-col cols="6" style="padding-top: 0px; padding-left: 0px; padding-bottom: 0px; padding-right: 0px;">
-                                    <v-text-field class="font-10" style="margin-bottom: 0px; padding-top: 0px; padding-bottom: 0px;" label="Points:" outlined v-model="points" readonly></v-text-field>
-                                  </b-col>
-                                  <b-col cols="6" style="padding-top: 0px; padding-left: 0px; padding-bottom: 0px; padding-right: 0px;">
-                                    <v-text-field style="margin-bottom: 0px; padding-top: 0px; padding-bottom: 0px;" label="Total Money:" outlined v-model="saleTotal" readonly></v-text-field>
-                                  </b-col>
-                                </b-row>
-                                <b-row style="margin-top: 0px; margin-bottom: 0px;">
-                                  <b-col cols="6" style="padding-top: 0px; padding-left: 0px; padding-bottom: 0px; padding-right: 0px;">
-                                    <v-text-field label="Points Used:" outlined v-model="pointsUsed" @change="redeemPoints()"></v-text-field>
-                                  </b-col>
-                                  <b-col cols="6" style="padding-top: 0px; padding-left: 0px; padding-bottom: 0px; padding-right: 0px;">
-                                    <v-text-field label="Discount:" outlined v-model="discountTotal" readonly></v-text-field>
-                                  </b-col>
-                                </b-row>
-                                <b-row style="margin-top: 0px; margin-bottom: 0px;">
-                                  <b-col cols="6" style="padding-top: 0px; padding-left: 0px; padding-bottom: 0px; padding-right: 0px;">
-                                    <v-text-field label="Points Net:" outlined v-model="pointsNet" readonly></v-text-field>
-                                  </b-col>
-                                  <b-col cols="6" style="padding-top: 0px; padding-left: 0px; padding-bottom: 0px; padding-right: 0px;">
-                                    <v-text-field label="Net:" outlined v-model="net" readonly></v-text-field>
->>>>>>> oil
                                   </b-col>
                                 </b-row>
                               </b-col>
@@ -642,22 +580,42 @@
                 </v-dialog>
 
                 <v-dialog v-model="dialogConfirmInvoice">
-                  <v-card style="width: 200vw; height: auto;">
-                    <v-toolbar flat >
-                      <v-card-title class="text-h5">สรุปรายการสินค้า</v-card-title>
+                  <v-card style="width: 200vw; height: auto">
+                    <v-toolbar flat>
+                      <v-card-title class="text-h5"
+                        >สรุปรายการสินค้า</v-card-title
+                      >
                       <v-spacer></v-spacer>
-                      <v-btn icon @click="dialogConfirmInvoice = false"><v-icon>mdi-close</v-icon></v-btn>
+                      <v-btn icon @click="dialogConfirmInvoice = false"
+                        ><v-icon>mdi-close</v-icon></v-btn
+                      >
                     </v-toolbar>
-                    
+
                     <v-card-text>
-                      <b-row style="margin-top: 0px; margin-bottom: 0px;">
-                        <b-col cols="6" style="padding-top: 0px; padding-left: 0px; padding-bottom: 0px; padding-right: 0px; border-right: 1px solid gray;">
-                          <div style="text-align: center;">
+                      <b-row style="margin-top: 0px; margin-bottom: 0px">
+                        <b-col
+                          cols="6"
+                          style="
+                            padding-top: 0px;
+                            padding-left: 0px;
+                            padding-bottom: 0px;
+                            padding-right: 0px;
+                            border-right: 1px solid gray;
+                          "
+                        >
+                          <div style="text-align: center">
                             <p>Sale Details</p>
                             <p>{{ saleDate }}</p>
                             <p>Sales Receipt</p>
                             <p>Sold By: {{ userInfo.name }}</p>
-                            <p>Sold To: {{ memberInfo == null ? "Walk-in customer" : memberInfo.memberName }}</p>
+                            <p>
+                              Sold To:
+                              {{
+                                memberInfo == null
+                                  ? "Walk-in customer"
+                                  : memberInfo.memberName
+                              }}
+                            </p>
                             <p>
                               <b-table-simple striped>
                                 <b-thead>
@@ -670,65 +628,124 @@
                                   </b-tr>
                                 </b-thead>
                                 <b-tbody>
-                                  <b-tr v-for="(item, index) in items" :key="item.productId">
+                                  <b-tr
+                                    v-for="(item, index) in items"
+                                    :key="item.productId"
+                                  >
                                     <b-td>{{ item.productId }}</b-td>
                                     <b-td>{{ item.productName }}</b-td>
                                     <b-td>{{ item.saleQty }}</b-td>
-                                    <b-td class="text-right">{{ item.pricePerItem }}</b-td>
-                                    <b-td class="text-right">{{ item.total }}</b-td>
+                                    <b-td class="text-right">{{
+                                      item.pricePerItem
+                                    }}</b-td>
+                                    <b-td class="text-right">{{
+                                      item.total
+                                    }}</b-td>
                                   </b-tr>
                                 </b-tbody>
                                 <b-tfoot>
                                   <b-tr>
                                     <b-td class="text-left">จำนวนรายการ:</b-td>
-                                    <b-td colspan="4" class="text-right">{{ items.length }}</b-td>
+                                    <b-td colspan="4" class="text-right">{{
+                                      items.length
+                                    }}</b-td>
                                   </b-tr>
                                   <b-tr>
                                     <b-td class="text-left">Sub Total:</b-td>
-                                    <b-td colspan="4" class="text-right">{{ saleTotal }}</b-td>
+                                    <b-td colspan="4" class="text-right">{{
+                                      saleTotal
+                                    }}</b-td>
                                   </b-tr>
                                   <b-tr>
                                     <b-td class="text-left">Discount:</b-td>
-                                    <b-td colspan="4" class="text-right">{{ discountTotal }}</b-td>
+                                    <b-td colspan="4" class="text-right">{{
+                                      discountTotal
+                                    }}</b-td>
                                   </b-tr>
                                   <b-tr>
-                                    <b-td class="text-left" variant="secondary">Net:</b-td>
-                                    <b-td colspan="4" variant="secondary" class="text-right"><b>{{ net }}</b></b-td>
+                                    <b-td class="text-left" variant="secondary"
+                                      >Net:</b-td
+                                    >
+                                    <b-td
+                                      colspan="4"
+                                      variant="secondary"
+                                      class="text-right"
+                                      ><b>{{ net }}</b></b-td
+                                    >
                                   </b-tr>
                                   <b-tr v-if="cashIn > net">
                                     <b-td class="text-left">Change:</b-td>
-                                    <b-td colspan="4" class="text-right"><b>{{ cashIn - net }}</b></b-td>
+                                    <b-td colspan="4" class="text-right"
+                                      ><b>{{ cashIn - net }}</b></b-td
+                                    >
                                   </b-tr>
                                 </b-tfoot>
                               </b-table-simple>
                             </p>
                           </div>
                           <div>
-                            <v-btn class="form-control"><v-icon>mdi-printer</v-icon>Print Receipt</v-btn>
+                            <v-btn class="form-control"
+                              ><v-icon>mdi-printer</v-icon>Print Receipt</v-btn
+                            >
                           </div>
                         </b-col>
-                        <b-col cols="6" style="padding-top: 0px; padding-left: 0px; padding-bottom: 0px; padding-right: 0px;">
+                        <b-col
+                          cols="6"
+                          style="
+                            padding-top: 0px;
+                            padding-left: 0px;
+                            padding-bottom: 0px;
+                            padding-right: 0px;
+                          "
+                        >
                           <b-col cols="12">
                             <b-row>
                               <b-col cols="6"><p>Total</p></b-col>
-                              <b-col cols="6"><p>{{ net }}</p></b-col>
+                              <b-col cols="6"
+                                ><p>{{ net }}</p></b-col
+                              >
                             </b-row>
                             <b-row>
                               <b-col cols="6"><p>รับเงิน</p></b-col>
-                              <b-col cols="6"><v-text-field @change="paymentMethod = 'cash'" v-model="cashIn"></v-text-field></b-col>
+                              <b-col cols="6"
+                                ><v-text-field
+                                  @change="paymentMethod = 'cash'"
+                                  v-model="cashIn"
+                                ></v-text-field
+                              ></b-col>
                             </b-row>
                             <b-row>
                               <b-col cols="6"><p>Note</p></b-col>
-                              <b-col cols="6"><v-textarea rows="3" outlined v-model="remark"></v-textarea></b-col>
+                              <b-col cols="6"
+                                ><v-textarea
+                                  rows="3"
+                                  outlined
+                                  v-model="remark"
+                                ></v-textarea
+                              ></b-col>
                             </b-row>
                             <v-divider></v-divider>
-                            <b-row style="text-align: center;">
-                                <b-col cols="6"><v-btn @click="paymentMethod = 'cash'"><v-icon>mdi-cash-multiple</v-icon>Cash</v-btn></b-col>
-                                <b-col cols="6"><v-btn @click="paymentMethod = 'creditCard'"><v-icon>mdi-credit-card</v-icon>Credit Card</v-btn></b-col>
+                            <b-row style="text-align: center">
+                              <b-col cols="6"
+                                ><v-btn @click="paymentMethod = 'cash'"
+                                  ><v-icon>mdi-cash-multiple</v-icon>Cash</v-btn
+                                ></b-col
+                              >
+                              <b-col cols="6"
+                                ><v-btn @click="paymentMethod = 'creditCard'"
+                                  ><v-icon>mdi-credit-card</v-icon>Credit
+                                  Card</v-btn
+                                ></b-col
+                              >
                             </b-row>
                             <v-divider></v-divider>
                             <div>
-                              <v-btn @click.prevent="saveOrder()" color="success" class="form-control">Done Payment</v-btn>
+                              <v-btn
+                                @click.prevent="saveOrder()"
+                                color="success"
+                                class="form-control"
+                                >Done Payment</v-btn
+                              >
                             </div>
                           </b-col>
                         </b-col>
@@ -739,13 +756,9 @@
 
                 <v-dialog v-model="dialogDelete" persistent max-width="500px">
                   <v-card>
-<<<<<<< HEAD
                     <v-card-title class="text-h5"
                       >Are you sure you want to delete this item?</v-card-title
                     >
-=======
-                    <v-card-title class="text-h5">ต้องการลบสินค้า ใช่หรือไม่?</v-card-title>
->>>>>>> oil
                     <v-card-actions>
                       <v-spacer></v-spacer>
                       <v-btn color="blue darken-1" text @click="closeDelete"
@@ -762,23 +775,56 @@
                   </v-card>
                 </v-dialog>
 
-                <v-dialog v-model="dialogCancelOrder" persistent max-width="500px">
+                <v-dialog
+                  v-model="dialogCancelOrder"
+                  persistent
+                  max-width="500px"
+                >
                   <v-card>
-                    <v-card-title class="text-h5">ต้องการยกเลิกรายการสินค้าทั้งหมด ใช่หรือไม่?</v-card-title>
+                    <v-card-title class="text-h5"
+                      >ต้องการยกเลิกรายการสินค้าทั้งหมด
+                      ใช่หรือไม่?</v-card-title
+                    >
                     <v-card-actions>
                       <v-spacer></v-spacer>
-                      <v-btn color="blue darken-1" text @click="closeDialogCancelOrder">Cancel</v-btn>
-                      <v-btn color="blue darken-1" text @click="confirmCancelOrder">OK</v-btn>
+                      <v-btn
+                        color="blue darken-1"
+                        text
+                        @click="closeDialogCancelOrder"
+                        >Cancel</v-btn
+                      >
+                      <v-btn
+                        color="blue darken-1"
+                        text
+                        @click="confirmCancelOrder"
+                        >OK</v-btn
+                      >
                       <v-spacer></v-spacer>
                     </v-card-actions>
                   </v-card>
                 </v-dialog>
 
-                <v-dialog v-model="dialogLastOrder" persistent max-width="500px">
+                <v-dialog
+                  v-model="dialogLastOrder"
+                  persistent
+                  max-width="500px"
+                >
                   <v-card>
-                    <v-card-title class="text-h5">กรุณาเลือก รายการที่ทำค้างไว้?</v-card-title>
+                    <v-card-title class="text-h5"
+                      >กรุณาเลือก รายการที่ทำค้างไว้?</v-card-title
+                    >
                     <v-card-text>
-                      <b-table ref="selectableTable" selectable :items="$store.state.lastOrder" select-mode="single" :per-page="5" :fields="lastOrderfields" show-empty small @row-selected="onRowSelected">
+                      <b-table
+                        ref="selectableTable"
+                        selectable
+                        :items="$store.state.lastOrder"
+                        select-mode="single"
+                        :per-page="5"
+                        :fields="lastOrderfields"
+                        show-empty
+                        small
+                        @row-selected="onRowSelected"
+                      >
                         <template #cell(selected)="{ rowSelected }">
                           <template v-if="rowSelected">
                             <span aria-hidden="true">&check;</span>
@@ -790,35 +836,70 @@
                           </template>
                         </template>
                         <template #cell(actions)="row">
-                          <b-button size="sm" @click="deletePauseInvoice(row.item, row.index, $event.target)" class="mr-1"><v-icon small >mdi-delete</v-icon></b-button>
+                          <b-button
+                            size="sm"
+                            @click="
+                              deletePauseInvoice(
+                                row.item,
+                                row.index,
+                                $event.target
+                              )
+                            "
+                            class="mr-1"
+                            ><v-icon small>mdi-delete</v-icon></b-button
+                          >
                         </template>
                       </b-table>
                     </v-card-text>
                     <v-card-actions>
                       <v-spacer></v-spacer>
-                      <v-btn color="blue darken-1" text @click="closeDialogLastOrder">Cancel</v-btn>
-                      <v-btn color="blue darken-1" text @click="confirmLastOrder">OK</v-btn>
+                      <v-btn
+                        color="blue darken-1"
+                        text
+                        @click="closeDialogLastOrder"
+                        >Cancel</v-btn
+                      >
+                      <v-btn
+                        color="blue darken-1"
+                        text
+                        @click="confirmLastOrder"
+                        >OK</v-btn
+                      >
                       <v-spacer></v-spacer>
                     </v-card-actions>
                   </v-card>
                 </v-dialog>
 
-                <v-dialog v-model="dialogCancelInvoicePauseOrder" persistent max-width="500px">
+                <v-dialog
+                  v-model="dialogCancelInvoicePauseOrder"
+                  persistent
+                  max-width="500px"
+                >
                   <v-card>
-                    <v-card-title class="text-h5">ต้องการยกเลิกรายการเลขที่บิลนี้ ใช่หรือไม่?</v-card-title>
+                    <v-card-title class="text-h5"
+                      >ต้องการยกเลิกรายการเลขที่บิลนี้ ใช่หรือไม่?</v-card-title
+                    >
                     <v-card-actions>
                       <v-spacer></v-spacer>
-                      <v-btn color="blue darken-1" text @click="closeDialogCancelInvoicePauseOrder">Cancel</v-btn>
-                      <v-btn color="blue darken-1" text @click="confirmCancelInvoicePauseOrder">OK</v-btn>
+                      <v-btn
+                        color="blue darken-1"
+                        text
+                        @click="closeDialogCancelInvoicePauseOrder"
+                        >Cancel</v-btn
+                      >
+                      <v-btn
+                        color="blue darken-1"
+                        text
+                        @click="confirmCancelInvoicePauseOrder"
+                        >OK</v-btn
+                      >
                       <v-spacer></v-spacer>
                     </v-card-actions>
                   </v-card>
                 </v-dialog>
-
               </v-toolbar>
             </template>
             <template v-slot:item.actions="{ item }">
-<<<<<<< HEAD
               <v-icon small class="mr-2" @click="editItem(item)"
                 >mdi-pencil</v-icon
               >
@@ -827,11 +908,6 @@
             <!-- <template v-slot:no-data> -->
             <!-- <v-btn color="primary" @click="initialize">Reset</v-btn> -->
             <!-- </template> -->
-=======
-              <!-- <v-icon small class="mr-2" @click="editItem(item)">mdi-pencil</v-icon> -->
-              <!-- <v-icon small @click="deleteItem(item)">mdi-delete</v-icon> -->
-            </template>
->>>>>>> oil
           </v-data-table>
         </b-tab>
         <!-- <b-tab title="Second"><p>I'm the second tab</p></b-tab> -->
@@ -850,7 +926,6 @@ export default {
       dialog: false,
       absolute: true,
       overlay: false,
-<<<<<<< HEAD
       search: "",
       dialogDelete: false,
       saleDate: dayjs().format("YYYY-MM-DD"),
@@ -880,19 +955,6 @@ export default {
           discount: "100",
         },
       ],
-=======
-      search: null,
-      searchInvoice: "",
-      dialogDelete: false,
-      dialogCancelOrder: false,
-      dialogLastOrder: false,
-      dialogCancelInvoicePauseOrder: false,
-      dialogConfirmInvoice: false,
-      invoiceNo: "",
-      pause: false,
-      today: dayjs().format("DD-MM-YYYY"),
-      saleDate: dayjs().format("YYYY-MM-DD HH:mm:ss"),
->>>>>>> oil
       headers: [
         { text: "Invoice No", value: "invoiceNo" },
         { text: "Order Date", sortable: true, value: "orderDate" },
@@ -906,18 +968,38 @@ export default {
       ],
       listInvoice: [],
       productfields: [
-        { key: 'productId', label: 'รหัสสินค้า', sortable: true, sortDirection: 'desc' },
-        { key: 'productName', label: 'รายละเอียดสินค้า', sortable: true, class: 'text-center' },
-        { key: 'saleQty', label: 'จำนวน', sortable: true, class: 'text-center' },
-        { key: 'pricePerItem', label: 'ราคา/หน่วย', sortable: true, class: 'text-center' },
-        { key: 'total', label: 'จำนวนเงิน', class: 'text-center' },
-        { key: 'actions', label: 'Actions' }
+        {
+          key: "productId",
+          label: "รหัสสินค้า",
+          sortable: true,
+          sortDirection: "desc",
+        },
+        {
+          key: "productName",
+          label: "รายละเอียดสินค้า",
+          sortable: true,
+          class: "text-center",
+        },
+        {
+          key: "saleQty",
+          label: "จำนวน",
+          sortable: true,
+          class: "text-center",
+        },
+        {
+          key: "pricePerItem",
+          label: "ราคา/หน่วย",
+          sortable: true,
+          class: "text-center",
+        },
+        { key: "total", label: "จำนวนเงิน", class: "text-center" },
+        { key: "actions", label: "Actions" },
       ],
       lastOrderfields: [
-        'selected',
-        { key: 'invoiceNo', label: 'เลขที่บิล', class: 'text-center' },
-        { key: 'timeRecord', label: 'เวลา', class: 'text-center' },
-        { key: 'actions', label: 'Actions' }
+        "selected",
+        { key: "invoiceNo", label: "เลขที่บิล", class: "text-center" },
+        { key: "timeRecord", label: "เวลา", class: "text-center" },
+        { key: "actions", label: "Actions" },
       ],
       selectedRework: [],
       items: [],
@@ -947,7 +1029,6 @@ export default {
         birthdayDate: dayjs("01/10/2564").format("YYYY-MM-DD"),
         opsDate: dayjs("01/10/2564").format("YYYY-MM-DD"),
       },
-<<<<<<< HEAD
       items: [],
       productfields: [
         {
@@ -993,43 +1074,25 @@ export default {
         content: "",
       },
       saleQty: 1,
-=======
-      totalRows: 1,
-      currentPage: 1,
-      sortBy: '',
-      sortDesc: false,
-      sortDirection: 'asc',
-      saleQty: 1,
-      productInput: "",
-      points: 0,
-      pointsUsed: 0,
-      pointsNet: 0,
-      saleTotal: 0,
-      discountTotal: 0,
-      net: 0,
-      cashIn: 0,
-      remark: "",
-      selectCancelInvoiceIndex: 0,
-      userInfo: {},
-      paymentMethod: undefined
->>>>>>> oil
     };
   },
   mounted: function () {
     if (this.$store.state.is_login == false) {
       this.$router.push({ name: "Home" }).catch((error) => {
         if (
-          error.name !== 'NavigationDuplicated' &&
-          !error.message.includes('Avoided redundant navigation to current location')
+          error.name !== "NavigationDuplicated" &&
+          !error.message.includes(
+            "Avoided redundant navigation to current location"
+          )
         ) {
-          console.log(error)
+          console.log(error);
         }
       });
     } else {
-      if(this.$store.state.listInvoice !== []) {
+      if (this.$store.state.listInvoice !== []) {
         this.listInvoice = this.$store.state.listInvoice;
       }
-      if(this.$store.state.currentOrder !== null) {
+      if (this.$store.state.currentOrder !== null) {
         let currentOrder = JSON.parse(this.$store.state.currentOrder);
         this.invoiceNo = currentOrder.invoiceNo;
         this.items = currentOrder.orderInfo;
@@ -1048,12 +1111,12 @@ export default {
   methods: {
     addItem() {
       /* TODO: ยิง api เพื่อรับข้อมูลสินค้า */
-      let data = { 
-        productId: this.productInput, 
-        productName: 'Dickerson'+ this.productInput, 
-        pricePerItem: '100', 
-        discount:"5",
-        point: 10  
+      let data = {
+        productId: this.productInput,
+        productName: "Dickerson" + this.productInput,
+        pricePerItem: "100",
+        discount: "5",
+        point: 10,
       };
       /******************************/
       if (this.items.length !== 0) {
@@ -1062,26 +1125,23 @@ export default {
         );
         if (selectProduct) {
           let qty = parseInt(selectProduct.saleQty);
-          qty = this.saleQty==1? qty+1: parseInt(this.saleQty);
+          qty = this.saleQty == 1 ? qty + 1 : parseInt(this.saleQty);
           selectProduct.saleQty = qty;
-          selectProduct.total = parseInt(selectProduct.pricePerItem) * parseInt(qty);
+          selectProduct.total =
+            parseInt(selectProduct.pricePerItem) * parseInt(qty);
         } else {
-          this.items.push(
-            { 
-              ...data, 
-              saleQty: parseInt(this.saleQty),
-              total: parseInt(data.pricePerItem) * parseInt(this.saleQty),
-            }
-          );
-        }
-      } else {
-        this.items.push(
-          { 
-            ...data, 
+          this.items.push({
+            ...data,
             saleQty: parseInt(this.saleQty),
             total: parseInt(data.pricePerItem) * parseInt(this.saleQty),
-          }
-        );
+          });
+        }
+      } else {
+        this.items.push({
+          ...data,
+          saleQty: parseInt(this.saleQty),
+          total: parseInt(data.pricePerItem) * parseInt(this.saleQty),
+        });
       }
       this.calSaleTotal();
       this.calPoints();
@@ -1095,7 +1155,7 @@ export default {
       this.discountTotal = 0;
       this.net = 0;
 
-      this.items.forEach( e => {
+      this.items.forEach((e) => {
         this.saleTotal += parseInt(e.total);
         this.discountTotal += parseInt(e.discount);
       });
@@ -1106,7 +1166,7 @@ export default {
       this.points = 0;
       this.pointsUsed = 0;
 
-      this.items.forEach( e => {
+      this.items.forEach((e) => {
         this.points += parseInt(e.point);
       });
       this.redeemPoints();
@@ -1133,13 +1193,16 @@ export default {
     },
     generateNewInvoice() {
       let generateInvNo = "" + (Math.floor(Math.random() * 10000) + 1);
-      let tempInvoiceNo = "INV" + generateInvNo.padStart(5, '0') + dayjs().format("YYYYMMDDhhmmss");
+      let tempInvoiceNo =
+        "INV" +
+        generateInvNo.padStart(5, "0") +
+        dayjs().format("YYYYMMDDhhmmss");
 
       let checkInvoice = this.$store.state.listInvoice.find(
         (ele) => ele.invoiceNo == tempInvoiceNo
       );
 
-      if(checkInvoice) {
+      if (checkInvoice) {
         this.generateNewInvoice();
       } else {
         this.invoiceNo = tempInvoiceNo;
@@ -1154,22 +1217,21 @@ export default {
         points: this.points,
         pointsUsed: this.pointsUsed,
         pointsNet: this.pointsNet,
-        timeRecord: dayjs().format("YYYY-MM-DD HH:mm:ss")
+        timeRecord: dayjs().format("YYYY-MM-DD HH:mm:ss"),
       };
-      this.$store.commit('currentOrder', JSON.stringify(data));
+      this.$store.commit("currentOrder", JSON.stringify(data));
     },
     showPayment() {
-     if(this.items.length == 0) {
-       alert("ไม่มีรายการสินค้า");
-     } else {
-      this.dialogConfirmInvoice = true;
-     }
+      if (this.items.length == 0) {
+        alert("ไม่มีรายการสินค้า");
+      } else {
+        this.dialogConfirmInvoice = true;
+      }
     },
     pauseOrder() {
-      if(this.items.length == 0) {
+      if (this.items.length == 0) {
         alert("ไม่มีรายการซื้อสินค้า");
       } else {
-
         let order = {
           invoiceNo: this.invoiceNo,
           userInfo: this.userInfo,
@@ -1179,22 +1241,22 @@ export default {
           pointsUsed: this.pointsUsed,
           pointsNet: this.pointsNet,
           timeRecord: dayjs().format("YYYY-MM-DD HH:mm:ss"),
-          status: "hold"
+          status: "hold",
         };
 
-        if(this.$store.state.lastOrder.length > 0) {
+        if (this.$store.state.lastOrder.length > 0) {
           let selectOrder = this.$store.state.lastOrder.find(
             (ele) => ele.invoiceNo == this.invoiceNo
           );
-          if(selectOrder) {
+          if (selectOrder) {
             selectOrder.orderInfo = this.items;
           } else {
             this.$store.state.lastOrder.push(order);
-            this.$store.commit('lastOrder', this.$store.state.lastOrder);
+            this.$store.commit("lastOrder", this.$store.state.lastOrder);
           }
         } else {
           this.$store.state.lastOrder.push(order);
-          this.$store.commit('lastOrder', this.$store.state.lastOrder);
+          this.$store.commit("lastOrder", this.$store.state.lastOrder);
         }
 
         this.items = [];
@@ -1208,12 +1270,12 @@ export default {
         this.discountTotal = 0;
         this.net = 0;
 
-        this.$store.commit('currentOrder', null);
+        this.$store.commit("currentOrder", null);
         this.generateNewInvoice();
       }
     },
     onRowSelected(items) {
-      this.selectedRework = items
+      this.selectedRework = items;
     },
     deletePauseInvoice(item, index, event) {
       this.dialogCancelInvoicePauseOrder = true;
@@ -1223,12 +1285,14 @@ export default {
       this.dialogCancelInvoicePauseOrder = false;
     },
     confirmCancelInvoicePauseOrder() {
-      var selectedIndex = this.$store.state.lastOrder.indexOf(this.selectCancelInvoiceIndex);
+      var selectedIndex = this.$store.state.lastOrder.indexOf(
+        this.selectCancelInvoiceIndex
+      );
       this.$store.state.lastOrder.splice(selectedIndex, 1);
-            
-      this.$store.commit('lastOrder', this.$store.state.lastOrder);
 
-      if(this.selectedRework.length !== 0) {
+      this.$store.commit("lastOrder", this.$store.state.lastOrder);
+
+      if (this.selectedRework.length !== 0) {
         this.dialogLastOrder = false;
       } else {
         this.reworkOrder();
@@ -1237,13 +1301,15 @@ export default {
       this.dialogCancelInvoicePauseOrder = false;
     },
     reworkOrder() {
-      if(this.items.length !== 0) {
-        alert("ไม่สามารถเลือกรายการที่ค้างมาทำรายการได้ในขณะนี้, กรุณาทำรายการปัจจุบันให้สำเร็จก่อน");
+      if (this.items.length !== 0) {
+        alert(
+          "ไม่สามารถเลือกรายการที่ค้างมาทำรายการได้ในขณะนี้, กรุณาทำรายการปัจจุบันให้สำเร็จก่อน"
+        );
       } else {
-        if(this.$store.state.lastOrder.length == 0) {
+        if (this.$store.state.lastOrder.length == 0) {
           alert("ไม่มีรายการค้างอยู่");
         } else {
-          if(this.$store.state.lastOrder.length == 1) {
+          if (this.$store.state.lastOrder.length == 1) {
             this.invoiceNo = this.$store.state.lastOrder[0].invoiceNo;
             this.items = this.$store.state.lastOrder[0].orderInfo;
             this.memberInfo = this.$store.state.lastOrder[0].memberInfo;
@@ -1252,10 +1318,12 @@ export default {
             this.pointsUsed = this.$store.state.lastOrder[0].pointsUsed;
 
             this.currentOrder();
-            var selectedIndex = this.$store.state.lastOrder.indexOf(this.$store.state.lastOrder[0]);
+            var selectedIndex = this.$store.state.lastOrder.indexOf(
+              this.$store.state.lastOrder[0]
+            );
             this.$store.state.lastOrder.splice(selectedIndex, 1);
-            
-            this.$store.commit('lastOrder', this.$store.state.lastOrder);
+
+            this.$store.commit("lastOrder", this.$store.state.lastOrder);
           } else {
             this.dialogLastOrder = true;
           }
@@ -1266,22 +1334,24 @@ export default {
       }
     },
     confirmLastOrder() {
-        this.invoiceNo = this.selectedRework[0].invoiceNo;
-        this.items = this.selectedRework[0].orderInfo;
-        this.memberInfo = this.selectedRework[0].memberInfo;
-        this.points = this.selectedRework[0].points;
-        this.pointsNet = this.selectedRework[0].pointsNet;
-        this.pointsUsed = this.selectedRework[0].pointsUsed;
+      this.invoiceNo = this.selectedRework[0].invoiceNo;
+      this.items = this.selectedRework[0].orderInfo;
+      this.memberInfo = this.selectedRework[0].memberInfo;
+      this.points = this.selectedRework[0].points;
+      this.pointsNet = this.selectedRework[0].pointsNet;
+      this.pointsUsed = this.selectedRework[0].pointsUsed;
 
-        this.calSaleTotal();
-        this.calPoints();
-        var selectedIndex = this.$store.state.lastOrder.indexOf(this.selectedRework[0]);
-        this.$store.state.lastOrder.splice(selectedIndex, 1);
-        
-        this.$store.commit('lastOrder', this.$store.state.lastOrder);
-        this.dialogLastOrder = false;
+      this.calSaleTotal();
+      this.calPoints();
+      var selectedIndex = this.$store.state.lastOrder.indexOf(
+        this.selectedRework[0]
+      );
+      this.$store.state.lastOrder.splice(selectedIndex, 1);
 
-        this.currentOrder();
+      this.$store.commit("lastOrder", this.$store.state.lastOrder);
+      this.dialogLastOrder = false;
+
+      this.currentOrder();
     },
     cancelOrder() {
       this.dialogCancelOrder = true;
@@ -1295,7 +1365,6 @@ export default {
       this.redeemPoints();
       this.dialogCancelOrder = false;
     },
-<<<<<<< HEAD
     resetInfoModal() {
       this.infoModal.title = "";
       this.infoModal.content = "";
@@ -1304,80 +1373,6 @@ export default {
       // Trigger pagination to update the number of buttons/pages due to filtering
       this.totalRows = filteredItems.length;
       this.currentPage = 1;
-=======
-    closeDialogCancelOrder() {
-      this.dialogCancelOrder = false;
-    },
-    closeDialogLastOrder() {
-      this.dialogLastOrder = false;
-    },
-    saveOrder() {
-      if(this.userInfo == "") {
-        this.$router.push({ name: "Home" }).catch((error) => {
-          if (
-            error.name !== 'NavigationDuplicated' &&
-            !error.message.includes('Avoided redundant navigation to current location')
-          ) {
-            console.log(error)
-          }
-        });
-      } else if(this.items.length == 0) {
-        alert("ไม่พบข้อมูล, รายการซื้อสินค้า");
-      } else if(this.paymentMethod == undefined) {
-        alert("ไม่พบข้อมูลวิธีการชำระเงิน");
-      } else if(this.paymentMethod == 'cash' && (this.cashIn == 0 || this.cashIn == "")) {
-        alert("กรุณาใส่จำนวนรับเงิน ให้ถูกต้อง");
-      } else {
-        let billOrder = {
-          invoiceNo: this.invoiceNo,
-          orderDate: dayjs(this.saleDate).format("YYYY-MM-DD HH:mm:ss"),
-          userInfo: this.userInfo,
-          memberInfo: this.memberInfo == null ? "Walk-in customer" : this.memberInfo,
-          orderInfo: this.items,
-          qty: this.items.length,
-          paymentMethod: this.paymentMethod,
-          amount: this.saleTotal,
-          discountTotal: this.discountTotal,
-          net: this.net,
-          received: this.paymentMethod == "cash" ? this.cashIn : this.net,
-          change: this.paymentMethod == "cash" ? this.cashIn - this.net : 0,
-          points: this.points,
-          pointsUsed: this.pointsUsed,
-          pointsNet: this.pointsNet,
-          remark: this.remark,
-          createdAt: dayjs().format("YYYY-MM-DD HH:mm:ss")
-        };
-
-        if(this.$store.state.listInvoice.length !== 0 ) {
-          this.$store.state.listInvoice.push(billOrder);
-          this.$store.commit('addListInvoice', this.$store.state.listInvoice);
-        } else {
-          this.listInvoice.push(billOrder);
-          this.$store.commit('addListInvoice', this.listInvoice);
-        }
-        
-        this.items = [];
-        this.memberInfo = {};
-
-        this.points = 0;
-        this.pointsUsed = 0;
-        this.pointsNet = 0;
-
-        this.saleTotal = 0;
-        this.discountTotal = 0;
-        this.net = 0;
-
-        this.cashIn = 0;
-
-        this.$store.commit('currentOrder', null);
-        this.dialogConfirmInvoice = false;
-        this.generateNewInvoice();
-      }
-    },
-    closePosDialog(){
-      this.dialog = false;
-      this.overlay =false;
->>>>>>> oil
     },
     getMemberInfo() {
       this.memberInfo = {
@@ -1400,7 +1395,6 @@ export default {
 </script>
 
 <style>
-<<<<<<< HEAD
 @media screen and (max-height: 450px) {
   .overlay .closebtn {
     font-size: 40px;
@@ -1482,10 +1476,3 @@ body {
   font-size: 14px !important;
 }
 </style>
-=======
-  .item-table{
-    height: 25vh;
-    overflow-y: scroll;
-  }
-</style>
->>>>>>> oil
