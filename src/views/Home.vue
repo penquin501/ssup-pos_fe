@@ -68,7 +68,7 @@ export default {
       },
       state: "login",
       showMain: false,
-      url: "http://localhost:8100",
+      url: "http://127.0.0.1:8000",
     };
   },
   mounted: function () {
