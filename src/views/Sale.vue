@@ -14,6 +14,9 @@
             :search="searchInvoice"
             class="elevation-1"
           >
+            <template v-slot:item.paymentMethod="{ item }">
+              {{ item.paymentMethod == "creditCard" ? "บัตรเครดิต": "เงินสด" }}
+            </template>
             <template v-slot:top>
               <v-toolbar flat>
                 <v-toolbar-title>รายการขายสินค้า {{ today }}</v-toolbar-title>
@@ -721,17 +724,7 @@
                             </b-row>
                             <v-divider></v-divider>
                             <b-row style="text-align: center">
-                              <b-col cols="6"
-                                ><v-btn @click="paymentMethod = 'cash'"
-                                  ><v-icon>mdi-cash-multiple</v-icon>Cash</v-btn
-                                ></b-col
-                              >
-                              <b-col cols="6"
-                                ><v-btn @click="paymentMethod = 'creditCard'"
-                                  ><v-icon>mdi-credit-card</v-icon>Credit
-                                  Card</v-btn
-                                ></b-col
-                              >
+                              <v-select style="text-align: center; height: 60px" v-model="paymentMethod" :items="optionsPaymentMethod" solo></v-select>
                             </b-row>
                             <v-divider></v-divider>
                             <div>
@@ -756,7 +749,7 @@
                     >
                     <v-card-actions>
                       <v-spacer></v-spacer>
-                      <v-btn color="blue darken-1" text @click="closeDelete"
+                      <v-btn color="blue darken-1" text @click="closeDelete()"
                         >Cancel</v-btn
                       >
                       <v-btn
@@ -986,6 +979,12 @@ export default {
         { value: 1, text: "Grab" },
         { value: 2, text: "Panda Rider" },
       ],
+      paymentMethod: null,
+      optionsPaymentMethod: [
+        { value: null, text: "เลือกวิธีชำระเงิน" },
+        { value: "cash", text: "เงินสด" },
+        { value: "creditCard", text: "Credit Card" },
+      ],
       msgText: "test",
       memberInfo: {
         memberId: "12324",
@@ -1017,8 +1016,9 @@ export default {
       cashIn: 0,
       remark: "",
       selectCancelInvoiceIndex: 0,
+      currentItemIndex: 0,
+      itemIndex: 0, 
       userInfo: {},
-      paymentMethod: undefined,
     };
   },
   mounted: function () {
@@ -1120,12 +1120,13 @@ export default {
       this.pointsNet = this.points - this.pointsUsed;
     },
     deleteItem(item, index, event) {
-      this.editedIndex = this.items.indexOf(item);
-      // this.editedItem = Object.assign({}, item);
+      this.itemIndex = this.items.indexOf(item);
       this.dialogDelete = true;
     },
     deleteItemConfirm() {
-      this.items.splice(this.editedIndex, 1);
+      this.items.splice(this.itemIndex, 1);
+
+      this.currentOrder();
       this.calSaleTotal();
       this.closeDelete();
     },
@@ -1330,7 +1331,7 @@ export default {
         });
       } else if (this.items.length == 0) {
         alert("ไม่พบข้อมูล, รายการซื้อสินค้า");
-      } else if (this.paymentMethod == undefined) {
+      } else if (this.paymentMethod == undefined && this.paymentMethod == null  && this.paymentMethod == "") {
         alert("ไม่พบข้อมูลวิธีการชำระเงิน");
       } else if (
         this.paymentMethod == "cash" &&

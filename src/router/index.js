@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import About from '../views/About.vue'
 import Sale from '../views/Sale.vue'
+import Tools from '../views/Tools.vue'
 
 Vue.use(VueRouter)
 
@@ -21,6 +22,11 @@ const routes = [
     path: '/sale',
     name: 'Sale',
     component: Sale
+  },
+  {
+    path: '/tools',
+    name: 'Tools',
+    component: Tools
   },
   // {
   //   path: '/about',
