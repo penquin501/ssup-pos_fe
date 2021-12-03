@@ -5,11 +5,12 @@
                 <b-tab title="Permission">
                     <b-table :items="listPermission" :fields="headers" >
                         <template #cell(actions)="row" style="text-align: center;">
-                            <span v-for="(option, index) in options" :key="option.id">
-                                <input class="form-check-input" type="checkbox" name="inlineRadioOptions" :value="option.value" @change="selectAction(row, option)">
-                                <label class="form-check-label">{{ option.text }}</label>
-                                &nbsp;&nbsp;
-                            </span>
+                            <b-form-group v-slot="{ ariaDescribedby }">
+                                <b-form-checkbox-group id="checkbox-group-2" style="display: flex;" v-model="row.item.selected" :aria-describedby="ariaDescribedby" name="flavour-2">
+                                    <b-form-checkbox  v-for="(option, index) in options" :key="option.id" :value="option.value">{{ option.text }} &nbsp;&nbsp;</b-form-checkbox>
+                                </b-form-checkbox-group>
+                            </b-form-group>
+                            {{ row.item.selected }}
                         </template>
                     </b-table>
                     <b-btn @click.prevent="save()">Save</b-btn>
@@ -32,14 +33,14 @@
           { key: 'actions', label: 'Actions' }
         ],
         listPermission: [
-          { name: 'Dashboard', selected: null },
-          { name: 'Sale', selected: null },
-          { name: 'Stock', selected: null },
-          { name: 'Member', selected: null },
-          { name: 'Off Promotion', selected: null },
-          { name: 'Report', selected: null },
-          { name: 'Tools', selected: null },
-          { name: 'Audit', selected: null },
+          { name: 'Dashboard', selected: [] },
+          { name: 'Sale', selected: [] },
+          { name: 'Stock', selected: [] },
+          { name: 'Member', selected: [] },
+          { name: 'Off Promotion', selected: [] },
+          { name: 'Report', selected: [] },
+          { name: 'Tools', selected: [] },
+          { name: 'Audit', selected: [] },
         ],
         options: [
           { text: 'Read', value: 'r', selected: 0, },
@@ -50,30 +51,31 @@
           { text: 'Export', value: 'x', selected: 0, },
         ],
         userInfo: {},
-        // permission: {
-        //     'r' : 0,
-        //     'w' : 0,
-        //     'e' : 0,
-        //     'd' : 0,
-        //     'i' : 0,
-        //     'x' : 0,
-        // },
-        listSelectedPermission: {},
+        permission: {
+            'r' : 0,
+            'w' : 0,
+            'e' : 0,
+            'd' : 0,
+            'i' : 0,
+            'x' : 0,
+        },
+        listSelectedPermission: [],
+        lKey: [],
       }
     },
     mounted: function () {
         if (this.$store.state.is_login == false) {
-        this.$router.push({ name: "Home" }).catch((error) => {
-            if (
-            error.name !== 'NavigationDuplicated' &&
-            !error.message.includes('Avoided redundant navigation to current location')
-            ) {
-            console.log(error)
-            }
-        });
+            this.$router.push({ name: "Home" }).catch((error) => {
+                if (
+                error.name !== 'NavigationDuplicated' &&
+                !error.message.includes('Avoided redundant navigation to current location')
+                ) {
+                console.log(error)
+                }
+            });
         } else {
             this.userInfo = JSON.parse(this.$store.state.userInfo);
-            this.setListMenuPermission(); //ดูว่ามี Menu อะไรให้เลือกบ้าง
+            // this.setListMenuPermission(); //ดูว่ามี Menu อะไรให้เลือกบ้าง
 
             /* 
                 TODO: เช็คว่า user มีข้อมูลส่วนนี้แล้วหรือยัง 
@@ -96,26 +98,44 @@
                 e.selected = permission;
             }); 
         },
-        selectAction(rowMenu, checkPermission) {
-            console.log("0", rowMenu.item.name, checkPermission.value);
-            let s = {};
-            console.log("s", s);
-            this.listPermission.forEach(e => {
-                if(e.name == rowMenu.item.name) {
-                    s = e;
-                }
-            });
-            console.log("s1", s.name, s.selected[checkPermission.value]);
-            // console.log("s11", s.name, s.selected);
-            s.selected[checkPermission.value] = s.selected[checkPermission.value] === 0? 1: 0;
-            
-            console.log("s2", s.name, s);
-        },
         save() {
-            console.log(this.listMenuPermission);
+            for(let selectedItem of this.listPermission) {
+
+                this.lKey = [];
+                for(let item of this.listUserPermission) {
+                    for (const [key, value] of Object.entries(item)) {
+                        this.lKey.push(key);
+                    }
+                }
+                let selectedIndex = this.lKey.indexOf(selectedItem.name);    
+
+                if(selectedItem.selected.length == 0) {
+                    if(selectedIndex !== -1) {
+                        this.listUserPermission.splice(selectedIndex, 1);
+                    }
+                } else {
+                    let permission = {
+                        'r' : 0,
+                        'w' : 0,
+                        'e' : 0,
+                        'd' : 0,
+                        'i' : 0,
+                        'x' : 0,
+                    };
+                    if(selectedIndex !== -1) {
+                        this.listUserPermission.splice(selectedIndex, 1);
+                    }
+                    let obj = {};
+                    obj[selectedItem.name] = permission;
+                    for(let opt of selectedItem.selected) {
+                        obj[selectedItem.name][opt] = 1;
+                    }
+                    this.listUserPermission.push(obj);
+                }
+            }
+            console.log("listUserPermission", this.listUserPermission);
             /* 
                 ดึง this.userInfo มาเพิ่ม key permission
-            
             */
         },
     },
