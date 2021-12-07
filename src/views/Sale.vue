@@ -15,14 +15,24 @@
           >
             <template v-slot:top>
               <v-toolbar flat>
-                <v-toolbar-title>My CRUD</v-toolbar-title>
+                <v-toolbar-title>รายการขายสินค้า {{ today }}</v-toolbar-title>
                 <v-divider class="mx-4" inset vertical></v-divider>
+
+                <v-spacer></v-spacer>
+                <v-text-field
+                  v-model="searchInvoice"
+                  append-icon="mdi-magnify"
+                  label="ใส่เลข Invoice No"
+                  single-line
+                  hide-details
+                ></v-text-field>
                 <v-spacer></v-spacer>
 
                 <v-dialog
                   v-model="dialog"
                   max-width="500px"
                   :retain-focus="false"
+                  persistent
                 >
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn
@@ -124,6 +134,9 @@
                                 ><b-form-input
                                   id="input-small"
                                   size="sm"
+                                  v-model="productInput"
+                                  ref="productInput"
+                                  @change="addItem()"
                                 ></b-form-input
                               ></b-col>
                             </b-row>
@@ -145,6 +158,7 @@
                                   ><b-form-input
                                     id="input-small"
                                     size="sm"
+                                    @change="getMemberInfo()"
                                     v-model="memberInfo.memberId"
                                   ></b-form-input
                                 ></b-col>
@@ -195,7 +209,7 @@
                       </div>
                       <div class="bottom">
                         <div class="left-bottom">
-                          <!-- <v-card-title style="padding-top: 0px">
+                          <v-card-title style="padding-top: 0px">
                             <v-text-field
                               style="padding-top: 0px"
                               v-model="search"
@@ -204,18 +218,23 @@
                               single-line
                               hide-details
                             ></v-text-field>
-                          </v-card-title> -->
+                          </v-card-title>
                           <div class="content-list-item">
                             <b-table
                               :items="items"
                               :fields="productfields"
                               :current-page="currentPage"
-                              :per-page="5"
                               :filter="search"
                               stacked="md"
                               show-empty
                               small
                             >
+                              <template #cell(pricePerItem)="row">
+                                {{ formatPrice(row.item.pricePerItem) }}
+                              </template>
+                              <template #cell(total)="row">
+                                {{ formatPrice(row.item.total) }}
+                              </template>
                               <template #cell(actions)="row">
                                 <b-button
                                   size="sm"
@@ -258,7 +277,8 @@
                                     cols="12"
                                     sm="12"
                                     md="12"
-                                    >21,899.00</v-col
+                                    v-model="net"
+                                    >{{ formatPrice(net) }}</v-col
                                   >
                                 </b-row>
                               </b-col>
@@ -277,6 +297,7 @@
                                     large
                                     elevation="2"
                                     color="success"
+                                    @click.prevent="showPayment()"
                                   >
                                     <v-icon> mdi-play </v-icon>
                                     payment (F10)</v-btn
@@ -291,8 +312,15 @@
                                       large
                                       elevation="2"
                                       color="orange"
+                                      @click="reworkOrder"
                                     >
-                                      <v-icon> mdi-reload </v-icon>
+                                      <v-badge
+                                        :content="$store.state.lastOrder.length"
+                                        :value="$store.state.lastOrder.length"
+                                        color="green"
+                                      >
+                                        <v-icon> mdi-reload </v-icon>
+                                      </v-badge>
                                       Rework</v-btn
                                     >
                                   </b-col>
@@ -302,6 +330,7 @@
                                       large
                                       elevation="2"
                                       color="#424242d4"
+                                      @click="pauseOrder"
                                     >
                                       <v-icon> mdi-pause </v-icon>
                                       pause (F9)</v-btn
@@ -313,6 +342,7 @@
                                       large
                                       elevation="2"
                                       color="red"
+                                      @click="cancelOrder"
                                     >
                                       <v-icon> mdi-delete </v-icon>
                                       Delete (F8)</v-btn
@@ -332,7 +362,7 @@
                               <v-expansion-panel-content>
                                 <v-col cols="12" sm="12" md="12">
                                   <v-text-field
-                                    value="Test test"
+                                    v-model="memberInfo.memberName"
                                     class="font-16"
                                     label="ชื่อสมาชิก"
                                     dense
@@ -563,10 +593,75 @@
                   </v-overlay>
                 </v-dialog>
 
-                <v-dialog v-model="dialogDelete" max-width="500px">
+                <v-dialog
+                  v-model="dialogLastOrder"
+                  persistent
+                  max-width="500px"
+                >
                   <v-card>
                     <v-card-title class="text-h5"
-                      >Are you sure you want to delete this item?</v-card-title
+                      >กรุณาเลือก รายการที่ทำค้างไว้?</v-card-title
+                    >
+                    <v-card-text>
+                      <b-table
+                        ref="selectableTable"
+                        selectable
+                        :items="$store.state.lastOrder"
+                        select-mode="single"
+                        :per-page="5"
+                        :fields="lastOrderfields"
+                        show-empty
+                        small
+                        @row-selected="onRowSelected"
+                      >
+                        <template #cell(selected)="{ rowSelected }">
+                          <template v-if="rowSelected">
+                            <span aria-hidden="true">&check;</span>
+                            <span class="sr-only">Selected</span>
+                          </template>
+                          <template v-else>
+                            <span aria-hidden="true">&nbsp;</span>
+                            <span class="sr-only">Not selected</span>
+                          </template>
+                        </template>
+                        <template #cell(actions)="row">
+                          <b-button
+                            size="sm"
+                            @click="
+                              deletePauseInvoice(
+                                row.item,
+                                row.index,
+                                $event.target
+                              )
+                            "
+                            class="mr-1"
+                            ><v-icon small>mdi-delete</v-icon></b-button
+                          >
+                        </template>
+                      </b-table>
+                    </v-card-text>
+                    <v-card-actions>
+                      <v-spacer></v-spacer>
+                      <v-btn
+                        color="blue darken-1"
+                        text
+                        @click="closeDialogLastOrder"
+                        >Cancel</v-btn
+                      >
+                      <v-btn
+                        color="blue darken-1"
+                        text
+                        @click="confirmLastOrder"
+                        >OK</v-btn
+                      >
+                      <v-spacer></v-spacer>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
+                <v-dialog v-model="dialogDelete" persistent max-width="500px">
+                  <v-card>
+                    <v-card-title class="text-h5"
+                      >ต้องการลบสินค้า ใช่หรือไม่?</v-card-title
                     >
                     <v-card-actions>
                       <v-spacer></v-spacer>
@@ -576,11 +671,274 @@
                       <v-btn
                         color="blue darken-1"
                         text
-                        @click="deleteItemConfirm"
+                        @click="deleteItemConfirm()"
                         >OK</v-btn
                       >
                       <v-spacer></v-spacer>
                     </v-card-actions>
+                  </v-card>
+                </v-dialog>
+
+                <v-dialog
+                  v-model="dialogCancelOrder"
+                  persistent
+                  max-width="500px"
+                >
+                  <v-card>
+                    <v-card-title class="text-h5"
+                      >ต้องการยกเลิกรายการสินค้าทั้งหมด
+                      ใช่หรือไม่?</v-card-title
+                    >
+                    <v-card-actions>
+                      <v-spacer></v-spacer>
+                      <v-btn
+                        color="blue darken-1"
+                        text
+                        @click="closeDialogCancelOrder"
+                        >Cancel</v-btn
+                      >
+                      <v-btn
+                        color="blue darken-1"
+                        text
+                        @click="confirmCancelOrder"
+                        >OK</v-btn
+                      >
+                      <v-spacer></v-spacer>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
+                <v-dialog
+                  v-model="dialogCancelInvoicePauseOrder"
+                  persistent
+                  max-width="500px"
+                >
+                  <v-card>
+                    <v-card-title class="text-h5"
+                      >ต้องการยกเลิกรายการเลขที่บิลนี้ ใช่หรือไม่?</v-card-title
+                    >
+                    <v-card-actions>
+                      <v-spacer></v-spacer>
+                      <v-btn
+                        color="blue darken-1"
+                        text
+                        @click="closeDialogCancelInvoicePauseOrder"
+                        >Cancel</v-btn
+                      >
+                      <v-btn
+                        color="blue darken-1"
+                        text
+                        @click="confirmCancelInvoicePauseOrder"
+                        >OK</v-btn
+                      >
+                      <v-spacer></v-spacer>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
+
+                <v-dialog v-model="dialogConfirmInvoice">
+                  <v-card style="width: 200vw; height: auto">
+                    <v-toolbar flat>
+                      <v-card-title class="text-h5"
+                        >สรุปรายการสินค้า</v-card-title
+                      >
+                      <v-spacer></v-spacer>
+                      <v-btn icon @click="dialogConfirmInvoice = false"
+                        ><v-icon>mdi-close</v-icon></v-btn
+                      >
+                    </v-toolbar>
+
+                    <v-card-text>
+                      <b-row style="margin-top: 0px; margin-bottom: 0px">
+                        <b-col
+                          cols="6"
+                          style="
+                            padding-top: 0px;
+                            padding-left: 0px;
+                            padding-bottom: 0px;
+                            padding-right: 5px;
+                            border-right: 1px solid gray;
+                            overflow-y: scroll;
+                            height: 765px;
+                          "
+                        >
+                          <div style="text-align: center">
+                            <p>Sale Details</p>
+                            <p>{{ saleDate }}</p>
+                            <p>Sales Receipt</p>
+                            <p>Sold By: {{ userInfo.name }}</p>
+                            <p>
+                              Sold To:
+                              {{
+                                memberInfo == null
+                                  ? "Walk-in customer"
+                                  : memberInfo.memberName
+                              }}
+                            </p>
+                            <p>
+                              <b-table-simple striped>
+                                <b-thead>
+                                  <b-tr>
+                                    <b-th>รหัสสินค้า</b-th>
+                                    <b-th>รายละเอียดสินค้า</b-th>
+                                    <b-th>จำนวน</b-th>
+                                    <b-th>ราคา/หน่วย</b-th>
+                                    <b-th>รวม</b-th>
+                                  </b-tr>
+                                </b-thead>
+                                <b-tbody>
+                                  <b-tr
+                                    v-for="(item, index) in items"
+                                    :key="item.productId"
+                                  >
+                                    <b-td>{{ item.productId }}</b-td>
+                                    <b-td>{{ item.productName }}</b-td>
+                                    <b-td>{{ item.saleQty }}</b-td>
+                                    <b-td class="text-right">{{
+                                      item.pricePerItem
+                                    }}</b-td>
+                                    <b-td class="text-right">{{
+                                      item.total
+                                    }}</b-td>
+                                  </b-tr>
+                                </b-tbody>
+                                <b-tfoot>
+                                  <b-tr>
+                                    <b-td class="text-left">จำนวนรายการ:</b-td>
+                                    <b-td colspan="4" class="text-right">{{
+                                      items.length
+                                    }}</b-td>
+                                  </b-tr>
+                                  <b-tr>
+                                    <b-td class="text-left">Sub Total:</b-td>
+                                    <b-td colspan="4" class="text-right">{{
+                                      saleTotal
+                                    }}</b-td>
+                                  </b-tr>
+                                  <b-tr>
+                                    <b-td class="text-left">Discount:</b-td>
+                                    <b-td colspan="4" class="text-right">{{
+                                      discountTotal
+                                    }}</b-td>
+                                  </b-tr>
+                                  <b-tr>
+                                    <b-td class="text-left" variant="secondary"
+                                      >Net:</b-td
+                                    >
+                                    <b-td
+                                      colspan="4"
+                                      variant="secondary"
+                                      class="text-right"
+                                      ><b>{{ net }}</b></b-td
+                                    >
+                                  </b-tr>
+                                  <b-tr v-if="cashIn > net">
+                                    <b-td class="text-left">Change:</b-td>
+                                    <b-td colspan="4" class="text-right"
+                                      ><b>{{ cashIn - net }}</b></b-td
+                                    >
+                                  </b-tr>
+                                </b-tfoot>
+                              </b-table-simple>
+                            </p>
+                          </div>
+                          <div>
+                            <v-btn class="form-control"
+                              ><v-icon>mdi-printer</v-icon>Print Receipt</v-btn
+                            >
+                          </div>
+                        </b-col>
+                        <b-col cols="6" style="padding: 6px !important">
+                          <b-col cols="12">
+                            <b-row>
+                              <b-col cols="2" style="padding: 20px 0px 4px 10px"
+                                ><p>Points ::</p></b-col
+                              >
+                              <b-col cols="2" style="padding: 20px 0px 4px 10px"
+                                ><v-text-field
+                                  @change="paymentMethod = 'cash'"
+                                  v-model="memberInfo.point"
+                                ></v-text-field
+                              ></b-col>
+                              <b-col cols="3"><p>Points Used ::</p></b-col>
+                              <b-col cols="2"
+                                ><v-text-field
+                                  @change="paymentMethod = 'cash'"
+                                  v-model="cashIn"
+                                ></v-text-field
+                              ></b-col>
+                            </b-row>
+                            <b-row style="margin-top: 1px !important">
+                              <b-col cols="6"><p>Total ::</p></b-col>
+                              <b-col cols="6"
+                                ><p>{{ formatPrice(net) }}</p></b-col
+                              >
+                            </b-row>
+                            <b-row>
+                              <b-col cols="6"><p>ส่วนลด ::</p></b-col>
+                              <b-col cols="6"
+                                ><p>{{ formatPrice(discountTotal) }}</p></b-col
+                              >
+                            </b-row>
+                            <b-row>
+                              <b-col cols="6"><p>Tax ::</p></b-col>
+                              <b-col cols="6"
+                                ><p>{{ taxsTotal.toFixed(2) }}</p></b-col
+                              >
+                            </b-row>
+                            <b-row>
+                              <b-col cols="6"><p>รับเงิน ::</p></b-col>
+                              <b-col cols="6"
+                                ><v-text-field
+                                  @change="paymentMethod = 'cash'"
+                                  v-model="cashIn"
+                                ></v-text-field
+                              ></b-col>
+
+                              <b-col cols="6"><p>เงินทอน ::</p></b-col>
+                              <b-col cols="6"
+                                ><v-text-field
+                                  @change="paymentMethod = 'cash'"
+                                  v-model="cashIn"
+                                ></v-text-field
+                              ></b-col>
+                            </b-row>
+                            <b-row>
+                              <b-col cols="6"><p>Note</p></b-col>
+                              <b-col cols="6"
+                                ><v-textarea
+                                  rows="3"
+                                  outlined
+                                  v-model="remark"
+                                ></v-textarea
+                              ></b-col>
+                            </b-row>
+                            <v-divider></v-divider>
+                            <b-row style="text-align: center">
+                              <b-col cols="6"
+                                ><v-btn @click="paymentMethod = 'cash'"
+                                  ><v-icon>mdi-cash-multiple</v-icon>Cash</v-btn
+                                ></b-col
+                              >
+                              <b-col cols="6"
+                                ><v-btn @click="paymentMethod = 'creditCard'"
+                                  ><v-icon>mdi-credit-card</v-icon>Credit
+                                  Card</v-btn
+                                ></b-col
+                              >
+                            </b-row>
+                            <v-divider></v-divider>
+                            <div>
+                              <v-btn
+                                @click.prevent="saveOrder()"
+                                color="success"
+                                class="form-control"
+                                >Done Payment</v-btn
+                              >
+                            </div>
+                          </b-col>
+                        </b-col>
+                      </b-row>
+                    </v-card-text>
                   </v-card>
                 </v-dialog>
               </v-toolbar>
@@ -591,13 +949,8 @@
               >
               <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
             </template>
-            <!-- <template v-slot:no-data> -->
-            <!-- <v-btn color="primary" @click="initialize">Reset</v-btn> -->
-            <!-- </template> -->
           </v-data-table>
         </b-tab>
-        <!-- <b-tab title="Second"><p>I'm the second tab</p></b-tab> -->
-        <!-- <b-tab title="Disabled" disabled><p>I'm a disabled tab!</p></b-tab> -->
       </b-tabs>
     </b-card>
   </div>
@@ -711,6 +1064,8 @@ export default {
       saleTotal: 0,
       discountTotal: 0,
       net: 0,
+      taxs: 0,
+      taxsTotal: 0,
       cashIn: 0,
       remark: "",
       selectCancelInvoiceIndex: 0,
@@ -731,7 +1086,6 @@ export default {
         }
       });
     } else {
-      console.log(" === ", JSON.parse(this.$store.state.userInfo));
       if (this.$store.state.listInvoice !== []) {
         this.listInvoice = this.$store.state.listInvoice;
       }
@@ -753,14 +1107,22 @@ export default {
     }
   },
   methods: {
+    formatPrice(value) {
+      let val = (value / 1).toFixed(2).replace(",", ".");
+      return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    },
+    debugRow(row) {
+      console.log(row);
+    },
     addItem() {
       /* TODO: ยิง api เพื่อรับข้อมูลสินค้า */
       let data = {
         productId: this.productInput,
         productName: "Dickerson" + this.productInput,
-        pricePerItem: "100",
+        pricePerItem: "1000",
         discount: "5",
         point: 10,
+        taxs: 7,
       };
       /******************************/
       if (this.items.length !== 0) {
@@ -769,15 +1131,24 @@ export default {
         );
         if (selectProduct) {
           let qty = parseInt(selectProduct.saleQty);
-          qty = this.saleQty == 1 ? qty + 1 : parseInt(this.saleQty);
-          selectProduct.saleQty = qty;
-          selectProduct.total =
-            parseInt(selectProduct.pricePerItem) * parseInt(qty);
+          // qty = this.saleQty == 1 ? qty + 1 : parseInt(this.saleQty);
+          if (parseInt(this.saleQty) < 0) {
+            alert("จำนวนสินค้าไม่ถูกต้อง");
+          } else {
+            selectProduct.saleQty = qty + parseInt(this.saleQty);
+            selectProduct.total =
+              parseInt(selectProduct.pricePerItem) * parseInt(qty);
+          }
         } else {
           this.items.push({
             ...data,
             saleQty: parseInt(this.saleQty),
             total: parseInt(data.pricePerItem) * parseInt(this.saleQty),
+            taxs:
+              (parseInt(data.pricePerItem) *
+                parseInt(this.saleQty) *
+                parseInt(data.taxs)) /
+              (100 + parseInt(data.taxs)),
           });
         }
       } else {
@@ -785,12 +1156,18 @@ export default {
           ...data,
           saleQty: parseInt(this.saleQty),
           total: parseInt(data.pricePerItem) * parseInt(this.saleQty),
+          taxs:
+            (parseInt(data.pricePerItem) *
+              parseInt(this.saleQty) *
+              parseInt(data.taxs)) /
+            (100 + parseInt(data.taxs)),
         });
       }
       this.calSaleTotal();
       this.calPoints();
 
       this.productInput = "";
+      this.saleQty = 1;
       this.$refs.productInput.focus();
       this.currentOrder();
     },
@@ -798,8 +1175,10 @@ export default {
       this.saleTotal = 0;
       this.discountTotal = 0;
       this.net = 0;
+      this.taxsTotal = 0;
 
       this.items.forEach((e) => {
+        this.taxsTotal += parseFloat(e.taxs);
         this.saleTotal += parseInt(e.total);
         this.discountTotal += parseInt(e.discount);
       });
@@ -1163,8 +1542,9 @@ body {
 }
 
 .content-list-item {
-  display: flex;
-  height: 70%;
+  /* display: flex; */
+  height: 60%;
+  overflow-y: scroll;
   background: rgb(255, 255, 255);
 }
 
