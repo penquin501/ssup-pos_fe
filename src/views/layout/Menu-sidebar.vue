@@ -91,8 +91,11 @@ export default {
   },
   methods: {
       setMenu () {
-        this.listUserPermission = this.userInfo.listUserPermission;
-        for(let item of this.listUserPermission) {
+        if(this.userInfo.listUserPermission == undefined) {
+          this.items = this.menuItems;
+        } else {
+          this.listUserPermission = this.userInfo.listUserPermission;
+          for(let item of this.listUserPermission) {
             for (const [key, value] of Object.entries(item)) {
                 for(let ele of this.menuItems) {
                     if(ele.title == key) {
@@ -100,6 +103,7 @@ export default {
                     }
                 }
             }
+          }
         }
       },
   },
