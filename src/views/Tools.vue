@@ -162,6 +162,7 @@
             this.userRoles = this.userInfo.roles == "Admin" ? false: true;
 
             this.listUser = this.$store.state.listUser == undefined? this.listUser: this.$store.state.listUser;
+            this.setListUserToStore();
         }
     },
     methods: {
