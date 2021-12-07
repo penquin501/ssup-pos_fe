@@ -3,6 +3,7 @@
       <b-card>
             <b-tabs content-class="mt-3">
                 <b-tab title="Permission">
+                    
                     <b-table :items="listPermission" :fields="headers" >
                         <template #cell(actions)="row" style="text-align: center;">
                             <b-form-group v-slot="{ ariaDescribedby }">
@@ -10,10 +11,10 @@
                                     <b-form-checkbox  v-for="(option, index) in options" :key="option.id" :value="option.value">{{ option.text }} &nbsp;&nbsp;</b-form-checkbox>
                                 </b-form-checkbox-group>
                             </b-form-group>
-                            {{ row.item.selected }}
                         </template>
                     </b-table>
                     <b-btn @click.prevent="save()">Save</b-btn>
+
                 </b-tab>
             </b-tabs>
       </b-card>
@@ -24,10 +25,7 @@
   export default {
     data () {
       return {
-        listUserPermission: [
-            {"Dashboard":{"r":1,"w":0,"e":0,"d":0,"i":0,"x":0}},
-            {"Sale":{"r":1,"w":0,"e":0,"d":0,"i":0,"x":0}}
-        ],
+        listUserPermission: [],
         headers: [
           { key: 'name', label: 'Topic' },
           { key: 'actions', label: 'Actions' }
@@ -36,7 +34,7 @@
           { name: 'Dashboard', selected: [] },
           { name: 'Sale', selected: [] },
           { name: 'Stock', selected: [] },
-          { name: 'Member', selected: [] },
+          { name: 'Member Register', selected: [] },
           { name: 'Off Promotion', selected: [] },
           { name: 'Report', selected: [] },
           { name: 'Tools', selected: [] },
@@ -51,15 +49,6 @@
           { text: 'Export', value: 'x', selected: 0, },
         ],
         userInfo: {},
-        permission: {
-            'r' : 0,
-            'w' : 0,
-            'e' : 0,
-            'd' : 0,
-            'i' : 0,
-            'x' : 0,
-        },
-        listSelectedPermission: [],
         lKey: [],
       }
     },
@@ -67,36 +56,32 @@
         if (this.$store.state.is_login == false) {
             this.$router.push({ name: "Home" }).catch((error) => {
                 if (
-                error.name !== 'NavigationDuplicated' &&
-                !error.message.includes('Avoided redundant navigation to current location')
+                    error.name !== 'NavigationDuplicated' &&
+                    !error.message.includes('Avoided redundant navigation to current location')
                 ) {
-                console.log(error)
+                    console.log(error)
                 }
             });
         } else {
             this.userInfo = JSON.parse(this.$store.state.userInfo);
-            // this.setListMenuPermission(); //ดูว่ามี Menu อะไรให้เลือกบ้าง
+            this.listUserPermission = this.userInfo.listUserPermission == undefined ? []: this.userInfo.listUserPermission;
 
-            /* 
-                TODO: เช็คว่า user มีข้อมูลส่วนนี้แล้วหรือยัง 
-                ถ้ายังไม่มี set ใหม่ 
-                ถ้ามีแล้ว ให้เอา ข้อมูลของ user มาเช็คเข้ากับ list menu เบื้องต้น
-            */
+            this.setListMenuPermission();
         }
     },
     methods: {
         setListMenuPermission() {
-            let permission = {
-                'r' : 0,
-                'w' : 0,
-                'e' : 0,
-                'd' : 0,
-                'i' : 0,
-                'x' : 0,
-            };
-            this.listPermission.forEach(e => {
-                e.selected = permission;
-            }); 
+            for(let item of this.listUserPermission) {
+                for (const [key, value] of Object.entries(item)) {
+                    for (const [k, v] of Object.entries(value)) {
+                        for(let ele of this.listPermission) {
+                            if(ele.name == key && v==1) {
+                                ele.selected.push(k);
+                            }
+                        }
+                    }
+                }
+            }
         },
         save() {
             for(let selectedItem of this.listPermission) {
@@ -133,10 +118,9 @@
                     this.listUserPermission.push(obj);
                 }
             }
-            console.log("listUserPermission", this.listUserPermission);
-            /* 
-                ดึง this.userInfo มาเพิ่ม key permission
-            */
+
+            this.userInfo.listUserPermission = this.listUserPermission;
+            this.$store.commit("updatePermission", JSON.stringify(this.userInfo));
         },
     },
   }

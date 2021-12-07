@@ -71,7 +71,15 @@ export default {
   }),
   mounted: function () {
     if (this.$store.state.is_login == false) {
-      this.$router.push({ name: "Home" });
+      // this.$router.push({ name: "Home" });
+      this.$router.push({ name: "Home" }).catch((error) => {
+          if (
+              error.name !== 'NavigationDuplicated' &&
+              !error.message.includes('Avoided redundant navigation to current location')
+          ) {
+              console.log(error)
+          }
+      });
     }
   },
 };
