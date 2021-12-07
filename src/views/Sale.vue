@@ -5,7 +5,7 @@
         <b-tab title="บิลขาย" active>
           <v-data-table
             :headers="headers"
-            :items="desserts"
+            :items="listInvoice"
             :footer-props="{
               pageText: 'total',
               'items-per-page-text': 'products per page',
@@ -61,7 +61,7 @@
                                   id="input-small"
                                   size="sm"
                                   readonly
-                                  v-model="empName"
+                                  v-model="userInfo.name"
                                 ></b-form-input>
                               </b-col>
                               <b-col cols="1" style="text-align: right"
@@ -69,6 +69,7 @@
                               >
                               <b-col cols="2">
                                 <b-form-input
+                                  style="font-size: 12px !important"
                                   id="input-small"
                                   size="sm"
                                   readonly
@@ -155,7 +156,7 @@
                                 <b-col cols="2"></b-col>
 
                                 <b-col cols="3">
-                                  <v-btn @click.prevent="close">
+                                  <v-btn @click.prevent="closePosDialog">
                                     <v-icon>mdi mdi-home</v-icon>
                                   </v-btn></b-col
                                 >
@@ -211,32 +212,23 @@
                               :current-page="currentPage"
                               :per-page="5"
                               :filter="search"
-                              :filter-included-fields="filterOn"
-                              :sort-by.sync="sortBy"
-                              :sort-desc.sync="sortDesc"
-                              :sort-direction="sortDirection"
                               stacked="md"
                               show-empty
                               small
-                              @filtered="onFiltered"
                             >
-                              <template #cell(name)="row"
-                                >{{ row.value.first }}
-                                {{ row.value.last }}</template
-                              >
-
                               <template #cell(actions)="row">
                                 <b-button
                                   size="sm"
                                   @click="
-                                    info(row.item, row.index, $event.target)
+                                    deleteItem(
+                                      row.item,
+                                      row.index,
+                                      $event.target
+                                    )
                                   "
                                   class="mr-1"
-                                  ><v-icon small @click="deleteItem(item)"
-                                    >mdi-delete</v-icon
-                                  ></b-button
+                                  ><v-icon small>mdi-delete</v-icon></b-button
                                 >
-                                <!-- <v-icon small @click="deleteItem(item)">mdi-delete</v-icon> -->
                               </template>
                             </b-table>
                           </div>
@@ -630,7 +622,7 @@ export default {
       invoiceNo: "",
       pause: false,
       today: dayjs().format("DD-MM-YYYY"),
-      saleDate: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+      saleDate: dayjs().format("YYYY-MM-DD HH:mm"),
       headers: [
         { text: "Invoice No", value: "invoiceNo" },
         { text: "Order Date", sortable: true, value: "orderDate" },
@@ -739,6 +731,7 @@ export default {
         }
       });
     } else {
+      console.log(" === ", JSON.parse(this.$store.state.userInfo));
       if (this.$store.state.listInvoice !== []) {
         this.listInvoice = this.$store.state.listInvoice;
       }
@@ -755,6 +748,7 @@ export default {
         this.calPoints();
       }
       this.userInfo = JSON.parse(this.$store.state.userInfo);
+
       this.generateNewInvoice();
     }
   },

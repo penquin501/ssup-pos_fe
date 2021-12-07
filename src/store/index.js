@@ -8,7 +8,7 @@ export default new Vuex.Store({
   state: {
     is_login: false,
     userInfo: "",
-    currentOrder: "",
+    currentOrder: null,
     lastOrder: [],
     listInvoice: []
   },
