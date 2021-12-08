@@ -38,7 +38,29 @@ export default {
   data () {
       return {
         selectedItem: 1,
-        menuItems: [
+        right: null,
+        userInfo: {},
+        items: []
+      };
+  },
+  mounted: function () {
+    if (this.$store.state.is_login == false) {
+      this.$router.push({ name: "Home" }).catch((error) => {
+          if (
+              error.name !== 'NavigationDuplicated' &&
+              !error.message.includes('Avoided redundant navigation to current location')
+          ) {
+              console.log(error)
+          }
+      });
+    } else {
+      this.setMenu();
+    }
+    
+  },
+  methods: {
+      setMenu () {
+        var menuItems = [
           {
             title: "Dashboard",
             icon: "mdi-monitor mdi-48px",
@@ -67,37 +89,17 @@ export default {
             icon: "mdi-briefcase-check mdi-48px",
             link: "/audit",
           },
-        ],
-        right: null,
-        userInfo: {},
-        items: []
-      };
-  },
-  mounted: function () {
-    if (this.$store.state.is_login == false) {
-      this.$router.push({ name: "Home" }).catch((error) => {
-          if (
-              error.name !== 'NavigationDuplicated' &&
-              !error.message.includes('Avoided redundant navigation to current location')
-          ) {
-              console.log(error)
-          }
-      });
-    } else {
+        ];
+
         this.userInfo = JSON.parse(this.$store.state.userInfo);
-        
-        this.setMenu();
-    }
-  },
-  methods: {
-      setMenu () {
+
         if(this.userInfo.listUserPermission == undefined) {
-          this.items = this.menuItems;
+          this.items = menuItems;
         } else {
           this.listUserPermission = this.userInfo.listUserPermission;
           for(let item of this.listUserPermission) {
             for (const [key, value] of Object.entries(item)) {
-                for(let ele of this.menuItems) {
+                for(let ele of menuItems) {
                     if(ele.title == key) {
                         this.items.push(ele);
                     }
