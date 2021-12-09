@@ -35,40 +35,14 @@
 </template>
 <script>
 export default {
-  data: () => ({
-    selectedItem: 1,
-    items: [
-      {
-        title: "Dashboard",
-        icon: "mdi-monitor mdi-48px",
-        link: "/dashboard",
-      },
-      { title: "Sale", icon: "mdi-cart-plus mdi-48px", link: "/sale" },
-      { title: "Stock", icon: "mdi-bank mdi-48px", link: "/stock" },
-      {
-        title: "Member Register",
-        icon: "mdi-account-card-details mdi-48px",
-        link: "/member",
-      },
-      {
-        title: "Off Promotion",
-        icon: "mdi-wallet-giftcard mdi-48px",
-        link: "/offpromotion",
-      },
-      {
-        title: "Report",
-        icon: "mdi-chart-areaspline mdi-48px",
-        link: "/report",
-      },
-      { title: "Tools", icon: "mdi-settings mdi-48px", link: "/tools" },
-      {
-        title: "Audit",
-        icon: "mdi-briefcase-check mdi-48px",
-        link: "/audit",
-      },
-    ],
-    right: null,
-  }),
+  data() {
+    return {
+      selectedItem: 1,
+      right: null,
+      userInfo: {},
+      items: [],
+    };
+  },
   mounted: function () {
     if (this.$store.state.is_login == false) {
       this.$router.push({ name: "Home" }).catch((error) => {
@@ -84,6 +58,57 @@ export default {
     } else {
       // this.userInfo = JSON.parse(this.$store.state.userInfo);
     }
+  },
+  methods: {
+    setMenu() {
+      var menuItems = [
+        {
+          title: "Dashboard",
+          icon: "mdi-monitor mdi-48px",
+          link: "/dashboard",
+        },
+        { title: "Sale", icon: "mdi-cart-plus mdi-48px", link: "/sale" },
+        { title: "Stock", icon: "mdi-bank mdi-48px", link: "/stock" },
+        {
+          title: "Member Register",
+          icon: "mdi-account-card-details mdi-48px",
+          link: "/member",
+        },
+        {
+          title: "Off Promotion",
+          icon: "mdi-wallet-giftcard mdi-48px",
+          link: "/offpromotion",
+        },
+        {
+          title: "Report",
+          icon: "mdi-chart-areaspline mdi-48px",
+          link: "/report",
+        },
+        { title: "Tools", icon: "mdi-settings mdi-48px", link: "/tools" },
+        {
+          title: "Audit",
+          icon: "mdi-briefcase-check mdi-48px",
+          link: "/audit",
+        },
+      ];
+
+      this.userInfo = JSON.parse(this.$store.state.userInfo);
+
+      if (this.userInfo.listUserPermission == undefined) {
+        this.items = menuItems;
+      } else {
+        this.listUserPermission = this.userInfo.listUserPermission;
+        for (let item of this.listUserPermission) {
+          for (const [key, value] of Object.entries(item)) {
+            for (let ele of menuItems) {
+              if (ele.title == key) {
+                this.items.push(ele);
+              }
+            }
+          }
+        }
+      }
+    },
   },
 };
 </script>

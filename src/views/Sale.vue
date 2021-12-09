@@ -10,9 +10,13 @@
               pageText: 'total',
               'items-per-page-text': 'products per page',
             }"
-            sort-by="calories"
+            sort-by="orderDate"
+            :search="searchInvoice"
             class="elevation-1"
           >
+            <template v-slot:item.paymentMethod="{ item }">
+              {{ item.paymentMethod == "creditCard" ? "บัตรเครดิต" : "เงินสด" }}
+            </template>
             <template v-slot:top>
               <v-toolbar flat>
                 <v-toolbar-title>รายการขายสินค้า {{ today }}</v-toolbar-title>
@@ -1036,6 +1040,12 @@ export default {
         { value: 1, text: "Grab" },
         { value: 2, text: "Panda Rider" },
       ],
+      paymentMethod: null,
+      optionsPaymentMethod: [
+        { value: null, text: "เลือกวิธีชำระเงิน" },
+        { value: "cash", text: "เงินสด" },
+        { value: "creditCard", text: "Credit Card" },
+      ],
       msgText: "test",
       memberInfo: {
         memberId: "12324",
@@ -1069,6 +1079,8 @@ export default {
       cashIn: 0,
       remark: "",
       selectCancelInvoiceIndex: 0,
+      currentItemIndex: 0,
+      itemIndex: 0,
       userInfo: {},
       paymentMethod: undefined,
     };
@@ -1198,12 +1210,13 @@ export default {
       this.pointsNet = this.points - this.pointsUsed;
     },
     deleteItem(item, index, event) {
-      this.editedIndex = this.items.indexOf(item);
-      // this.editedItem = Object.assign({}, item);
+      this.itemIndex = this.items.indexOf(item);
       this.dialogDelete = true;
     },
     deleteItemConfirm() {
-      this.items.splice(this.editedIndex, 1);
+      this.items.splice(this.itemIndex, 1);
+
+      this.currentOrder();
       this.calSaleTotal();
       this.closeDelete();
     },

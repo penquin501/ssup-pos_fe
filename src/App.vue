@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <div v-show="$store.state.is_login">
+    <div v-if="$store.state.is_login">
       <v-navigation-drawer v-model="drawer" app>
         <Sidebar />
       </v-navigation-drawer>
@@ -20,7 +20,7 @@
         <router-view />
       </v-main>
     </div>
-    <div v-show="!$store.state.is_login">
+    <div v-if="!$store.state.is_login">
       <router-view />
     </div>
   </v-app>
