@@ -238,6 +238,7 @@
             this.$store.commit("updatePermission", JSON.stringify(this.userInfo)); //save ข้อมูลใน User login
 
             this.dialog = false;
+            this.$router.go();
         },
         editItem (item) {
             this.editedIndex = this.listUser.indexOf(item);
