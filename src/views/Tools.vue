@@ -49,7 +49,56 @@
                             <v-icon small class="mr-2" @click="editItem(item)">mdi-pencil</v-icon>
                         </template>
                     </v-data-table>
-
+                </b-tab>
+                <b-tab title="Shop Info">
+                    <b-card no-body v-if="shopInfo[0].shop_id == '' && overlay == false">
+                        <b-card-header><v-icon>mdi-key-variant</v-icon> Purchase Code</b-card-header>
+                        <b-card-body class="text-center">
+                            <b-card-text>
+                                <b-row class="my-1">
+                                    <b-col sm="3"><label for="code">Code :</label></b-col>
+                                    <b-col sm="9"><b-form-input id="code" placeholder="Enter Code"></b-form-input></b-col>
+                                </b-row>
+                            </b-card-text>
+                            <b-button variant="primary" @click.prevent="getShopInfo()">INSTALL KEY</b-button>
+                        </b-card-body>
+                    </b-card>
+                    <v-overlay :absolute="absolute" :opacity="opacity" :value="overlay" style="height: 100vh;">
+                        <b-card style="background-color: white; width: 50vw; margin: 0;">
+                            <b-card-body class="text-right">
+                                <v-progress-linear indeterminate v-model="progressing" height="25"><strong>{{ Math.ceil(progressing) }}%</strong></v-progress-linear>
+                            </b-card-body>
+                        </b-card>
+                    </v-overlay>
+                    <b-card no-body v-if="shopInfo[0].install">
+                        <b-card-header><v-icon>mdi-home-map-marker</v-icon> Shop ID: <b>{{ shopInfo[0].shop_id }}</b></b-card-header>
+                        <b-card-body class="text-right">
+                            <b-row>
+                                <b-col sm="3"><label for="shopName">Shop Name :</label></b-col>
+                                <b-col sm="3"><b-form-input id="shopName" readonly v-model="shopInfo[0].shop"></b-form-input></b-col>
+                                <b-col sm="3"><label for="brandName">Brand Name :</label></b-col>
+                                <b-col sm="3"><b-form-input id="brandName" readonly v-model="shopInfo[0].brand"></b-form-input></b-col>
+                            </b-row>
+                            <b-row>
+                                <b-col sm="3"><label for="shopAddress">Address :</label></b-col>
+                                <b-col sm="3"><b-form-input id="shopAddress" readonly v-model="shopInfo[0].address"></b-form-input></b-col>
+                                <b-col sm="3"><label for="shopArea">Area :</label></b-col>
+                                <b-col sm="3"><b-form-input id="shopArea" readonly v-model="shopInfo[0].area"></b-form-input></b-col>
+                            </b-row>
+                            <b-row>
+                                <b-col sm="3"><label for="shopDistrict">District :</label></b-col>
+                                <b-col sm="3"><b-form-input id="shopDistrict" readonly v-model="shopInfo[0].district"></b-form-input></b-col>
+                                <b-col sm="3"><label for="lease">Lease :</label></b-col>
+                                <b-col sm="3"><b-form-input id="lease" readonly v-model="shopInfo[0].lease"></b-form-input></b-col>
+                            </b-row>
+                            <b-row>
+                                <b-col sm="3"><label for="shopSubDistrict">Sub District :</label></b-col>
+                                <b-col sm="3"><b-form-input id="shopSubDistrict" readonly v-model="shopInfo[0].sub_district"></b-form-input></b-col>
+                                <b-col sm="3"><label for="shopZipcode">Zipcode :</label></b-col>
+                                <b-col sm="3"><b-form-input id="shopZipcode" readonly v-model="shopInfo[0].zipcode"></b-form-input></b-col>
+                            </b-row>
+                        </b-card-body>
+                    </b-card>
                 </b-tab>
             </b-tabs>
       </b-card>
@@ -144,7 +193,26 @@
             },
         ],
         editedIndex: -1,
-        userRoles: true
+        userRoles: true,
+        purchaseCode: "",
+        progressing: 0,
+        shopInfo: [{
+            num: '',
+            shop_id: '',
+            shop: '',
+            brand: '',
+            address:'',
+            district: '',
+            sub_district:'',
+            province:'',
+            zipcode: '',
+            area: '',
+            lease: '',
+            install: false
+        }],
+        absolute: true,
+        opacity: 1,
+        overlay: false,
       }
     },
     mounted: function () {
@@ -247,6 +315,37 @@
         },
         close () {
             this.dialog = false;
+        },
+        getShopInfo() {
+            this.overlay = true;
+            this.progressing = 1;
+            setTimeout(() => {
+                this.progressing = 25;
+            }, 2000);
+            setTimeout(() => {
+                this.progressing = 50;
+            }, 5000);
+            setTimeout(() => {
+                this.progressing = 75;
+            }, 8000);
+            setTimeout(() => {
+                this.progressing = 100;
+                this.shopInfo.push({
+                    num: '1',
+                    shop_id: '7742',
+                    shop: 'Central',
+                    brand: 'Cute Press (Mega Bangna)',
+                    address:'999/9 Rama I Road',
+                    district: 'Pathum Wan',
+                    sub_district:'Pathum Wan',
+                    province:'Bangkok',
+                    zipcode: '11111',
+                    area: 'A',
+                    lease: 'lease',
+                    install: true
+                }); 
+                this.overlay = false;
+            }, 10000);
         },
     },
   }
