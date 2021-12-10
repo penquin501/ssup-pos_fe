@@ -2,7 +2,7 @@
   <div>
       <b-card>
             <b-tabs content-class="mt-3">
-                <b-tab title="Permission">
+                <b-tab :title="$t('message', { msg: 'hello' })" >
                     <v-data-table :headers="headersUser" :items="listUser" :search="search" sort-by="name" class="elevation-1">
                         <template v-slot:top>
                         <v-toolbar flat>

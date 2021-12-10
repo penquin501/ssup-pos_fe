@@ -1,4 +1,5 @@
 <template>
+
   <v-menu
     offset-y
     origin="center center"
@@ -20,7 +21,7 @@
           </v-list-item-avatar>
 
           <v-list-item-content>
-            <v-list-item-title>test</v-list-item-title>
+            <v-list-item-title>{{ $t('message.hello', { msg: 'hello' }) }}</v-list-item-title>
             <v-list-item-subtitle>tesdddd</v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
@@ -79,5 +80,10 @@ export default {
 .avatar {
   right: 20px;
   position: absolute;
+}
+li {
+  text-decoration: underline;
+  color: #459CE7;
+  cursor: pointer;
 }
 </style>

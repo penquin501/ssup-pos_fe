@@ -12,7 +12,17 @@
           </div>
           <div v-else><i class="fa fa-indent" aria-hidden="true"></i></div>
         </v-app-bar-nav-icon>
-        <v-toolbar-title> </v-toolbar-title>
+        <v-toolbar-title></v-toolbar-title>
+        <v-spacer></v-spacer>
+        <v-col class="d-flex" sm="1">
+          <v-select v-model="selectedLang" :items="langs" dense @change="setLang()">
+            <template v-slot:item="{ item, index }">
+              {{ item.text }}
+                <!-- <img :src="item.image">{{ item.text }} -->
+            </template>
+          </v-select>
+        </v-col>
+        <v-spacer></v-spacer>
         <Header />
       </v-app-bar>
 
@@ -38,6 +48,13 @@ export default {
   },
   data: () => ({
     drawer: null,
+    selectedLang: "en",
+    langs: [
+      { text: 'EN', value: 'en', image: 'https://www.gravatar.com/avatar/b17065ea1655f1e3283aac8d8fc16019?s=48&d=identicon&r=PG'},
+      { text: 'TH', value: 'th', image: 'https://www.countryflags.com/wp-content/uploads/thailand-flag-png-large.png'},
+      // { name: 'Hoo', value: 'TH', image: 'https://www.gravatar.com/avatar/b17065ea1655f1e3283aac8d8fc16019?s=48&d=identicon&r=PG'},
+      // { name: 'Coo', value: 'TH', image: 'https://www.gravatar.com/avatar/b17065ea1655f1e3283aac8d8fc16019?s=48&d=identicon&r=PG'},
+      ]
   }),
   mounted: function () {
     if (this.$store.state.is_login == false) {
@@ -53,5 +70,10 @@ export default {
       });
     }
   },
+  methods: {
+    setLang() {
+      this.$i18n.locale = this.selectedLang;
+    },
+  }
 };
 </script>
