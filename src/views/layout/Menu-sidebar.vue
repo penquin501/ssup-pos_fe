@@ -56,7 +56,7 @@ export default {
         }
       });
     } else {
-      // this.userInfo = JSON.parse(this.$store.state.userInfo);
+      this.setMenu();
     }
   },
   methods: {
@@ -112,6 +112,7 @@ export default {
   },
 };
 </script>
+
 <style scoped>
 .branch {
   padding: 10px;
