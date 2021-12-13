@@ -15,10 +15,9 @@
         <v-toolbar-title></v-toolbar-title>
         <v-spacer></v-spacer>
         <v-col class="d-flex" sm="1">
-          <v-select v-model="selectedLang" :items="langs" dense @change="setLang()">
+          <v-select v-model="selectedLang" :items="languages" dense @change="setLang()">
             <template v-slot:item="{ item, index }">
-              {{ item.text }}
-                <!-- <img :src="item.image">{{ item.text }} -->
+              <flag :iso="item.flag" /> {{item.text}}
             </template>
           </v-select>
         </v-col>
@@ -49,12 +48,10 @@ export default {
   data: () => ({
     drawer: null,
     selectedLang: "en",
-    langs: [
-      { text: 'EN', value: 'en', image: 'https://www.gravatar.com/avatar/b17065ea1655f1e3283aac8d8fc16019?s=48&d=identicon&r=PG'},
-      { text: 'TH', value: 'th', image: 'https://www.countryflags.com/wp-content/uploads/thailand-flag-png-large.png'},
-      // { name: 'Hoo', value: 'TH', image: 'https://www.gravatar.com/avatar/b17065ea1655f1e3283aac8d8fc16019?s=48&d=identicon&r=PG'},
-      // { name: 'Coo', value: 'TH', image: 'https://www.gravatar.com/avatar/b17065ea1655f1e3283aac8d8fc16019?s=48&d=identicon&r=PG'},
-      ]
+    languages: [
+        { flag: 'us', value: 'en', text: 'EN' },
+        { flag: 'th', value: 'th', text: 'TH' }
+    ]
   }),
   mounted: function () {
     if (this.$store.state.is_login == false) {

@@ -6,6 +6,7 @@ import vuetify from './plugins/vuetify'
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
+import FlagIcon from 'vue-flag-icon';
 
 import VueI18n from 'vue-i18n'
 import i18n from './i18n'
@@ -14,6 +15,7 @@ Vue.config.productionTip = false
 Vue.use(VueI18n)
 Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
+Vue.use(FlagIcon)
 
 new Vue({
   router,
