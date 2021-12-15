@@ -18,11 +18,11 @@ npm run build
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
 
-###install vue-i18n
+### install vue-i18n
 ```
 npm i i18n
 ```
-###install vue-flag-icon
+### install vue-flag-icon
 ```
 npm i vue-flag-icon
 ```
