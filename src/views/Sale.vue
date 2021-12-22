@@ -3,17 +3,7 @@
     <b-card>
       <b-tabs content-class="mt-3">
         <b-tab title="บิลขาย" active>
-          <v-data-table
-            :headers="headers"
-            :items="listInvoice"
-            :footer-props="{
-              pageText: 'total',
-              'items-per-page-text': 'products per page',
-            }"
-            sort-by="orderDate"
-            :search="searchInvoice"
-            class="elevation-1"
-          >
+          <v-data-table :headers="headers" :items="listInvoice" :search="searchInvoice" sort-by="orderDate" class="elevation-1">
             <template v-slot:item.paymentMethod="{ item }">
               {{ item.paymentMethod == "creditCard" ? "บัตรเครดิต" : "เงินสด" }}
             </template>

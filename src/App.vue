@@ -12,7 +12,21 @@
           </div>
           <div v-else><i class="fa fa-indent" aria-hidden="true"></i></div>
         </v-app-bar-nav-icon>
-        <v-toolbar-title> </v-toolbar-title>
+        <v-toolbar-title></v-toolbar-title>
+        <v-spacer></v-spacer>
+        <v-col class="d-flex" sm="1">
+          <v-select
+            v-model="selectedLang"
+            :items="languages"
+            dense
+            @change="setLang()"
+          >
+            <template v-slot:item="{ item, index }">
+              <flag :iso="item.flag" /> {{ item.text }}
+            </template>
+          </v-select>
+        </v-col>
+        <v-spacer></v-spacer>
         <Header />
       </v-app-bar>
 
@@ -38,6 +52,11 @@ export default {
   },
   data: () => ({
     drawer: null,
+    selectedLang: "en",
+    languages: [
+      { flag: "us", value: "en", text: "EN" },
+      { flag: "th", value: "th", text: "TH" },
+    ],
   }),
   mounted: function () {
     if (this.$store.state.is_login == false) {
@@ -52,6 +71,11 @@ export default {
         }
       });
     }
+  },
+  methods: {
+    setLang() {
+      this.$i18n.locale = this.selectedLang;
+    },
   },
 };
 </script>
