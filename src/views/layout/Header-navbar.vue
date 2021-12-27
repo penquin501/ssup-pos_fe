@@ -1,5 +1,4 @@
 <template>
-
   <v-menu
     offset-y
     origin="center center"
@@ -21,8 +20,10 @@
           </v-list-item-avatar>
 
           <v-list-item-content>
-            <v-list-item-title>{{ $t('message.hello', { msg: 'hello' }) }}</v-list-item-title>
-            <v-list-item-subtitle>tesdddd</v-list-item-subtitle>
+            <v-list-item-title>{{
+              $t("message.hello", { msg: "hello" })
+            }}</v-list-item-title>
+            <v-list-item-subtitle>tesdddd123</v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -67,7 +68,7 @@ export default {
           click: (e) => {
             console.log(e);
             this.$store.commit("doLogout");
-            window.localStorage.removeItem('vuex');
+            window.localStorage.removeItem("vuex");
             // this.logout();
           },
         },
@@ -83,7 +84,7 @@ export default {
 }
 li {
   text-decoration: underline;
-  color: #459CE7;
+  color: #459ce7;
   cursor: pointer;
 }
 </style>

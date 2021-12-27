@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
-import About from '../views/About.vue'
 import Sale from '../views/Sale.vue'
 import Tools from '../views/Tools.vue'
 

@@ -87,6 +87,7 @@ export default {
       axios
         .post(this.url + "/api/login", this.loginForm)
         .then((res) => {
+          console.log(JSON.stringify(res.data.message));
           if (res.status == 201) {
             this.$store.commit("doLogin", JSON.stringify(res.data));
           } else {
