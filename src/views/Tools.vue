@@ -240,6 +240,7 @@ import dayjs from "dayjs";
 import moment from "moment";
 // import axios from 'axios';
 const dtFormat = "MM-DD-YYYY";
+const today = dayjs().format(dtFormat);
   export default {
     data () {
       return {
@@ -374,6 +375,7 @@ const dtFormat = "MM-DD-YYYY";
         selectedUpdatedData: "",
         currentVersionData: {},
         lastestVersionData: {},
+        listPromotion: [],
         currentPromotionData: [],
         lastestPromotionData: [],
         matchedVersion: false
@@ -540,48 +542,44 @@ const dtFormat = "MM-DD-YYYY";
         },
         getCurrentVersion () {
             this.currentPromotionData = [
-                    {
-                        type: 'Promotion',
-                        version: "1.0",
-                        updated_at: dayjs("12-01-2021").format(dtFormat),
-                        description: "O0"
-                    },
-                    {
-                        type: "Promotion",
-                        version: "0.9",
-                        updated_at: dayjs("12-02-2021").format(dtFormat),
-                        description: "A1"
-                    },
-                    {
-                        type: "Promotion",
-                        version: "1.8",
-                        updated_at: dayjs("12-03-2021").format(dtFormat),
-                        description: "B2"
-                    },
-                    {
-                        type: "Promotion",
-                        version: "0.7",
-                        updated_at: dayjs("12-04-2021").format(dtFormat),
-                        description: "C3"
-                    },
-                    {
-                        type: "Promotion",
-                        version: "0.6",
-                        updated_at: dayjs("12-05-2021").format(dtFormat),
-                        description: "D4"
-                    },
-                ];
-            var maxProObj = this.currentPromotionData[0];
-            for(let e of this.currentPromotionData) {
-                if (new Date(e.updated_at) > new Date(maxProObj.updated_at)) {    
-                    maxProObj = e;
-                }  
-                if(new Date(e.updated_at) == new Date(maxProObj.updated_at)) {
-                    if(e.version > maxProObj.version) {
-                        maxProObj = e;
-                    }
-                }
-            }
+                {
+                    type: 'Promotion',
+                    version: "1.0",
+                    updated_at: dayjs("12-01-2021").format(dtFormat),
+                    description: "O0"
+                },
+                {
+                    type: "Promotion",
+                    version: "1.0",
+                    updated_at: today,
+                    description: "A1"
+                },
+                {
+                    type: "Promotion",
+                    version: "0.9",
+                    updated_at: dayjs("12-02-2021").format(dtFormat),
+                    description: "A1"
+                },
+                {
+                    type: "Promotion",
+                    version: "1.8",
+                    updated_at: dayjs("12-03-2021").format(dtFormat),
+                    description: "B2"
+                },
+                {
+                    type: "Promotion",
+                    version: "0.7",
+                    updated_at: dayjs("12-04-2021").format(dtFormat),
+                    description: "C3"
+                },
+                {
+                    type: "Promotion",
+                    version: "0.6",
+                    updated_at: dayjs("12-05-2021").format(dtFormat),
+                    description: "D4"
+                },
+            ];
+            
             this.lastestVersion.push(
                 {
                     type: "Code",
@@ -590,97 +588,14 @@ const dtFormat = "MM-DD-YYYY";
                     description: "fix bug code1,change printer driver1,change printer driver1.1"
                 }
             );
-            this.lastestVersion.push(maxProObj);
+
+            this.findLastestPromotion();
 
             this.lastestVersion.forEach(e => {
                 e.updated_at = dayjs(e.updated_at).format(dtFormat);
             });
         },
-        checkVersion (item) {
-            this.dialogCheckVersion = true;
-            this.selectedUpdatedData = item.type;
-            this.currentVersionData = item; 
-            this.getVersion();
-            this.versionIndex = this.lastestVersion.indexOf(item);
-        },
-        getVersion () {
-            this.matchedVersion = false;
-            this.lastestVersionData = {};
-            this.lastestPromotionData = [];
-            //TODO: เรียก Api สำหรับ เช็ค version
-
-            if(this.selectedUpdatedData == 'Code') {
-                this.lastestVersionData = {
-                    type: "Code",
-                    version: "1.1",
-                    updated_at: dayjs().format(dtFormat),
-                    description: "fix bug code2,change printer driver2"
-                };
-            } else {
-                /**
-                 * TODO: 1.get list promo จาก api
-                 *       2.วนลูป check ว่า Pro ไหนที่เครื่องยังไม่มี
-                 *          2.1 ถ้า Proไหน ที่เครื่องยังไม่มีให้แสดงตาราง Pro
-                 *          2.2 ถ้ามี ครบแล้ว ให้ขึ้นข้อมูลว่า ข้อมูลครบแล้ว 
-                 */
-
-                var listPromotion = [
-                    {
-                        type: "Promotion",
-                        version: "1.0",
-                        updated_at: dayjs().format(dtFormat),
-                        description: "A1"
-                    },
-                    {
-                        type: "Promotion",
-                        version: "1.2",
-                        updated_at: dayjs().format(dtFormat),
-                        description: "B2"
-                    },
-                    {
-                        type: "Promotion",
-                        version: "1.3",
-                        updated_at: dayjs().format(dtFormat),
-                        description: "C3"
-                    },
-                    {
-                        type: "Promotion",
-                        version: "1.4",
-                        updated_at: dayjs().format(dtFormat),
-                        description: "D4"
-                    },
-                ];
-                var maxProObj = this.currentPromotionData[0];
-                for(let cPromo of this.currentPromotionData) {
-                    for(let lPromo of listPromotion) {
-                        if (new Date(lPromo.updated_at) > new Date(cPromo.updated_at)) {
-                            // maxProObj = lPromo;
-                            this.lastestPromotionData.push(lPromo);
-                        }  
-                        if (new Date(lPromo.updated_at) == new Date(cPromo.updated_at)) {    
-                            if(lPromo.version !== cPromo.version) {
-                                // maxProObj = lPromo;
-                                this.lastestPromotionData.push(lPromo);
-                            }
-                        }
-                    }
-                }
-                // this.lastestPromotionData.push(maxProObj);
-
-                this.lastestPromotionData.forEach(e => {
-                    e.updated_at = dayjs(e.updated_at).format(dtFormat);
-                });
-            }
-
-            if(this.selectedUpdatedData == 'Code' && this.currentVersionData.version == this.lastestVersionData.version) {
-                this.matchedVersion = true;
-                this.lastestVersionData = this.currentVersionData;
-            }
-        },
-        addPromo (promo) {
-            this.currentPromotionData.push(promo.item);
-            this.lastestVersion.splice(this.versionIndex, 1);
-
+        findLastestPromotion () {
             var maxProObj = this.currentPromotionData[0];
             for(let e of this.currentPromotionData) {
                 if (new Date(e.updated_at) > new Date(maxProObj.updated_at)) {    
@@ -692,21 +607,101 @@ const dtFormat = "MM-DD-YYYY";
                     }
                 }
             }
+
             this.lastestVersion.push(maxProObj);
+        },
+        checkVersion (item) {
+            this.dialogCheckVersion = true;
+            this.selectedUpdatedData = item.type;
+            this.currentVersionData = item; 
+            this.getVersion();
+            this.versionIndex = this.lastestVersion.indexOf(item);
+        },
+        getVersion () {       
+            //TODO: เรียก Api สำหรับ เช็ค version
+
+            if(this.selectedUpdatedData == 'Code') {
+                this.matchedVersion = false;
+                this.lastestVersionData = {};
+
+                this.lastestVersionData = {
+                    type: "Code",
+                    version: "1.1",
+                    updated_at: dayjs().format(dtFormat),
+                    description: "fix bug code2,change printer driver2"
+                };
+
+                if(this.selectedUpdatedData == 'Code' && this.currentVersionData.version == this.lastestVersionData.version) {
+                    this.matchedVersion = true;
+                    this.lastestVersionData = this.currentVersionData;
+                }
+            } else {
+                this.listPromotion = [
+                    {
+                        type: "Promotion",
+                        version: "1.0",
+                        updated_at: today,
+                        description: "A1"
+                    },
+                    {
+                        type: "Promotion",
+                        version: "1.2",
+                        updated_at: dayjs().add(1, 'day'),
+                        description: "B2"
+                    },
+                    {
+                        type: "Promotion",
+                        version: "1.3",
+                        updated_at: dayjs().add(2, 'day'),
+                        description: "C3"
+                    },
+                    {
+                        type: "Promotion",
+                        version: "1.4",
+                        updated_at: today,
+                        description: "D4"
+                    },
+                ];
+
+                this.checkCurrentPro();
+            }
+        },
+        checkCurrentPro() {
+            this.lastestPromotionData = [];
+            for(let lPromo of this.listPromotion) {
+                let checkCurrentPro = this.currentPromotionData.find(ele => dayjs(ele.updated_at).format(dtFormat) == dayjs(lPromo.updated_at).format(dtFormat) && ele.version == lPromo.version); //check pro ที่มีอยู่ก่อนแล้ว
+                if(checkCurrentPro == undefined) {
+                    if(dayjs(lPromo.updated_at) >= dayjs(today)) {
+                        this.lastestPromotionData.push(lPromo);
+                    }
+                }
+            }
+            
+            this.lastestPromotionData.forEach(e => {
+                e.updated_at = dayjs(e.updated_at).format(dtFormat);
+            });
+        },
+        addPromo (promo) {
+            this.currentPromotionData.push(promo.item);
+
+            this.checkCurrentPro();
+
+            //แสดงข้อมูลล่าสุดในตารางหลัก
+            this.lastestVersion.splice(this.versionIndex, 1);
+
+            this.findLastestPromotion();
 
             this.lastestVersion.forEach(e => {
                 e.updated_at = dayjs(e.updated_at).format(dtFormat);
             });
-            //TODO:วน check pro ปัจจุบัน 
         },
         updateVersion (selectType) {
-            // this.lastestVersion.splice(this.versionIndex, 1);
+            this.lastestVersion.splice(this.versionIndex, 1);
             this.overlay = true;
             this.dialogCheckVersion = false;
             this.progressing = 1;
 
             if(selectType == 'Code') {
-                this.lastestVersion.splice(this.versionIndex, 1);
                 setTimeout(() => {
                     this.progressing = 25;
                 }, 2000);
@@ -724,19 +719,33 @@ const dtFormat = "MM-DD-YYYY";
             } else {
                 setTimeout(() => {
                     this.progressing = 25;
+
+                    for(let lPromo of this.lastestPromotionData) {
+                        let checkCurrentPro = this.currentPromotionData.find(ele => dayjs(ele.updated_at).format(dtFormat) == dayjs(lPromo.updated_at).format(dtFormat) && ele.version == lPromo.version); //check pro ที่มีอยู่ก่อนแล้ว
+                        if(checkCurrentPro == undefined) {
+                            if(dayjs(lPromo.updated_at) >= dayjs(today)) {
+                                this.currentPromotionData.push(lPromo);
+                            }
+                        }
+                    }
                 }, 2000);
                 setTimeout(() => {
                     this.progressing = 50;
+
+                    this.checkCurrentPro();
+
                 }, 5000);
                 setTimeout(() => {
                     this.progressing = 75;
+
+                    this.findLastestPromotion();
+
                 }, 8000);
                 setTimeout(() => {
                     this.progressing = 100;
-                    // this.lastestVersion.push(this.lastestVersionData); 
-                    // this.lastestPromotionData
-
                     this.overlay = false;
+
+                    console.log(this.currentPromotionData);
                 }, 10000);
             }
         },
