@@ -65,6 +65,8 @@ export default {
           console.log(error);
         }
       });
+    } else {
+      this.$i18n.locale = this.selectedLang;
     }
   },
   methods: {

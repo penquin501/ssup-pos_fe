@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import VuexPersistence from 'vuex-persist'
-import vuexI18n from "vuex-i18n";
 
 Vue.use(Vuex)
 

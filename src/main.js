@@ -11,6 +11,11 @@ import FlagIcon from 'vue-flag-icon';
 import VueI18n from 'vue-i18n'
 import i18n from './i18n'
 
+import dayjs from "dayjs";
+import moment from "moment";
+
+import 'dayjs/locale/th'
+
 Vue.config.productionTip = false
 Vue.use(VueI18n)
 Vue.use(BootstrapVue)
@@ -20,6 +25,8 @@ Vue.use(FlagIcon)
 new Vue({
   router,
   store,
+  dayjs,
+  moment,
   vuetify,
   i18n,
   render: function (h) { return h(App) }
