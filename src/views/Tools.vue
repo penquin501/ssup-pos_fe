@@ -32,17 +32,6 @@
                                     </v-card-actions>
                                 </v-card>
                             </v-dialog>
-                            <!-- <v-dialog v-model="dialogDelete" max-width="500px" persistent>
-                                <v-card>
-                                    <v-card-title class="text-h5">Are you sure you want to delete this item?</v-card-title>
-                                    <v-card-actions>
-                                        <v-spacer></v-spacer>
-                                        <v-btn color="blue darken-1" text @click="closeDelete">Cancel</v-btn>
-                                        <v-btn color="blue darken-1" text @click="deleteItemConfirm">OK</v-btn>
-                                        <v-spacer></v-spacer>
-                                    </v-card-actions>
-                                </v-card>
-                            </v-dialog> -->
                             </v-toolbar>
                         </template>
                         <template v-slot:item.actions="{ item }">
@@ -100,12 +89,158 @@
                         </b-card-body>
                     </b-card>
                 </b-tab>
+                <b-tab title="Test Equipment">
+                    <b-row style="text-align: center;">
+                        <b-col sm="3">
+                            <b-img center style="width: 150px;" src="img/setting/etc.png"></b-img>
+                        </b-col>
+                        <b-col sm="3">
+                            <b-img center style="width: 150px;" src="img/setting/webcam.png"></b-img>
+                        </b-col>
+                        <b-col sm="3">
+                            <b-img center style="width: 150px;" src="img/setting/printer.png"></b-img>
+                        </b-col>
+                        <b-col sm="3">
+                            <b-img center style="width: 150px;" src="img/setting/fingerscan.png"></b-img>
+                        </b-col>
+                    </b-row>
+                    <b-row style="text-align: center;">
+                        <b-col sm="3">
+                            <b-button class="form-control" @click.prevent="selectEquip('etc')">ETC</b-button>
+                        </b-col>
+                        <b-col sm="3">
+                            <b-button class="form-control" @click.prevent="selectEquip('webcam')">WEB CAM</b-button>
+                        </b-col>
+                        <b-col sm="3">
+                            <b-button class="form-control" @click.prevent="selectEquip('printer')">PRINTER</b-button>
+                        </b-col>
+                        <b-col sm="3">
+                            <b-button class="form-control" @click.prevent="selectEquip('fingerscan')">FINGER SCAN</b-button>
+                        </b-col>
+                    </b-row>
+                    <v-dialog v-model="dialogIp" max-width="800px" :retain-focus="false" persistent>
+                        <v-card style="background-color: white; color: black; width: 200vw; height: auto; margin: 0;">
+                            <b-card-header><v-icon>mdi-server</v-icon> IP Address</b-card-header>
+                            <v-card-text>
+                                <v-container>
+                                    <b-form-input v-model="ipAddress" placeholder="Enter your IP Address"></b-form-input>
+                                </v-container>
+                                <v-container v-if="responseCheckEquip.length !== 0">
+                                    <v-card style="height: 200px; overflow-y: auto;">
+                                        <v-card-text>
+                                            <li v-for="(value, index) in responseCheckEquip" :key="index">{{ value }}</li>
+                                        </v-card-text>
+                                    </v-card>
+                                </v-container>
+                            </v-card-text>
+                            <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn color="blue darken-1" text @click.prevent="closeCheckStatus()">Cancel</v-btn>
+                                <v-btn color="blue darken-1" class="ma-2" :loading="loadingStatus" :disabled="loadingStatus" text @click.prevent="checkStatusEquip()">Send
+                                    <template v-slot:loader>
+                                        <span>Loading...</span>
+                                    </template>
+                                </v-btn>
+                            </v-card-actions>
+                        </v-card>
+                    </v-dialog>
+                </b-tab>
+                <b-tab title="Update Data">
+                    <v-data-table :headers="headersVersion" :items="lastestVersion" sort-by="type" class="elevation-1">
+                        <template v-slot:item.index="{ item, index }">
+                            {{ index + 1 }}
+                        </template>
+                        <template v-slot:item.type="{ item }">
+                            {{ item.type }}({{item.version}})
+                        </template>
+                        <!-- <template v-slot:item.updated_at="{ item }">
+                            {{ $dayjs(item.updated_at).format('DD-MM-YYYY') }}
+                        </template> -->
+                        <template v-slot:top>
+                            <v-toolbar flat>
+                                <v-toolbar-title>Updated Data</v-toolbar-title>
+                                <v-divider class="mx-4" inset vertical></v-divider>
+                                <v-spacer></v-spacer>
+                                <!-- <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details></v-text-field> -->
+                            </v-toolbar>
+                        </template>
+                        <template v-slot:item.actions="{ item }">
+                            <v-icon class="mr-2" @click.prevent="checkVersion(item)">mdi-package-down</v-icon>
+                            <v-dialog v-model="dialogCheckVersion" max-width="800px" :retain-focus="false" persistent>
+                                <v-card v-if="selectedUpdatedData == 'Code'" style="background-color: white; color: black; width: 200vw; height: auto; margin: 0;">
+                                    <v-card-title>Check Code Version</v-card-title>
+                                    <v-card-text>
+                                        <v-container>
+                                            <p>Version: {{ lastestVersionData.version }}</p>
+                                            <p>Updated at: {{ lastestVersionData.updated_at }}</p>
+                                            <p>Description:</p>
+                                            <li v-for="(value, index) in lastestVersionData.description.split(',')" :key="index">{{ value }}</li>
+                                        </v-container>
+                                    </v-card-text>
+                                    <v-card-actions>
+                                        <v-spacer></v-spacer>
+                                        <v-btn color="blue darken-1" text @click.prevent="closeDialogCheckVersion()">Cancel</v-btn>
+
+                                        <v-btn color="blue darken-1" v-if="matchedVersion !== false" text @click.prevent="updateVersion('Code')" disabled>Update</v-btn>
+                                        <v-btn color="blue darken-1" v-else text @click.prevent="updateVersion('Code')">Update</v-btn>
+                                    </v-card-actions>
+                                </v-card>
+
+                                <v-card v-if="selectedUpdatedData == 'Promotion'" style="background-color: white; color: black; width: 200vw; height: auto; margin: 0;">
+                                    <v-card-title>Check Promotion Version</v-card-title>
+                                    <v-card-text>
+                                        <v-container>
+                                            <b-table v-if="lastestPromotionData.length !== 0" :items="lastestPromotionData" :fields="headersPromotion" >
+                                                <template #cell(name)="row" style="text-align: center;">
+                                                    {{ row.item.version }}
+                                                </template>
+                                                <template #cell(actions)="row" style="text-align: center;">
+                                                    <v-btn color="blue darken-1" text @click.prevent="addPromo(row)">Update</v-btn>
+                                                </template>
+                                            </b-table>
+                                        </v-container>
+                                    </v-card-text>
+                                    <v-card-actions>
+                                        <v-spacer></v-spacer>
+                                        <v-btn color="blue darken-1" text @click.prevent="closeDialogCheckVersion()">Cancel</v-btn>
+
+                                        <v-btn v-if="lastestPromotionData.length == 0" color="blue darken-1" text @click.prevent="updateVersion('pro')" disabled>Update All Promotion</v-btn>
+                                        <v-btn v-else color="blue darken-1" text @click.prevent="updateVersion('pro')">Update All Promotion</v-btn>
+ 
+                                        <!--<v-btn v-if="lastestPromotionData.length == 0" color="blue darken-1" text @click.prevent="updatePromoVersion('list')" disabled>List Promo</v-btn>
+                                        <v-btn v-else color="blue darken-1" text @click.prevent="updatePromoVersion('list')" >List Promo</v-btn> -->
+                                    </v-card-actions>
+                                </v-card>
+                            </v-dialog>
+                            <v-overlay :absolute="absolute" :opacity="opacity" :value="overlay" style="height: 100vh;">
+                                <b-card style="background-color: white; width: 50vw; margin: 0;">
+                                    <b-card-body class="text-right">
+                                        <v-progress-linear indeterminate v-model="progressing" height="25"><strong>{{ Math.ceil(progressing) }}%</strong></v-progress-linear>
+                                    </b-card-body>
+                                </b-card>
+                            </v-overlay>
+                        </template>
+                    </v-data-table>
+                </b-tab>
+                <!-- <b-tab title="Hardware Logs">
+                </b-tab> -->
+                <!-- <b-tab title="Invoice Templates">
+                </b-tab> -->
+                <!-- <b-tab title="Software Logs">
+                </b-tab> -->
+                <!-- <b-tab title="History">
+                </b-tab> -->
             </b-tabs>
       </b-card>
   </div>
 </template>
 
 <script>
+import dayjs from "dayjs";
+import moment from "moment";
+// import axios from 'axios';
+const dtFormat = "MM-DD-YYYY";
+const today = dayjs().format(dtFormat);
   export default {
     data () {
       return {
@@ -113,6 +248,11 @@
         listUserPermission: [],
         headers: [
           { key: 'name', label: 'Topic' },
+          { key: 'actions', label: 'Actions' }
+        ],
+        headersPromotion: [
+          { key: 'name', label: 'Promotion Name' },
+          { key: 'updated_at', label: `Updated at(${dtFormat})` },
           { key: 'actions', label: 'Actions' }
         ],
         listPermission: [
@@ -136,6 +276,8 @@
         userInfo: {},
         lKey: [],
         dialog: false,
+        dialogIp: false,
+        dialogCheckVersion: false,
         headersUser: [
             {
                 text: 'Name',
@@ -193,6 +335,7 @@
             },
         ],
         editedIndex: -1,
+        versionIndex: -1,
         userRoles: true,
         purchaseCode: "",
         progressing: 0,
@@ -213,6 +356,29 @@
         absolute: true,
         opacity: 1,
         overlay: false,
+        loadingStatus: false,
+        responseCheckEquip: [],
+        equipType: "",
+        ipAddress: "",
+        headersVersion: [
+            { text: 'No.', value: 'index' },
+            {
+                text: 'Type',
+                align: 'start',
+                sortable: true,
+                value: 'type',
+            },
+            { text: `Lastest Date(${dtFormat})`, value: 'updated_at' },
+            { text: 'Actions', value: 'actions' },
+        ],
+        lastestVersion: [],
+        selectedUpdatedData: "",
+        currentVersionData: {},
+        lastestVersionData: {},
+        listPromotion: [],
+        currentPromotionData: [],
+        lastestPromotionData: [],
+        matchedVersion: false
       }
     },
     mounted: function () {
@@ -231,6 +397,7 @@
 
             this.listUser = this.$store.state.listUser.length == 0? this.listUser: this.$store.state.listUser;
             this.setListUserToStore();
+            this.getCurrentVersion();
         }
     },
     methods: {
@@ -316,6 +483,14 @@
         close () {
             this.dialog = false;
         },
+        closeCheckStatus () {
+            this.loadingStatus = false;
+            this.responseCheckEquip = [];
+            this.dialogIp = false;
+        },
+        closeDialogCheckVersion () {
+            this.dialogCheckVersion = false;
+        },
         getShopInfo() {
             this.overlay = true;
             this.progressing = 1;
@@ -346,6 +521,233 @@
                 }); 
                 this.overlay = false;
             }, 10000);
+        },
+        selectEquip(type) {
+            this.equipType = type;
+            this.dialogIp = true;
+            this.responseCheckEquip = [];
+        },
+        checkStatusEquip() {
+            this.loadingStatus = true;
+            let count = 0;
+            this.responseCheckEquip = [];
+            var result = setInterval(() => {
+                count++;
+                if(count >= 10) {
+                    clearInterval(result);
+                    this.loadingStatus = false;
+                }
+                this.responseCheckEquip.push(count);
+            }, 1000);
+        },
+        getCurrentVersion () {
+            this.currentPromotionData = [
+                {
+                    type: 'Promotion',
+                    version: "1.0",
+                    updated_at: dayjs("12-01-2021").format(dtFormat),
+                    description: "O0"
+                },
+                {
+                    type: "Promotion",
+                    version: "1.0",
+                    updated_at: today,
+                    description: "A1"
+                },
+                {
+                    type: "Promotion",
+                    version: "0.9",
+                    updated_at: dayjs("12-02-2021").format(dtFormat),
+                    description: "A1"
+                },
+                {
+                    type: "Promotion",
+                    version: "1.8",
+                    updated_at: dayjs("12-03-2021").format(dtFormat),
+                    description: "B2"
+                },
+                {
+                    type: "Promotion",
+                    version: "0.7",
+                    updated_at: dayjs("12-04-2021").format(dtFormat),
+                    description: "C3"
+                },
+                {
+                    type: "Promotion",
+                    version: "0.6",
+                    updated_at: dayjs("12-05-2021").format(dtFormat),
+                    description: "D4"
+                },
+            ];
+            
+            this.lastestVersion.push(
+                {
+                    type: "Code",
+                    version: "1.0",
+                    updated_at: dayjs("12-11-2021").format(dtFormat),
+                    description: "fix bug code1,change printer driver1,change printer driver1.1"
+                }
+            );
+
+            this.findLastestPromotion();
+
+            this.lastestVersion.forEach(e => {
+                e.updated_at = dayjs(e.updated_at).format(dtFormat);
+            });
+        },
+        findLastestPromotion () {
+            var maxProObj = this.currentPromotionData[0];
+            for(let e of this.currentPromotionData) {
+                if (new Date(e.updated_at) > new Date(maxProObj.updated_at)) {    
+                    maxProObj = e;
+                }  
+                if(new Date(e.updated_at) == new Date(maxProObj.updated_at)) {
+                    if(e.version > maxProObj.version) {
+                        maxProObj = e;
+                    }
+                }
+            }
+
+            this.lastestVersion.push(maxProObj);
+        },
+        checkVersion (item) {
+            this.dialogCheckVersion = true;
+            this.selectedUpdatedData = item.type;
+            this.currentVersionData = item; 
+            this.getVersion();
+            this.versionIndex = this.lastestVersion.indexOf(item);
+        },
+        getVersion () {       
+            //TODO: เรียก Api สำหรับ เช็ค version
+
+            if(this.selectedUpdatedData == 'Code') {
+                this.matchedVersion = false;
+                this.lastestVersionData = {};
+
+                this.lastestVersionData = {
+                    type: "Code",
+                    version: "1.1",
+                    updated_at: dayjs().format(dtFormat),
+                    description: "fix bug code2,change printer driver2"
+                };
+
+                if(this.selectedUpdatedData == 'Code' && this.currentVersionData.version == this.lastestVersionData.version) {
+                    this.matchedVersion = true;
+                    this.lastestVersionData = this.currentVersionData;
+                }
+            } else {
+                this.listPromotion = [
+                    {
+                        type: "Promotion",
+                        version: "1.0",
+                        updated_at: today,
+                        description: "A1"
+                    },
+                    {
+                        type: "Promotion",
+                        version: "1.2",
+                        updated_at: dayjs().add(1, 'day'),
+                        description: "B2"
+                    },
+                    {
+                        type: "Promotion",
+                        version: "1.3",
+                        updated_at: dayjs().add(2, 'day'),
+                        description: "C3"
+                    },
+                    {
+                        type: "Promotion",
+                        version: "1.4",
+                        updated_at: today,
+                        description: "D4"
+                    },
+                ];
+
+                this.checkCurrentPro();
+            }
+        },
+        checkCurrentPro() {
+            this.lastestPromotionData = [];
+            for(let lPromo of this.listPromotion) {
+                let checkCurrentPro = this.currentPromotionData.find(ele => dayjs(ele.updated_at).format(dtFormat) == dayjs(lPromo.updated_at).format(dtFormat) && ele.version == lPromo.version); //check pro ที่มีอยู่ก่อนแล้ว
+                if(checkCurrentPro == undefined) {
+                    if(dayjs(lPromo.updated_at) >= dayjs(today)) {
+                        this.lastestPromotionData.push(lPromo);
+                    }
+                }
+            }
+            
+            this.lastestPromotionData.forEach(e => {
+                e.updated_at = dayjs(e.updated_at).format(dtFormat);
+            });
+        },
+        addPromo (promo) {
+            this.currentPromotionData.push(promo.item);
+
+            this.checkCurrentPro();
+
+            //แสดงข้อมูลล่าสุดในตารางหลัก
+            this.lastestVersion.splice(this.versionIndex, 1);
+
+            this.findLastestPromotion();
+
+            this.lastestVersion.forEach(e => {
+                e.updated_at = dayjs(e.updated_at).format(dtFormat);
+            });
+        },
+        updateVersion (selectType) {
+            this.lastestVersion.splice(this.versionIndex, 1);
+            this.overlay = true;
+            this.dialogCheckVersion = false;
+            this.progressing = 1;
+
+            if(selectType == 'Code') {
+                setTimeout(() => {
+                    this.progressing = 25;
+                }, 2000);
+                setTimeout(() => {
+                    this.progressing = 50;
+                }, 5000);
+                setTimeout(() => {
+                    this.progressing = 75;
+                }, 8000);
+                setTimeout(() => {
+                    this.progressing = 100;
+                    this.lastestVersion.push(this.lastestVersionData); 
+                    this.overlay = false;
+                }, 10000);
+            } else {
+                setTimeout(() => {
+                    this.progressing = 25;
+
+                    for(let lPromo of this.lastestPromotionData) {
+                        let checkCurrentPro = this.currentPromotionData.find(ele => dayjs(ele.updated_at).format(dtFormat) == dayjs(lPromo.updated_at).format(dtFormat) && ele.version == lPromo.version); //check pro ที่มีอยู่ก่อนแล้ว
+                        if(checkCurrentPro == undefined) {
+                            if(dayjs(lPromo.updated_at) >= dayjs(today)) {
+                                this.currentPromotionData.push(lPromo);
+                            }
+                        }
+                    }
+                }, 2000);
+                setTimeout(() => {
+                    this.progressing = 50;
+
+                    this.checkCurrentPro();
+
+                }, 5000);
+                setTimeout(() => {
+                    this.progressing = 75;
+
+                    this.findLastestPromotion();
+
+                }, 8000);
+                setTimeout(() => {
+                    this.progressing = 100;
+                    this.overlay = false;
+
+                    console.log(this.currentPromotionData);
+                }, 10000);
+            }
         },
     },
   }
