@@ -25,7 +25,9 @@ npm i vue-flag-icon
 ```
 
 ### install moment
+```
 npm install --save moment
+```
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
