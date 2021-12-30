@@ -27,7 +27,7 @@
                                     </v-card-text>
                                     <v-card-actions>
                                         <v-spacer></v-spacer>
-                                        <v-btn color="blue darken-1" text @click.prevent="close()">Cancel</v-btn>
+                                        <v-btn color="blue darken-1" text @click.prevent="dialog = false">Cancel</v-btn>
                                         <v-btn color="blue darken-1" text @click.prevent="savePermission()">Save</v-btn>
                                     </v-card-actions>
                                 </v-card>
@@ -106,7 +106,7 @@
                     </b-row>
                     <b-row style="text-align: center;">
                         <b-col sm="3">
-                            <b-button class="form-control" @click.prevent="selectEquip('etc')">ETC</b-button>
+                            <b-button class="form-control" @click.prevent="selectEquip('edc')">EDC</b-button>
                         </b-col>
                         <b-col sm="3">
                             <b-button class="form-control" @click.prevent="selectEquip('webcam')">WEB CAM</b-button>
@@ -153,15 +153,11 @@
                         <template v-slot:item.type="{ item }">
                             {{ item.type }}({{item.version}})
                         </template>
-                        <!-- <template v-slot:item.updated_at="{ item }">
-                            {{ $dayjs(item.updated_at).format('DD-MM-YYYY') }}
-                        </template> -->
                         <template v-slot:top>
                             <v-toolbar flat>
                                 <v-toolbar-title>Updated Data</v-toolbar-title>
                                 <v-divider class="mx-4" inset vertical></v-divider>
                                 <v-spacer></v-spacer>
-                                <!-- <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details></v-text-field> -->
                             </v-toolbar>
                         </template>
                         <template v-slot:item.actions="{ item }">
@@ -179,7 +175,7 @@
                                     </v-card-text>
                                     <v-card-actions>
                                         <v-spacer></v-spacer>
-                                        <v-btn color="blue darken-1" text @click.prevent="closeDialogCheckVersion()">Cancel</v-btn>
+                                        <v-btn color="blue darken-1" text @click.prevent="dialogCheckVersion = false">Cancel</v-btn>
 
                                         <v-btn color="blue darken-1" v-if="matchedVersion !== false" text @click.prevent="updateVersion('Code')" disabled>Update</v-btn>
                                         <v-btn color="blue darken-1" v-else text @click.prevent="updateVersion('Code')">Update</v-btn>
@@ -202,7 +198,7 @@
                                     </v-card-text>
                                     <v-card-actions>
                                         <v-spacer></v-spacer>
-                                        <v-btn color="blue darken-1" text @click.prevent="closeDialogCheckVersion()">Cancel</v-btn>
+                                        <v-btn color="blue darken-1" text @click.prevent="dialogCheckVersion = false">Cancel</v-btn>
 
                                         <v-btn v-if="lastestPromotionData.length == 0" color="blue darken-1" text @click.prevent="updateVersion('pro')" disabled>Update All Promotion</v-btn>
                                         <v-btn v-else color="blue darken-1" text @click.prevent="updateVersion('pro')">Update All Promotion</v-btn>
@@ -222,7 +218,83 @@
                         </template>
                     </v-data-table>
                 </b-tab>
-                <!-- <b-tab title="Hardware Logs">
+                <b-tab title="Hardware Logs">
+                    <v-data-table :headers="headersHardwareLogs" :items="hardwareLogsItems" sort-by="serialNo" sort-desc class="elevation-1">
+                        <template v-slot:top>
+                        <v-toolbar flat >
+                            <v-toolbar-title>Hardware Logs</v-toolbar-title>
+                            <v-divider class="mx-4" inset vertical></v-divider>
+                            <v-spacer></v-spacer>
+                            <v-dialog v-model="dialogAddHardware" max-width="500px" persistent>
+                                <template v-slot:activator="{ on, attrs }">
+                                    <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">New</v-btn>
+                                </template>
+                                
+                                <v-card style="width: 200vw;">
+                                    <b-form>
+                                        <v-card-title style="background-color: #ffc478; color: #393e46;">Add New Hardware</v-card-title>
+                                        <v-card-text>
+                                            <label>Hardware Name</label>
+                                            <b-form-input v-model="formHardwareInfo.hwName" placeholder="" required></b-form-input>
+
+                                            <label>Serial No</label>
+                                            <b-form-input v-model="formHardwareInfo.serialNo" placeholder="" required></b-form-input>
+
+                                            <label>Brand</label>
+                                            <b-form-input v-model="formHardwareInfo.brand" placeholder="" required></b-form-input>
+
+                                            <label>Group</label>
+                                            <!-- <b-form-input v-model="formHardwareInfo.group" placeholder="" required></b-form-input> -->
+                                            <v-select style="text-align: center; height: 60px" :items="optionsGroup" v-model="formHardwareInfo.group" dense outlined></v-select>
+
+                                            <label>Spec</label>
+                                            <b-form-input v-model="formHardwareInfo.spec" placeholder="" required></b-form-input>
+                                            
+                                            <label>วันที่ทำรายการ</label>
+                                            <b-form-datepicker id="example-datepicker" v-model="formHardwareInfo.registerDate" :locale="$i18n.locale" required class="mb-2"></b-form-datepicker>
+                                        </v-card-text>
+                                        <v-card-actions>
+                                            <v-spacer></v-spacer>
+                                            <v-btn color="blue darken-1" text @click.prevent="dialogAddHardware=false">Cancel</v-btn>
+                                            <v-btn type="submit" @click.prevent="saveHardwareInfo" color="blue darken-1" text>Save</v-btn>
+                                        </v-card-actions>
+                                    </b-form>
+                                </v-card>
+                            </v-dialog>
+
+                            <v-dialog v-model="dialogConfirmStatus" style="height: 200vh;" persistent>
+                                <v-card style="background-color: white; color: black; width: 50vw; height: auto; margin: 0;">
+                                    <v-card-title class="text-h5">ต้องการ {{ displayHardware }} ใช่หรือไม่?</v-card-title>
+                                    <v-card-text v-if="listDevice.length > 1">
+                                        <v-radio-group v-if="selectedHardware.status" v-model="selectedDevice">
+                                            กรุณาเลือก อุปกรณ์
+                                            <v-radio v-for="device in listDevice" :key="device.id" :label="`${device.hwName} (${device.serialNo})`" :value="device" ></v-radio>
+                                        </v-radio-group>
+                                    </v-card-text>
+                                    <v-card-text v-else>
+                                        ไม่สามารถปิด อุปกรณ์นี้ได้ เนื่องจาก ไม่มีอุปกรณ์อื่นมาใช้งานแทน
+                                    </v-card-text>
+                                    <v-card-actions>
+                                        <v-spacer></v-spacer>
+                                        <v-btn color="blue darken-1" text @click.prevent="dialogConfirmStatus=false">Cancel</v-btn>
+                                        <v-btn color="blue darken-1" text v-if="listDevice.length > 1" @click.prevent="confirmHardwareStatus()" >OK</v-btn>
+                                        <v-btn color="blue darken-1" text v-else @click.prevent="confirmHardwareStatus()" disabled>OK</v-btn>
+                                        <v-spacer></v-spacer>
+                                    </v-card-actions>
+                                </v-card>
+                            </v-dialog>
+                        </v-toolbar>
+                        </template>
+                        <template v-slot:item.status="{ item }">
+                            <v-icon small class="mr-2" v-if="item.status" style="color: green;">mdi-checkbox-blank-circle</v-icon>
+                            <v-icon small class="mr-2" v-else style="color: red;">mdi-checkbox-blank-circle</v-icon>
+                        </template>
+                        <template v-slot:item.actions="{ item }">
+                            <v-icon small class="mr-2" @click.prevent="changeHardwareStatus(item)">mdi-pencil</v-icon>
+                        </template>
+                    </v-data-table>
+                </b-tab>
+                <!-- <b-tab title="User Tree">
                 </b-tab> -->
                 <!-- <b-tab title="Invoice Templates">
                 </b-tab> -->
@@ -241,6 +313,7 @@ import moment from "moment";
 // import axios from 'axios';
 const dtFormat = "MM-DD-YYYY";
 const today = dayjs().format(dtFormat);
+
   export default {
     data () {
       return {
@@ -254,6 +327,20 @@ const today = dayjs().format(dtFormat);
           { key: 'name', label: 'Promotion Name' },
           { key: 'updated_at', label: `Updated at(${dtFormat})` },
           { key: 'actions', label: 'Actions' }
+        ],
+        headersHardwareLogs: [
+        //   { value: 'hwId', text: 'Hardware Id' },
+          { value: 'hwName', text: 'Hardware Name' },
+          { value: 'serialNo', text: 'Serial Number' },
+          { value: 'brand', text: 'Brand' },
+        //   { value: 'shopId', text: 'Shop Id' },
+          { value: 'spec', text: 'Spec' },
+          { value: 'group', text: 'Hardware Group' },
+        //   { value: 'ipAddress', text: 'Hardware IP' },
+          { value: 'registerDate', text: 'Register Date' },
+          { value: 'expiredDate', text: 'Expired Date' },
+          { value: 'status', text: 'Status' },
+          { value: 'actions', text: 'Actions' }
         ],
         listPermission: [
           { name: 'Dashboard', selected: [] },
@@ -278,6 +365,8 @@ const today = dayjs().format(dtFormat);
         dialog: false,
         dialogIp: false,
         dialogCheckVersion: false,
+        dialogAddHardware: false,
+        dialogConfirmStatus: false,
         headersUser: [
             {
                 text: 'Name',
@@ -378,7 +467,31 @@ const today = dayjs().format(dtFormat);
         listPromotion: [],
         currentPromotionData: [],
         lastestPromotionData: [],
-        matchedVersion: false
+        matchedVersion: false,
+        hardwareLogsItems: [],
+        formHardwareInfo: {
+                hwId: '',
+                hwName: '',
+                serialNo: Math.floor(Math.random() * 1000000000)+1,
+                brand: '',
+                shopId: '',
+                group: 'EDC',
+                ipAddress: '',
+                spec: '',
+                registerDate: dayjs().format("YYYY-MM-DD"),
+                expiredDate: '',
+                status: true,
+            },
+        displayHardware: '',
+        selectedHardware: null,
+        optionsGroup: [
+          { value: 'EDC', text: 'EDC' },
+          { value: 'PRINTER', text: 'PRINTER' },
+          { value: 'FINGERSCAN', text: 'FINGERSCAN' },
+          { value: 'WEBCAM', text: 'WEBCAM' }
+        ],
+        listDevice: [],
+        selectedDevice: ''
       }
     },
     mounted: function () {
@@ -398,6 +511,7 @@ const today = dayjs().format(dtFormat);
             this.listUser = this.$store.state.listUser.length == 0? this.listUser: this.$store.state.listUser;
             this.setListUserToStore();
             this.getCurrentVersion();
+            this.getHardwareInfo();
         }
     },
     methods: {
@@ -480,16 +594,10 @@ const today = dayjs().format(dtFormat);
             this.setListMenuPermission(item);
             this.dialog = true;
         },
-        close () {
-            this.dialog = false;
-        },
         closeCheckStatus () {
             this.loadingStatus = false;
             this.responseCheckEquip = [];
             this.dialogIp = false;
-        },
-        closeDialogCheckVersion () {
-            this.dialogCheckVersion = false;
         },
         getShopInfo() {
             this.overlay = true;
@@ -590,13 +698,10 @@ const today = dayjs().format(dtFormat);
             );
 
             this.findLastestPromotion();
-
-            this.lastestVersion.forEach(e => {
-                e.updated_at = dayjs(e.updated_at).format(dtFormat);
-            });
         },
         findLastestPromotion () {
             var maxProObj = this.currentPromotionData[0];
+
             for(let e of this.currentPromotionData) {
                 if (new Date(e.updated_at) > new Date(maxProObj.updated_at)) {    
                     maxProObj = e;
@@ -609,6 +714,10 @@ const today = dayjs().format(dtFormat);
             }
 
             this.lastestVersion.push(maxProObj);
+
+            this.lastestVersion.forEach(e => {
+                e.updated_at = dayjs(e.updated_at).format(dtFormat);
+            });
         },
         checkVersion (item) {
             this.dialogCheckVersion = true;
@@ -618,12 +727,11 @@ const today = dayjs().format(dtFormat);
             this.versionIndex = this.lastestVersion.indexOf(item);
         },
         getVersion () {       
-            //TODO: เรียก Api สำหรับ เช็ค version
-
             if(this.selectedUpdatedData == 'Code') {
                 this.matchedVersion = false;
                 this.lastestVersionData = {};
 
+                //TODO: เรียก Api สำหรับ เช็ค version
                 this.lastestVersionData = {
                     type: "Code",
                     version: "1.1",
@@ -636,6 +744,7 @@ const today = dayjs().format(dtFormat);
                     this.lastestVersionData = this.currentVersionData;
                 }
             } else {
+                //TODO: เรียก Api สำหรับ เช็ค version
                 this.listPromotion = [
                     {
                         type: "Promotion",
@@ -669,7 +778,9 @@ const today = dayjs().format(dtFormat);
         checkCurrentPro() {
             this.lastestPromotionData = [];
             for(let lPromo of this.listPromotion) {
-                let checkCurrentPro = this.currentPromotionData.find(ele => dayjs(ele.updated_at).format(dtFormat) == dayjs(lPromo.updated_at).format(dtFormat) && ele.version == lPromo.version); //check pro ที่มีอยู่ก่อนแล้ว
+                let checkCurrentPro = this.currentPromotionData.find(
+                    ele => dayjs(ele.updated_at).format(dtFormat) == dayjs(lPromo.updated_at).format(dtFormat) && ele.version == lPromo.version
+                ); //check pro ที่มีอยู่ก่อนแล้ว
                 if(checkCurrentPro == undefined) {
                     if(dayjs(lPromo.updated_at) >= dayjs(today)) {
                         this.lastestPromotionData.push(lPromo);
@@ -683,17 +794,11 @@ const today = dayjs().format(dtFormat);
         },
         addPromo (promo) {
             this.currentPromotionData.push(promo.item);
-
             this.checkCurrentPro();
 
             //แสดงข้อมูลล่าสุดในตารางหลัก
             this.lastestVersion.splice(this.versionIndex, 1);
-
             this.findLastestPromotion();
-
-            this.lastestVersion.forEach(e => {
-                e.updated_at = dayjs(e.updated_at).format(dtFormat);
-            });
         },
         updateVersion (selectType) {
             this.lastestVersion.splice(this.versionIndex, 1);
@@ -721,7 +826,9 @@ const today = dayjs().format(dtFormat);
                     this.progressing = 25;
 
                     for(let lPromo of this.lastestPromotionData) {
-                        let checkCurrentPro = this.currentPromotionData.find(ele => dayjs(ele.updated_at).format(dtFormat) == dayjs(lPromo.updated_at).format(dtFormat) && ele.version == lPromo.version); //check pro ที่มีอยู่ก่อนแล้ว
+                        let checkCurrentPro = this.currentPromotionData.find(
+                            ele => dayjs(ele.updated_at).format(dtFormat) == dayjs(lPromo.updated_at).format(dtFormat) && ele.version == lPromo.version
+                        ); //check pro ที่มีอยู่ก่อนแล้ว
                         if(checkCurrentPro == undefined) {
                             if(dayjs(lPromo.updated_at) >= dayjs(today)) {
                                 this.currentPromotionData.push(lPromo);
@@ -733,26 +840,189 @@ const today = dayjs().format(dtFormat);
                     this.progressing = 50;
 
                     this.checkCurrentPro();
-
                 }, 5000);
                 setTimeout(() => {
                     this.progressing = 75;
 
                     this.findLastestPromotion();
-
                 }, 8000);
                 setTimeout(() => {
                     this.progressing = 100;
                     this.overlay = false;
 
-                    console.log(this.currentPromotionData);
+                    console.log(this.currentPromotionData);//for debug
                 }, 10000);
             }
         },
+        getHardwareInfo() {
+            this.hardwareLogsItems =[{
+                    hwId: 1,
+                    hwName: 'Brothers',
+                    serialNo: Math.floor(Math.random() * 1000000000)+1,
+                    brand: 'op',
+                    shopId: 37,
+                    group: 'PRINTER',
+                    ipAddress: '10.0.0.1',
+                    spec: '1.0',
+                    registerDate: dayjs().add(-2, 'day').format(dtFormat),
+                    expiredDate: '',
+                    status: true,
+                },
+                {
+                    hwId: 2,
+                    hwName: 'EDC',
+                    serialNo: Math.floor(Math.random() * 1000000000)+1,
+                    brand: 'op',
+                    shopId: 37,
+                    group: 'EDC',
+                    ipAddress: '10.0.0.2',
+                    spec: '1.0',
+                    registerDate: dayjs().add(-2, 'day').format(dtFormat),
+                    expiredDate: '',
+                    status: true,
+                },
+                {
+                    hwId: 3,
+                    hwName: 'Beacon',
+                    serialNo: Math.floor(Math.random() * 1000000000)+1,
+                    brand: 'op',
+                    shopId: 37,
+                    group: 'FINGERSCAN',
+                    ipAddress: '10.0.0.3',
+                    spec: '1.0',
+                    registerDate: dayjs().add(-2, 'day').format(dtFormat),
+                    expiredDate: '',
+                    status: true,
+                },
+                {
+                    hwId: 4,
+                    hwName: 'Logitech',
+                    serialNo: Math.floor(Math.random() * 1000000000)+1,
+                    brand: 'op',
+                    shopId: 37,
+                    group: 'WEBCAM',
+                    ipAddress: '10.0.0.4',
+                    spec: '1.0',
+                    registerDate: dayjs().add(-2, 'day').format(dtFormat),
+                    expiredDate: '',
+                    status: true,
+                },
+                {
+                    hwId: 5,
+                    hwName: 'Logitech',
+                    serialNo: Math.floor(Math.random() * 1000000000)+1,
+                    brand: 'op',
+                    shopId: 37,
+                    group: 'WEBCAM',
+                    ipAddress: '10.0.0.5',
+                    spec: '1.0',
+                    registerDate: dayjs().add(-2, 'day').format(dtFormat),
+                    expiredDate: dayjs().format(dtFormat),
+                    status: false,
+                },
+                {
+                    hwId: 6,
+                    hwName: 'Logitech',
+                    serialNo: Math.floor(Math.random() * 1000000000)+1,
+                    brand: 'op',
+                    shopId: 37,
+                    group: 'WEBCAM',
+                    ipAddress: '10.0.0.6',
+                    spec: '1.0',
+                    registerDate: dayjs().add(-2, 'day').format(dtFormat),
+                    expiredDate: dayjs().format(dtFormat),
+                    status: false,
+                },
+            ];
+        },
+        saveHardwareInfo () {
+            var valid = true;
+            valid = this.isValidation(this.formHardwareInfo, "hwName", valid);
+            valid = this.isValidation(this.formHardwareInfo, "brand", valid);
+            valid = this.isValidation(this.formHardwareInfo, "spec", valid);
+
+            if(!valid) {
+                alert('กรุณาใส่ข้อมูลให้ครบถ้วน');
+            } else {
+                this.formHardwareInfo.hwId = this.hardwareLogsItems.length + 1;
+                this.formHardwareInfo.shopId = 37;
+                this.formHardwareInfo.status = true;
+
+                let checkEquip = this.hardwareLogsItems.find(
+                    ele => ele.group == this.formHardwareInfo.group
+                ); 
+                if(checkEquip !== undefined) {
+                    this.formHardwareInfo.group = checkEquip.group;
+                    this.formHardwareInfo.ipAddress = checkEquip.ipAddress;
+
+                    checkEquip.expiredDate = dayjs().format(dtFormat);
+                    checkEquip.status = false;
+                }
+                this.hardwareLogsItems.push(this.formHardwareInfo);
+                this.dialogAddHardware = false;
+            }
+        },
+        confirmHardwareStatus () {
+            // TODO!!!!!
+            /**
+             * เช็คว่า อุปกรณ์ เปิดหรือปิดอยู่
+             * ถ้า เปิดอยู่ ต้องการจะ ปิด
+             * - ไล่ปิดทุกตัวก่อนแล้วค่อย เปิด ตัวที่ต้องการ
+             * ถ้า ปิดอยู่ ต้องการจะ เปิด
+             * - ไล่ปิดทุกตัวก่อนแล้วค่อย เปิด ตัวที่ต้องการ
+             */
+
+            // if(this.listDevice.length > 1) {
+            // if (this.listDevice.length > 1 && this.selectedDevice == "") {
+            //     alert(`กรุณาเลือกอุปกรณ์ที่ต้องการใช้แทน`);
+            //     return;
+            // } else {
+
+            // }
+            // if(!this.selectedHardware) {
+            //     //ต้องการเปิดอุปกรณ์
+            //     this.selectedHardware.status = !this.selectedHardware.status;
+            //     this.listDevice.forEach(e => {
+            //         e.status = !e.status;
+            //     });
+            // }
+            // // } else {
+            //     this.selectedHardware.status = !this.selectedHardware.status;
+            //     this.selectedHardware.expiredDate = dayjs().format(dtFormat);
+            //     this.selectedDevice.status = !this.selectedDevice.status;
+            // // }
+            
+            // this.dialogConfirmStatus = false;
+        },
+        changeHardwareStatus(item) {
+            this.dialogConfirmStatus = true;
+            this.selectedHardware = item;
+            
+            this.listDevice = [];
+            this.hardwareLogsItems.forEach(e => {
+                if(e.group == item.group && e.serialNo !== item.serialNo) {
+                    this.listDevice.push(e);
+                }
+            });
+
+            this.displayHardware = item.status ? 'ปิด': 'เปิด';
+            this.displayHardware += " "+`${item.hwName} (${item.serialNo})`;
+        },
+        isValidation(data, key, defaultValue) {
+            if (data[key] == "") {
+                return false;
+            }
+            if (data[key] == null) {
+                return false;
+            }
+            if (data[key] == undefined) {
+                return false;
+            }
+            return defaultValue;
+        }
     },
   }
 </script>
 
 <style>
-
 </style>
