@@ -68,14 +68,13 @@ export default {
       },
       state: "login",
       showMain: false,
-      url: "http://127.0.0.1:8100",
+      url: "http://127.0.0.1:8000",
     };
   },
   mounted: function () {
     if (this.$store.state.is_login == false) {
       this.loginForm.username = "";
       this.loginForm.password = "";
-
       this.$refs.username.focus();
     }
   },
@@ -88,6 +87,7 @@ export default {
       axios
         .post(this.url + "/api/login", this.loginForm)
         .then((res) => {
+          console.log(JSON.stringify(res.data.message));
           if (res.status == 201) {
             this.$store.commit("doLogin", JSON.stringify(res.data));
           } else {

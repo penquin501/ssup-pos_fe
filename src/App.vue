@@ -15,9 +15,14 @@
         <v-toolbar-title></v-toolbar-title>
         <v-spacer></v-spacer>
         <v-col class="d-flex" sm="1">
-          <v-select v-model="selectedLang" :items="languages" dense @change="setLang()">
+          <v-select
+            v-model="selectedLang"
+            :items="languages"
+            dense
+            @change="setLang()"
+          >
             <template v-slot:item="{ item, index }">
-              <flag :iso="item.flag" /> {{item.text}}
+              <flag :iso="item.flag" /> {{ item.text }}
             </template>
           </v-select>
         </v-col>
@@ -49,9 +54,9 @@ export default {
     drawer: null,
     selectedLang: "en",
     languages: [
-        { flag: 'us', value: 'en', text: 'EN' },
-        { flag: 'th', value: 'th', text: 'TH' }
-    ]
+      { flag: "us", value: "en", text: "EN" },
+      { flag: "th", value: "th", text: "TH" },
+    ],
   }),
   mounted: function () {
     if (this.$store.state.is_login == false) {
@@ -73,6 +78,6 @@ export default {
     setLang() {
       this.$i18n.locale = this.selectedLang;
     },
-  }
+  },
 };
 </script>

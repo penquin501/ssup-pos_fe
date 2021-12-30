@@ -5,12 +5,13 @@
         <b-tab title="บิลขาย" active>
           <v-data-table :headers="headers" :items="listInvoice" :search="searchInvoice" sort-by="orderDate" class="elevation-1">
             <template v-slot:item.paymentMethod="{ item }">
-              {{ item.paymentMethod == "creditCard" ? "บัตรเครดิต": "เงินสด" }}
+              {{ item.paymentMethod == "creditCard" ? "บัตรเครดิต" : "เงินสด" }}
             </template>
             <template v-slot:top>
               <v-toolbar flat>
                 <v-toolbar-title>รายการขายสินค้า {{ today }}</v-toolbar-title>
                 <v-divider class="mx-4" inset vertical></v-divider>
+
                 <v-spacer></v-spacer>
                 <v-text-field
                   v-model="searchInvoice"
@@ -25,6 +26,7 @@
                   v-model="dialog"
                   max-width="500px"
                   :retain-focus="false"
+                  persistent
                 >
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn
@@ -37,117 +39,111 @@
                     >
                   </template>
 
-                  <v-overlay :absolute="absolute" :value="overlay">
-                    <v-card
-                      style="
-                        background-color: white;
-                        color: black;
-                        width: 100vw;
-                        height: 100vh;
-                        margin: 0;
-                      "
-                    >
-                      <!-- <v-card-title style="color: black; padding-bottom: 0px; padding-top: 0px;">
-                        <span class="text-h5">บิลเงินสด</span>
-                      </v-card-title> -->
-
-                      <v-card-text
-                        style="background-color: lightgreen; color: black"
-                      >
+                  <v-overlay :absolute="absolute" :value="overlay" responsive>
+                    <div class="containers">
+                      <div class="navbar">
                         <v-row no-gutters>
                           <b-col cols="7">
-                            <v-card style="background-color: blue">
-                              <b-row
-                                style="margin-left: 0px; margin-right: 0px"
+                            <b-row style="margin-left: 0px; margin-right: 0px">
+                              <b-col
+                                cols="4"
+                                style="
+                                  border: 0px solid black;
+                                  text-align: center;
+                                  background-color: green;
+                                  margin: 5px;
+                                  color: white;
+                                "
                               >
-                                <b-col
-                                  cols="1"
-                                  style="padding-left: 0px; padding-right: 0px"
-                                ></b-col>
-                                <b-col
-                                  cols="5"
-                                  style="
-                                    border: 1px solid black;
-                                    text-align: center;
-                                    background-color: green;
-                                  "
-                                >
-                                  <b>บิลเงินสดอย่างย่อ</b>
-                                </b-col>
-                                <b-col cols="2" style="text-align: right"
-                                  >ผู้เปิดบิล:</b-col
-                                >
-                                <b-col cols="3">
-                                  <b-form-input
-                                    id="input-small"
-                                    size="sm"
-                                    readonly
-                                    v-model="userInfo.name"
-                                  ></b-form-input>
-                                </b-col>
-                                <b-col
-                                  cols="1"
-                                  style="padding-left: 0px; padding-right: 0px"
-                                ></b-col>
-                              </b-row>
-                              <b-row
-                                style="margin-left: 0px; margin-right: 0px"
+                                <b>บิลเงินสดอย่างย่อ</b>
+                              </b-col>
+                              <b-col cols="2" style="text-align: right"
+                                >ผู้เปิดบิล:</b-col
                               >
-                                <b-col cols="3" style="padding-bottom: 0px">
-                                  <v-select
-                                    style="text-align: center; height: 60px"
-                                    v-model="selectedPlayPromo"
-                                    :items="optionsPromotion"
-                                    solo
-                                  ></v-select>
-                                </b-col>
-                                <b-col cols="3" style="padding-bottom: 0px">
-                                  <v-select
-                                    style="text-align: center; height: 60px"
-                                    v-model="selectSale"
-                                    :items="optionsSale"
-                                    solo
-                                  ></v-select>
-                                </b-col>
-                                <b-col
-                                  cols="1"
-                                  style="
-                                    text-align: right;
-                                    padding-left: 0px;
-                                    padding-right: 0px;
-                                  "
-                                  >จำนวน:</b-col
-                                >
-                                <b-col cols="1"
-                                  ><b-form-input
-                                    id="input-small"
-                                    size="sm"
-                                    v-model="saleQty"
-                                  ></b-form-input
-                                ></b-col>
-                                <b-col
-                                  cols="1"
-                                  style="
-                                    text-align: right;
-                                    padding-left: 0px;
-                                    padding-right: 0px;
-                                  "
-                                  >รหัสสินค้า:</b-col
-                                >
-                                <b-col cols="3">
-                                  <b-form-input
-                                    id="input-small"
-                                    size="sm"
-                                    v-model="productInput"
-                                    ref="productInput"
-                                    @change="addItem()"
-                                  ></b-form-input>
-                                </b-col>
-                              </b-row>
-                            </v-card>
+                              <b-col cols="2">
+                                <b-form-input
+                                  id="input-small"
+                                  size="sm"
+                                  readonly
+                                  v-model="userInfo.name"
+                                ></b-form-input>
+                              </b-col>
+                              <b-col cols="1" style="text-align: right"
+                                >วันที่:</b-col
+                              >
+                              <b-col cols="2">
+                                <b-form-input
+                                  style="font-size: 12px !important"
+                                  id="input-small"
+                                  size="sm"
+                                  readonly
+                                  v-model="saleDate"
+                                ></b-form-input>
+                              </b-col>
+                            </b-row>
+                            <b-row style="margin-left: 0px; margin-right: 0px">
+                              <b-col cols="3" style="padding-bottom: 0px">
+                                <v-select
+                                  style="text-align: center; height: 40px"
+                                  v-model="selectedPlayPromo"
+                                  :items="optionsPromotion"
+                                  solo
+                                ></v-select>
+                              </b-col>
+                              <b-col cols="3" style="padding-bottom: 0px">
+                                <v-select
+                                  style="text-align: center; height: 40px"
+                                  v-model="selectSale"
+                                  :items="optionsSale"
+                                  solo
+                                ></v-select>
+                              </b-col>
+                              <b-col
+                                cols="1"
+                                style="
+                                  text-align: right;
+                                  padding-left: 0px;
+                                  padding-right: 0px;
+                                "
+                                >จำนวน:</b-col
+                              >
+                              <b-col cols="1"
+                                ><b-form-input
+                                  id="input-small"
+                                  size="sm"
+                                  type="number"
+                                  v-model="saleQty"
+                                ></b-form-input
+                              ></b-col>
+                              <b-col
+                                cols="2"
+                                style="
+                                  text-align: right;
+                                  padding-left: 0px;
+                                  padding-right: 0px;
+                                "
+                                >รหัสสินค้า:</b-col
+                              >
+                              <b-col cols="2"
+                                ><b-form-input
+                                  id="input-small"
+                                  size="sm"
+                                  v-model="productInput"
+                                  ref="productInput"
+                                  @change="addItem()"
+                                ></b-form-input
+                              ></b-col>
+                            </b-row>
                           </b-col>
                           <b-col cols="5">
-                            <v-card style="background-color: green">
+                            <v-card
+                              style="
+                                background-color: green;
+                                font-size: 14px;
+                                margin: 5px;
+                                padding: 5px;
+                              "
+                            >
                               <b-row style="text-align: center">
                                 <b-col cols="2" style="text-align: right"
                                   >รหัสสมาชิก:</b-col
@@ -161,33 +157,23 @@
                                   ></b-form-input
                                 ></b-col>
                                 <b-col cols="1"
-                                  ><button @click.prevent="getMemberInfo()">
+                                  ><button @click.prevent="getMemberInfo">
                                     <v-icon>mdi-book-open</v-icon>
                                   </button></b-col
                                 >
-                                <b-col cols="1"
-                                  ><i class="fa fa-star" aria-hidden="true"></i
-                                ></b-col>
-                                <b-col cols="3"
-                                  ><b-form-input
-                                    style="text-align: center"
-                                    id="input-small"
-                                    size="sm"
-                                    v-model="saleDate"
-                                    readonly
-                                  ></b-form-input
-                                ></b-col>
-                                <b-col cols="1"
-                                  ><button @click.prevent="closePosDialog()">
-                                    <v-icon>mdi-home</v-icon>
-                                  </button></b-col
+                                <b-col cols="2"></b-col>
+
+                                <b-col cols="3">
+                                  <v-btn @click.prevent="closePosDialog">
+                                    <v-icon>mdi mdi-home</v-icon>
+                                  </v-btn></b-col
                                 >
                               </b-row>
                               <b-row style="text-align: center">
                                 <b-col cols="2" style="text-align: right"
                                   >ประเภท:</b-col
                                 >
-                                <b-col cols="2">{{
+                                <b-col cols="3" style="font-size: 12px">{{
                                   memberInfo.memberType
                                 }}</b-col>
                                 <b-col cols="2" style="text-align: right"
@@ -203,7 +189,7 @@
                                 <b-col cols="2" style="text-align: right"
                                   >ส่วนลด %:</b-col
                                 >
-                                <b-col cols="2"
+                                <b-col cols="1"
                                   ><b-form-input
                                     id="input-small"
                                     size="sm"
@@ -214,357 +200,533 @@
                             </v-card>
                           </b-col>
                         </v-row>
-                        <v-row>
-                          <b-col
-                            cols="8"
-                            style="padding-top: 0px; padding-bottom: 0px"
-                          >
-                            <b-row no-gutters>
-                              <v-card-title style="padding-top: 0px">
-                                <v-text-field
-                                  style="padding-top: 0px"
-                                  v-model="search"
-                                  append-icon="mdi-magnify"
-                                  label="Search"
-                                  single-line
-                                  hide-details
-                                ></v-text-field>
-                              </v-card-title>
-                              <div class="item-table">
-                                <b-table
-                                  :items="items"
-                                  :fields="productfields"
-                                  :current-page="currentPage"
-                                  :per-page="5"
-                                  :filter="search"
-                                  stacked="md"
-                                  show-empty
-                                  small
+                      </div>
+                      <div class="bottom">
+                        <div class="left-bottom">
+                          <v-card-title style="padding-top: 0px">
+                            <v-text-field
+                              style="padding-top: 0px"
+                              v-model="search"
+                              append-icon="mdi-magnify"
+                              label="Search"
+                              single-line
+                              hide-details
+                            ></v-text-field>
+                          </v-card-title>
+                          <div class="content-list-item">
+                            <b-table
+                              :items="items"
+                              :fields="productfields"
+                              :current-page="currentPage"
+                              :filter="search"
+                              stacked="md"
+                              show-empty
+                              small
+                            >
+                              <template #cell(pricePerItem)="row">
+                                {{ formatPrice(row.item.pricePerItem) }}
+                              </template>
+                              <template #cell(total)="row">
+                                {{ formatPrice(row.item.total) }}
+                              </template>
+                              <template #cell(actions)="row">
+                                <b-button
+                                  size="sm"
+                                  @click="
+                                    deleteItem(
+                                      row.item,
+                                      row.index,
+                                      $event.target
+                                    )
+                                  "
+                                  class="mr-1"
+                                  ><v-icon small>mdi-delete</v-icon></b-button
                                 >
-                                  <template #cell(actions)="row">
-                                    <b-button
-                                      size="sm"
-                                      @click="
-                                        deleteItem(
-                                          row.item,
-                                          row.index,
-                                          $event.target
-                                        )
-                                      "
-                                      class="mr-1"
-                                      ><v-icon small
-                                        >mdi-delete</v-icon
-                                      ></b-button
-                                    >
-                                  </template>
-                                </b-table>
-                              </div>
-                            </b-row>
-                            <b-row>
-                              <b-col
-                                cols="8"
-                                style="padding-top: 0px; padding-bottom: 0px"
-                              >
-                                <b-row>
-                                  <b-col
-                                    cols="12"
+                              </template>
+                            </b-table>
+                          </div>
+                          <div class="Calc-Price">
+                            <v-row
+                              no-gutters
+                              style="padding: 10px 10px 0px 10px"
+                            >
+                              <b-col cols="6">
+                                <b-row
+                                  style="
+                                    margin-left: 0px;
+                                    margin-right: 0px;
+                                    text-align: center;
+                                  "
+                                >
+                                  <v-col
                                     style="
+                                      background: rgb(0 0 0 / 52%);
+                                      border-radius: 8px;
                                       text-align: center;
-                                      padding-top: 0px;
-                                      padding-bottom: 0px;
+                                      margin-bottom: 5px;
+                                      height: calc(15vh);
+                                      font-size: 270%;
+                                      padding: 1.5rem 0.75rem;
                                     "
+                                    cols="12"
+                                    sm="12"
+                                    md="12"
+                                    v-model="net"
+                                    >{{ formatPrice(net) }}</v-col
                                   >
-                                    <b-form-input
-                                      class="form-control ma-2"
-                                      style="
-                                        text-align: center;
-                                        font-size: 17px;
-                                      "
-                                      readonly
-                                      v-model="net"
-                                    ></b-form-input>
-                                  </b-col>
                                 </b-row>
-                                <b-row>
-                                  <b-col
-                                    cols="12"
-                                    style="
-                                      text-align: center;
-                                      padding-top: 0px;
-                                      padding-bottom: 0px;
-                                    "
+                              </b-col>
+                              <b-col cols="6">
+                                <b-row
+                                  style="
+                                    margin-left: 0px;
+                                    margin-right: 0px;
+                                    text-align: center;
+                                    padding-top: 2px;
+                                    padding-left: 5px;
+                                  "
+                                >
+                                  <v-btn
+                                    block
+                                    large
+                                    elevation="2"
+                                    color="success"
+                                    @click.prevent="showPayment()"
                                   >
-                                    <v-btn
-                                      color="success"
-                                      class="form-control ma-2 white--text"
-                                      @click.prevent="showPayment()"
-                                    >
-                                      <v-icon>mdi-play</v-icon>Payment(F10)
-                                    </v-btn>
-                                  </b-col>
+                                    <v-icon> mdi-play </v-icon>
+                                    payment (F10)</v-btn
+                                  >
                                 </b-row>
-                                <b-row>
-                                  <b-col
-                                    cols="12"
-                                    style="
-                                      text-align: center;
-                                      padding-top: 0px;
-                                      padding-bottom: 0px;
-                                    "
-                                  >
+                                <b-row
+                                  style="margin-left: 0px; margin-right: 0px"
+                                >
+                                  <b-col cols="4" style="padding-bottom: 0px">
                                     <v-btn
-                                      color="warning"
-                                      class="ma-2 white--text"
-                                      @click.prevent="reworkOrder()"
+                                      block
+                                      large
+                                      elevation="2"
+                                      color="orange"
+                                      @click="reworkOrder"
                                     >
                                       <v-badge
                                         :content="$store.state.lastOrder.length"
                                         :value="$store.state.lastOrder.length"
                                         color="green"
                                       >
-                                        <v-icon>mdi-restore</v-icon>Rework
+                                        <v-icon> mdi-reload </v-icon>
                                       </v-badge>
-                                    </v-btn>
-
-                                    <v-btn
-                                      color="yellow"
-                                      class="ma-2 white--text"
-                                      @click.prevent="pauseOrder()"
-                                      ><v-icon>mdi-pause</v-icon
-                                      >Pause(F9)</v-btn
+                                      Rework</v-btn
                                     >
+                                  </b-col>
+                                  <b-col cols="4" style="padding-bottom: 0px">
                                     <v-btn
-                                      color="error"
-                                      class="ma-2 white--text"
-                                      @click.prevent="cancelOrder()"
-                                      ><v-icon>mdi-delete</v-icon
-                                      >Delete(F8)</v-btn
+                                      block
+                                      large
+                                      elevation="2"
+                                      color="#424242d4"
+                                      @click="pauseOrder"
+                                    >
+                                      <v-icon> mdi-pause </v-icon>
+                                      pause (F9)</v-btn
+                                    >
+                                  </b-col>
+                                  <b-col cols="4" style="padding-bottom: 0px">
+                                    <v-btn
+                                      block
+                                      large
+                                      elevation="2"
+                                      color="red"
+                                      @click="cancelOrder"
+                                    >
+                                      <v-icon> mdi-delete </v-icon>
+                                      Delete (F8)</v-btn
                                     >
                                   </b-col>
                                 </b-row>
                               </b-col>
-                              <b-col
-                                cols="4"
-                                style="padding-top: 0px; padding-bottom: 0px"
-                              >
-                                <b-row style="margin-bottom: 0px">
-                                  <b-col
-                                    cols="6"
-                                    style="
-                                      padding-top: 0px;
-                                      padding-left: 0px;
-                                      padding-bottom: 0px;
-                                      padding-right: 0px;
-                                    "
-                                  >
-                                    <v-text-field
-                                      class="font-10"
-                                      style="
-                                        margin-bottom: 0px;
-                                        padding-top: 0px;
-                                        padding-bottom: 0px;
-                                      "
-                                      label="Points:"
-                                      outlined
-                                      v-model="points"
-                                      readonly
-                                    ></v-text-field>
-                                  </b-col>
-                                  <b-col
-                                    cols="6"
-                                    style="
-                                      padding-top: 0px;
-                                      padding-left: 0px;
-                                      padding-bottom: 0px;
-                                      padding-right: 0px;
-                                    "
-                                  >
-                                    <v-text-field
-                                      style="
-                                        margin-bottom: 0px;
-                                        padding-top: 0px;
-                                        padding-bottom: 0px;
-                                      "
-                                      label="Total Money:"
-                                      outlined
-                                      v-model="saleTotal"
-                                      readonly
-                                    ></v-text-field>
-                                  </b-col>
-                                </b-row>
-                                <b-row
-                                  style="margin-top: 0px; margin-bottom: 0px"
-                                >
-                                  <b-col
-                                    cols="6"
-                                    style="
-                                      padding-top: 0px;
-                                      padding-left: 0px;
-                                      padding-bottom: 0px;
-                                      padding-right: 0px;
-                                    "
-                                  >
-                                    <v-text-field
-                                      label="Points Used:"
-                                      outlined
-                                      v-model="pointsUsed"
-                                      @change="redeemPoints()"
-                                    ></v-text-field>
-                                  </b-col>
-                                  <b-col
-                                    cols="6"
-                                    style="
-                                      padding-top: 0px;
-                                      padding-left: 0px;
-                                      padding-bottom: 0px;
-                                      padding-right: 0px;
-                                    "
-                                  >
-                                    <v-text-field
-                                      label="Discount:"
-                                      outlined
-                                      v-model="discountTotal"
-                                      readonly
-                                    ></v-text-field>
-                                  </b-col>
-                                </b-row>
-                                <b-row
-                                  style="margin-top: 0px; margin-bottom: 0px"
-                                >
-                                  <b-col
-                                    cols="6"
-                                    style="
-                                      padding-top: 0px;
-                                      padding-left: 0px;
-                                      padding-bottom: 0px;
-                                      padding-right: 0px;
-                                    "
-                                  >
-                                    <v-text-field
-                                      label="Points Net:"
-                                      outlined
-                                      v-model="pointsNet"
-                                      readonly
-                                    ></v-text-field>
-                                  </b-col>
-                                  <b-col
-                                    cols="6"
-                                    style="
-                                      padding-top: 0px;
-                                      padding-left: 0px;
-                                      padding-bottom: 0px;
-                                      padding-right: 0px;
-                                    "
-                                  >
-                                    <v-text-field
-                                      label="Net:"
-                                      outlined
-                                      v-model="net"
-                                      readonly
-                                    ></v-text-field>
-                                  </b-col>
-                                </b-row>
-                              </b-col>
-                            </b-row>
-                          </b-col>
-                          <b-col cols="4">
-                            <v-expansion-panels>
-                              <v-expansion-panel style="background-color: grey">
-                                <v-expansion-panel-header
-                                  >ข้อมูลสมาชิก</v-expansion-panel-header
-                                >
-                                <v-expansion-panel-content>
-                                  <!-- ข้อมูลสมาชิก -->
+                            </v-row>
+                          </div>
+                        </div>
+                        <div class="right-bottom">
+                          <v-expansion-panels>
+                            <v-expansion-panel>
+                              <v-expansion-panel-header class="font-16">
+                                ข้อมูลสมาชิก
+                              </v-expansion-panel-header>
+                              <v-expansion-panel-content>
+                                <v-col cols="12" sm="12" md="12">
                                   <v-text-field
-                                    class="font-10"
-                                    label="ชื่อสมาชิก:"
                                     v-model="memberInfo.memberName"
-                                  ></v-text-field>
+                                    class="font-16"
+                                    label="ชื่อสมาชิก"
+                                    dense
+                                    readonly
+                                  >
+                                  </v-text-field>
+                                </v-col>
+
+                                <v-col cols="12" sm="12" md="12">
                                   <v-text-field
-                                    label="วันสมัคร:"
-                                    v-model="memberInfo.registerDate"
-                                  ></v-text-field>
+                                    value="01/06/2562"
+                                    class="font-16"
+                                    label="วันสมัคร"
+                                    dense
+                                    readonly
+                                  >
+                                  </v-text-field>
+                                </v-col>
+
+                                <v-col cols="12" sm="12" md="12">
                                   <v-text-field
-                                    label="วันหมดอายุ:"
-                                    v-model="memberInfo.expiredDate"
-                                  ></v-text-field>
+                                    value="01/06/2566"
+                                    class="font-16"
+                                    label="วันหมดอายุ"
+                                    dense
+                                    readonly
+                                  >
+                                  </v-text-field>
+                                </v-col>
+
+                                <v-col cols="12" sm="12" md="12">
                                   <v-text-field
-                                    label="วันเกิด:"
-                                    v-model="memberInfo.birthdayDate"
-                                  ></v-text-field>
+                                    value="01/06/2520"
+                                    class="font-16"
+                                    label="วันเกิด"
+                                    dense
+                                    readonly
+                                  >
+                                  </v-text-field>
+                                </v-col>
+
+                                <v-col cols="12" sm="12" md="12">
                                   <v-text-field
-                                    label="OPS Day:"
-                                    v-model="memberInfo.opsDate"
-                                  ></v-text-field>
-                                  <v-text-field
-                                    label="ที่อยู่:"
+                                    value="01/06/2565"
+                                    class="font-16"
+                                    label="OPS DAY"
+                                    dense
+                                    readonly
+                                  >
+                                  </v-text-field>
+                                </v-col>
+
+                                <v-col cols="12" sm="12" md="12">
+                                  <v-textarea
                                     outlined
-                                    v-model="memberInfo.memberAddress"
-                                  ></v-text-field>
-                                </v-expansion-panel-content>
-                              </v-expansion-panel>
-                              <v-expansion-panel style="background-color: grey">
-                                <v-expansion-panel-header
-                                  >ฟังก์ชั่น</v-expansion-panel-header
-                                >
-                                <v-expansion-panel-content>
-                                  <!-- ฟังก์ชั่น -->
-                                  <v-row
-                                    no-gutters
-                                    v-for="(item, index) in 3"
-                                    :key="item"
-                                  >
-                                    <v-col cols="12" style="text-align: center">
-                                      <v-btn
-                                        style="height: 30px"
-                                        class="ma-2"
-                                        color="secondary"
-                                        >Accept Terms</v-btn
-                                      >
-                                      <v-btn
-                                        style="height: 30px"
-                                        class="ma-2"
-                                        color="secondary"
-                                        >Accept Terms</v-btn
-                                      >
-                                    </v-col>
-                                  </v-row>
-                                </v-expansion-panel-content>
-                              </v-expansion-panel>
-                              <v-expansion-panel style="background-color: grey">
-                                <v-expansion-panel-header
-                                  >อื่นๆ</v-expansion-panel-header
-                                >
-                                <v-expansion-panel-content>
-                                  <!-- อื่นๆ -->
-                                  <v-row
-                                    no-gutters
-                                    v-for="(item, index) in 5"
-                                    :key="item"
-                                  >
-                                    <v-col cols="12" style="text-align: center">
-                                      <v-btn
-                                        style="height: 30px"
-                                        class="ma-2"
-                                        color="secondary"
-                                        >Accept Terms</v-btn
-                                      >
-                                      <v-btn
-                                        style="height: 30px"
-                                        class="ma-2"
-                                        color="secondary"
-                                        >Accept Terms</v-btn
-                                      >
-                                    </v-col>
-                                  </v-row>
-                                </v-expansion-panel-content>
-                              </v-expansion-panel>
-                            </v-expansion-panels>
-                          </b-col>
-                        </v-row>
-                      </v-card-text>
-                    </v-card>
+                                    name="input-7-7"
+                                    label="ที่อยู่"
+                                    value="12/345"
+                                  ></v-textarea>
+                                </v-col>
+                                <v-col cols="12" sm="12" md="12"> </v-col>
+                              </v-expansion-panel-content>
+                            </v-expansion-panel>
+
+                            <v-expansion-panel class="v-item--active">
+                              <v-expansion-panel-header class="font-16">
+                                ฟังก์ชั่น
+                              </v-expansion-panel-header>
+                              <v-expansion-panel-content>
+                                <v-col class="d-flex" cols="12" sm="12" md="12">
+                                  <v-col cols="12" sm="6" md="6">
+                                    <v-btn elevation="2" color="primary"
+                                      ><v-icon> mdi-worker </v-icon>
+                                      Click</v-btn
+                                    >
+                                  </v-col>
+                                  <v-col cols="12" sm="6" md="6">
+                                    <v-btn elevation="2" color="primary"
+                                      ><v-icon> mdi-worker </v-icon>
+                                      Click</v-btn
+                                    >
+                                  </v-col>
+                                </v-col>
+
+                                <v-col class="d-flex" cols="12" sm="12" md="12">
+                                  <v-col cols="12" sm="6" md="6">
+                                    <v-btn elevation="2" color="primary"
+                                      ><v-icon> mdi-worker </v-icon>
+                                      Click</v-btn
+                                    >
+                                  </v-col>
+                                  <v-col cols="12" sm="6" md="6">
+                                    <v-btn elevation="2" color="primary"
+                                      ><v-icon> mdi-worker </v-icon>
+                                      Click</v-btn
+                                    >
+                                  </v-col>
+                                </v-col>
+
+                                <v-col class="d-flex" cols="12" sm="12" md="12">
+                                  <v-col cols="12" sm="6" md="6">
+                                    <v-btn elevation="2" color="primary"
+                                      ><v-icon> mdi-worker </v-icon>
+                                      Click</v-btn
+                                    >
+                                  </v-col>
+                                  <v-col cols="12" sm="6" md="6">
+                                    <v-btn elevation="2" color="primary"
+                                      ><v-icon> mdi-worker </v-icon>
+                                      Click</v-btn
+                                    >
+                                  </v-col>
+                                </v-col>
+                              </v-expansion-panel-content>
+                            </v-expansion-panel>
+
+                            <v-expansion-panel>
+                              <v-expansion-panel-header class="font-16">
+                                อื่นๆ
+                              </v-expansion-panel-header>
+                              <v-expansion-panel-content>
+                                <v-col class="d-flex" cols="12" sm="12" md="12">
+                                  <v-col cols="12" sm="6" md="6">
+                                    <v-btn
+                                      elevation="2"
+                                      color="primary"
+                                      class="font-16"
+                                      style="height: 80px"
+                                      >Click</v-btn
+                                    >
+                                  </v-col>
+                                  <v-col cols="12" sm="6" md="6">
+                                    <v-btn
+                                      elevation="2"
+                                      color="primary"
+                                      class="font-16"
+                                      style="height: 80px"
+                                      >Click</v-btn
+                                    >
+                                  </v-col>
+                                </v-col>
+                                <v-col class="d-flex" cols="12" sm="12" md="12">
+                                  <v-col cols="12" sm="6" md="6">
+                                    <v-btn
+                                      elevation="2"
+                                      color="primary"
+                                      class="font-16"
+                                      style="height: 80px"
+                                      >Click</v-btn
+                                    >
+                                  </v-col>
+                                  <v-col cols="12" sm="6" md="6">
+                                    <v-btn
+                                      elevation="2"
+                                      color="primary"
+                                      class="font-16"
+                                      style="height: 80px"
+                                      >Click</v-btn
+                                    >
+                                  </v-col>
+                                </v-col>
+                                <v-col class="d-flex" cols="12" sm="12" md="12">
+                                  <v-col cols="12" sm="6" md="6">
+                                    <v-btn
+                                      elevation="2"
+                                      color="primary"
+                                      class="font-16"
+                                      style="height: 80px"
+                                      >Click</v-btn
+                                    >
+                                  </v-col>
+                                  <v-col cols="12" sm="6" md="6">
+                                    <v-btn
+                                      elevation="2"
+                                      color="primary"
+                                      class="font-16"
+                                      style="height: 80px"
+                                      >Click</v-btn
+                                    >
+                                  </v-col>
+                                </v-col>
+                                <v-col class="d-flex" cols="12" sm="12" md="12">
+                                  <v-col cols="12" sm="6" md="6">
+                                    <v-btn
+                                      elevation="2"
+                                      color="primary"
+                                      class="font-16"
+                                      style="height: 80px"
+                                      >Click</v-btn
+                                    >
+                                  </v-col>
+                                  <v-col cols="12" sm="6" md="6">
+                                    <v-btn
+                                      elevation="2"
+                                      color="primary"
+                                      class="font-16"
+                                      style="height: 80px"
+                                      >Click</v-btn
+                                    >
+                                  </v-col>
+                                </v-col>
+                                <v-col class="d-flex" cols="12" sm="12" md="12">
+                                  <v-col cols="12" sm="6" md="6">
+                                    <v-btn
+                                      elevation="2"
+                                      color="primary"
+                                      class="font-16"
+                                      style="height: 80px"
+                                      >Click</v-btn
+                                    >
+                                  </v-col>
+                                  <v-col cols="12" sm="6" md="6">
+                                    <v-btn
+                                      elevation="2"
+                                      color="primary"
+                                      class="font-16"
+                                      style="height: 80px"
+                                      >Click</v-btn
+                                    >
+                                  </v-col>
+                                </v-col>
+                              </v-expansion-panel-content>
+                            </v-expansion-panel>
+                          </v-expansion-panels>
+                        </div>
+                      </div>
+                    </div>
                   </v-overlay>
+                </v-dialog>
+
+                <v-dialog
+                  v-model="dialogLastOrder"
+                  persistent
+                  max-width="500px"
+                >
+                  <v-card>
+                    <v-card-title class="text-h5"
+                      >กรุณาเลือก รายการที่ทำค้างไว้?</v-card-title
+                    >
+                    <v-card-text>
+                      <b-table
+                        ref="selectableTable"
+                        selectable
+                        :items="$store.state.lastOrder"
+                        select-mode="single"
+                        :per-page="5"
+                        :fields="lastOrderfields"
+                        show-empty
+                        small
+                        @row-selected="onRowSelected"
+                      >
+                        <template #cell(selected)="{ rowSelected }">
+                          <template v-if="rowSelected">
+                            <span aria-hidden="true">&check;</span>
+                            <span class="sr-only">Selected</span>
+                          </template>
+                          <template v-else>
+                            <span aria-hidden="true">&nbsp;</span>
+                            <span class="sr-only">Not selected</span>
+                          </template>
+                        </template>
+                        <template #cell(actions)="row">
+                          <b-button
+                            size="sm"
+                            @click="
+                              deletePauseInvoice(
+                                row.item,
+                                row.index,
+                                $event.target
+                              )
+                            "
+                            class="mr-1"
+                            ><v-icon small>mdi-delete</v-icon></b-button
+                          >
+                        </template>
+                      </b-table>
+                    </v-card-text>
+                    <v-card-actions>
+                      <v-spacer></v-spacer>
+                      <v-btn
+                        color="blue darken-1"
+                        text
+                        @click="closeDialogLastOrder"
+                        >Cancel</v-btn
+                      >
+                      <v-btn
+                        color="blue darken-1"
+                        text
+                        @click="confirmLastOrder"
+                        >OK</v-btn
+                      >
+                      <v-spacer></v-spacer>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
+                <v-dialog v-model="dialogDelete" persistent max-width="500px">
+                  <v-card>
+                    <v-card-title class="text-h5"
+                      >ต้องการลบสินค้า ใช่หรือไม่?</v-card-title
+                    >
+                    <v-card-actions>
+                      <v-spacer></v-spacer>
+                      <v-btn color="blue darken-1" text @click="closeDelete"
+                        >Cancel</v-btn
+                      >
+                      <v-btn
+                        color="blue darken-1"
+                        text
+                        @click="deleteItemConfirm()"
+                        >OK</v-btn
+                      >
+                      <v-spacer></v-spacer>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
+
+                <v-dialog
+                  v-model="dialogCancelOrder"
+                  persistent
+                  max-width="500px"
+                >
+                  <v-card>
+                    <v-card-title class="text-h5"
+                      >ต้องการยกเลิกรายการสินค้าทั้งหมด
+                      ใช่หรือไม่?</v-card-title
+                    >
+                    <v-card-actions>
+                      <v-spacer></v-spacer>
+                      <v-btn
+                        color="blue darken-1"
+                        text
+                        @click="closeDialogCancelOrder"
+                        >Cancel</v-btn
+                      >
+                      <v-btn
+                        color="blue darken-1"
+                        text
+                        @click="confirmCancelOrder"
+                        >OK</v-btn
+                      >
+                      <v-spacer></v-spacer>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
+                <v-dialog
+                  v-model="dialogCancelInvoicePauseOrder"
+                  persistent
+                  max-width="500px"
+                >
+                  <v-card>
+                    <v-card-title class="text-h5"
+                      >ต้องการยกเลิกรายการเลขที่บิลนี้ ใช่หรือไม่?</v-card-title
+                    >
+                    <v-card-actions>
+                      <v-spacer></v-spacer>
+                      <v-btn
+                        color="blue darken-1"
+                        text
+                        @click="closeDialogCancelInvoicePauseOrder"
+                        >Cancel</v-btn
+                      >
+                      <v-btn
+                        color="blue darken-1"
+                        text
+                        @click="confirmCancelInvoicePauseOrder"
+                        >OK</v-btn
+                      >
+                      <v-spacer></v-spacer>
+                    </v-card-actions>
+                  </v-card>
                 </v-dialog>
 
                 <v-dialog v-model="dialogConfirmInvoice">
@@ -587,8 +749,10 @@
                             padding-top: 0px;
                             padding-left: 0px;
                             padding-bottom: 0px;
-                            padding-right: 0px;
+                            padding-right: 5px;
                             border-right: 1px solid gray;
+                            overflow-y: scroll;
+                            height: 765px;
                           "
                         >
                           <div style="text-align: center">
@@ -677,24 +841,54 @@
                             >
                           </div>
                         </b-col>
-                        <b-col
-                          cols="6"
-                          style="
-                            padding-top: 0px;
-                            padding-left: 0px;
-                            padding-bottom: 0px;
-                            padding-right: 0px;
-                          "
-                        >
+                        <b-col cols="6" style="padding: 6px !important">
                           <b-col cols="12">
                             <b-row>
-                              <b-col cols="6"><p>Total</p></b-col>
+                              <b-col cols="2" style="padding: 20px 0px 4px 10px"
+                                ><p>Points ::</p></b-col
+                              >
+                              <b-col cols="2" style="padding: 20px 0px 4px 10px"
+                                ><v-text-field
+                                  @change="paymentMethod = 'cash'"
+                                  v-model="memberInfo.point"
+                                ></v-text-field
+                              ></b-col>
+                              <b-col cols="3"><p>Points Used ::</p></b-col>
+                              <b-col cols="2"
+                                ><v-text-field
+                                  @change="paymentMethod = 'cash'"
+                                  v-model="cashIn"
+                                ></v-text-field
+                              ></b-col>
+                            </b-row>
+                            <b-row style="margin-top: 1px !important">
+                              <b-col cols="6"><p>Total ::</p></b-col>
                               <b-col cols="6"
-                                ><p>{{ net }}</p></b-col
+                                ><p>{{ formatPrice(net) }}</p></b-col
                               >
                             </b-row>
                             <b-row>
-                              <b-col cols="6"><p>รับเงิน</p></b-col>
+                              <b-col cols="6"><p>ส่วนลด ::</p></b-col>
+                              <b-col cols="6"
+                                ><p>{{ formatPrice(discountTotal) }}</p></b-col
+                              >
+                            </b-row>
+                            <b-row>
+                              <b-col cols="6"><p>Tax ::</p></b-col>
+                              <b-col cols="6"
+                                ><p>{{ taxsTotal.toFixed(2) }}</p></b-col
+                              >
+                            </b-row>
+                            <b-row>
+                              <b-col cols="6"><p>รับเงิน ::</p></b-col>
+                              <b-col cols="6"
+                                ><v-text-field
+                                  @change="paymentMethod = 'cash'"
+                                  v-model="cashIn"
+                                ></v-text-field
+                              ></b-col>
+
+                              <b-col cols="6"><p>เงินทอน ::</p></b-col>
                               <b-col cols="6"
                                 ><v-text-field
                                   @change="paymentMethod = 'cash'"
@@ -714,7 +908,17 @@
                             </b-row>
                             <v-divider></v-divider>
                             <b-row style="text-align: center">
-                              <v-select style="text-align: center; height: 60px" v-model="paymentMethod" :items="optionsPaymentMethod" solo></v-select>
+                              <b-col cols="6"
+                                ><v-btn @click="paymentMethod = 'cash'"
+                                  ><v-icon>mdi-cash-multiple</v-icon>Cash</v-btn
+                                ></b-col
+                              >
+                              <b-col cols="6"
+                                ><v-btn @click="paymentMethod = 'creditCard'"
+                                  ><v-icon>mdi-credit-card</v-icon>Credit
+                                  Card</v-btn
+                                ></b-col
+                              >
                             </b-row>
                             <v-divider></v-divider>
                             <div>
@@ -731,160 +935,16 @@
                     </v-card-text>
                   </v-card>
                 </v-dialog>
-
-                <v-dialog v-model="dialogDelete" persistent max-width="500px">
-                  <v-card>
-                    <v-card-title class="text-h5"
-                      >ต้องการลบสินค้า ใช่หรือไม่?</v-card-title
-                    >
-                    <v-card-actions>
-                      <v-spacer></v-spacer>
-                      <v-btn color="blue darken-1" text @click="closeDelete()"
-                        >Cancel</v-btn
-                      >
-                      <v-btn
-                        color="blue darken-1"
-                        text
-                        @click="deleteItemConfirm"
-                        >OK</v-btn
-                      >
-                      <v-spacer></v-spacer>
-                    </v-card-actions>
-                  </v-card>
-                </v-dialog>
-
-                <v-dialog
-                  v-model="dialogCancelOrder"
-                  persistent
-                  max-width="500px"
-                >
-                  <v-card>
-                    <v-card-title class="text-h5"
-                      >ต้องการยกเลิกรายการสินค้าทั้งหมด
-                      ใช่หรือไม่?</v-card-title
-                    >
-                    <v-card-actions>
-                      <v-spacer></v-spacer>
-                      <v-btn
-                        color="blue darken-1"
-                        text
-                        @click="closeDialogCancelOrder"
-                        >Cancel</v-btn
-                      >
-                      <v-btn
-                        color="blue darken-1"
-                        text
-                        @click="confirmCancelOrder"
-                        >OK</v-btn
-                      >
-                      <v-spacer></v-spacer>
-                    </v-card-actions>
-                  </v-card>
-                </v-dialog>
-
-                <v-dialog
-                  v-model="dialogLastOrder"
-                  persistent
-                  max-width="500px"
-                >
-                  <v-card>
-                    <v-card-title class="text-h5"
-                      >กรุณาเลือก รายการที่ทำค้างไว้?</v-card-title
-                    >
-                    <v-card-text>
-                      <b-table
-                        ref="selectableTable"
-                        selectable
-                        :items="$store.state.lastOrder"
-                        select-mode="single"
-                        :per-page="5"
-                        :fields="lastOrderfields"
-                        show-empty
-                        small
-                        @row-selected="onRowSelected"
-                      >
-                        <template #cell(selected)="{ rowSelected }">
-                          <template v-if="rowSelected">
-                            <span aria-hidden="true">&check;</span>
-                            <span class="sr-only">Selected</span>
-                          </template>
-                          <template v-else>
-                            <span aria-hidden="true">&nbsp;</span>
-                            <span class="sr-only">Not selected</span>
-                          </template>
-                        </template>
-                        <template #cell(actions)="row">
-                          <b-button
-                            size="sm"
-                            @click="
-                              deletePauseInvoice(
-                                row.item,
-                                row.index,
-                                $event.target
-                              )
-                            "
-                            class="mr-1"
-                            ><v-icon small>mdi-delete</v-icon></b-button
-                          >
-                        </template>
-                      </b-table>
-                    </v-card-text>
-                    <v-card-actions>
-                      <v-spacer></v-spacer>
-                      <v-btn
-                        color="blue darken-1"
-                        text
-                        @click="closeDialogLastOrder"
-                        >Cancel</v-btn
-                      >
-                      <v-btn
-                        color="blue darken-1"
-                        text
-                        @click="confirmLastOrder"
-                        >OK</v-btn
-                      >
-                      <v-spacer></v-spacer>
-                    </v-card-actions>
-                  </v-card>
-                </v-dialog>
-
-                <v-dialog
-                  v-model="dialogCancelInvoicePauseOrder"
-                  persistent
-                  max-width="500px"
-                >
-                  <v-card>
-                    <v-card-title class="text-h5"
-                      >ต้องการยกเลิกรายการเลขที่บิลนี้ ใช่หรือไม่?</v-card-title
-                    >
-                    <v-card-actions>
-                      <v-spacer></v-spacer>
-                      <v-btn
-                        color="blue darken-1"
-                        text
-                        @click="closeDialogCancelInvoicePauseOrder"
-                        >Cancel</v-btn
-                      >
-                      <v-btn
-                        color="blue darken-1"
-                        text
-                        @click="confirmCancelInvoicePauseOrder"
-                        >OK</v-btn
-                      >
-                      <v-spacer></v-spacer>
-                    </v-card-actions>
-                  </v-card>
-                </v-dialog>
               </v-toolbar>
             </template>
             <template v-slot:item.actions="{ item }">
-              <!-- <v-icon small class="mr-2" @click="editItem(item)">mdi-pencil</v-icon> -->
-              <!-- <v-icon small @click="deleteItem(item)">mdi-delete</v-icon> -->
+              <v-icon small class="mr-2" @click="editItem(item)"
+                >mdi-pencil</v-icon
+              >
+              <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
             </template>
           </v-data-table>
         </b-tab>
-        <!-- <b-tab title="Second"><p>I'm the second tab</p></b-tab> -->
-        <!-- <b-tab title="Disabled" disabled><p>I'm a disabled tab!</p></b-tab> -->
       </b-tabs>
     </b-card>
   </div>
@@ -909,7 +969,7 @@ export default {
       invoiceNo: "",
       pause: false,
       today: dayjs().format("DD-MM-YYYY"),
-      saleDate: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+      saleDate: dayjs().format("YYYY-MM-DD HH:mm"),
       headers: [
         { text: "Invoice No", value: "invoiceNo" },
         { text: "Order Date", sortable: true, value: "orderDate" },
@@ -921,6 +981,7 @@ export default {
         { text: "Received", value: "received" },
         { text: "change", value: "change" },
       ],
+
       listInvoice: [],
       productfields: [
         {
@@ -1003,12 +1064,15 @@ export default {
       saleTotal: 0,
       discountTotal: 0,
       net: 0,
+      taxs: 0,
+      taxsTotal: 0,
       cashIn: 0,
       remark: "",
       selectCancelInvoiceIndex: 0,
       currentItemIndex: 0,
-      itemIndex: 0, 
+      itemIndex: 0,
       userInfo: {},
+      paymentMethod: undefined,
     };
   },
   mounted: function () {
@@ -1040,18 +1104,27 @@ export default {
         this.calPoints();
       }
       this.userInfo = JSON.parse(this.$store.state.userInfo);
+
       this.generateNewInvoice();
     }
   },
   methods: {
+    formatPrice(value) {
+      let val = (value / 1).toFixed(2).replace(",", ".");
+      return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    },
+    debugRow(row) {
+      console.log(row);
+    },
     addItem() {
       /* TODO: ยิง api เพื่อรับข้อมูลสินค้า */
       let data = {
         productId: this.productInput,
         productName: "Dickerson" + this.productInput,
-        pricePerItem: "100",
+        pricePerItem: "1000",
         discount: "5",
         point: 10,
+        taxs: 7,
       };
       /******************************/
       if (this.items.length !== 0) {
@@ -1060,15 +1133,24 @@ export default {
         );
         if (selectProduct) {
           let qty = parseInt(selectProduct.saleQty);
-          qty = this.saleQty == 1 ? qty + 1 : parseInt(this.saleQty);
-          selectProduct.saleQty = qty;
-          selectProduct.total =
-            parseInt(selectProduct.pricePerItem) * parseInt(qty);
+          // qty = this.saleQty == 1 ? qty + 1 : parseInt(this.saleQty);
+          if (parseInt(this.saleQty) < 0) {
+            alert("จำนวนสินค้าไม่ถูกต้อง");
+          } else {
+            selectProduct.saleQty = qty + parseInt(this.saleQty);
+            selectProduct.total =
+              parseInt(selectProduct.pricePerItem) * parseInt(qty);
+          }
         } else {
           this.items.push({
             ...data,
             saleQty: parseInt(this.saleQty),
             total: parseInt(data.pricePerItem) * parseInt(this.saleQty),
+            taxs:
+              (parseInt(data.pricePerItem) *
+                parseInt(this.saleQty) *
+                parseInt(data.taxs)) /
+              (100 + parseInt(data.taxs)),
           });
         }
       } else {
@@ -1076,12 +1158,18 @@ export default {
           ...data,
           saleQty: parseInt(this.saleQty),
           total: parseInt(data.pricePerItem) * parseInt(this.saleQty),
+          taxs:
+            (parseInt(data.pricePerItem) *
+              parseInt(this.saleQty) *
+              parseInt(data.taxs)) /
+            (100 + parseInt(data.taxs)),
         });
       }
       this.calSaleTotal();
       this.calPoints();
 
       this.productInput = "";
+      this.saleQty = 1;
       this.$refs.productInput.focus();
       this.currentOrder();
     },
@@ -1089,8 +1177,10 @@ export default {
       this.saleTotal = 0;
       this.discountTotal = 0;
       this.net = 0;
+      this.taxsTotal = 0;
 
       this.items.forEach((e) => {
+        this.taxsTotal += parseFloat(e.taxs);
         this.saleTotal += parseInt(e.total);
         this.discountTotal += parseInt(e.discount);
       });
@@ -1321,7 +1411,7 @@ export default {
         });
       } else if (this.items.length == 0) {
         alert("ไม่พบข้อมูล, รายการซื้อสินค้า");
-      } else if (this.paymentMethod == undefined && this.paymentMethod == null  && this.paymentMethod == "") {
+      } else if (this.paymentMethod == undefined) {
         alert("ไม่พบข้อมูลวิธีการชำระเงิน");
       } else if (
         this.paymentMethod == "cash" &&
@@ -1401,8 +1491,85 @@ export default {
 </script>
 
 <style>
-.item-table {
-  height: 25vh;
+@media screen and (max-height: 450px) {
+  .overlay .closebtn {
+    font-size: 40px;
+    top: 15px;
+    right: 35px;
+  }
+}
+.row {
+  --bs-gutter-x: 0.5rem !important;
+  --bs-gutter-y: 0;
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: calc(-1 * var(--bs-gutter-y));
+  margin-right: calc(-0.5 * var(--bs-gutter-x));
+  margin-left: calc(-0.5 * var(--bs-gutter-x));
+}
+body {
+  margin: 0;
+  color: white;
+}
+
+.containers {
+  background: grey;
+  width: 100vw !important;
+  height: 100vh;
+}
+
+.navbar {
+  height: 22vh;
+  background: rgb(46, 199, 201);
+  margin: 0 10px;
+}
+
+.bottom {
+  background: lightgrey;
+  height: 85vh;
+  margin: 0 10px;
+  display: flex;
+}
+
+.left-bottom {
+  background: rgb(151, 151, 151);
+  width: 76%;
+  display: flex;
+  flex-direction: column;
+}
+
+.right-bottom {
+  overflow: scroll;
+  flex: 1;
+  background: rgb(46, 199, 201);
+}
+
+.content-list-item {
+  /* display: flex; */
+  height: 60%;
   overflow-y: scroll;
+  background: rgb(255, 255, 255);
+}
+
+.Calc-Price {
+  flex: 1;
+  background: rgb(46, 199, 201);
+}
+
+.content {
+  width: 80%;
+  background: rgb(46, 199, 201);
+}
+
+.list {
+  flex: 1;
+}
+.input-group-text {
+  font-family: "FontAwesome";
+  font-size: 14px !important;
+}
+.form-control {
+  font-family: "FontAwesome";
+  font-size: 14px !important;
 }
 </style>
