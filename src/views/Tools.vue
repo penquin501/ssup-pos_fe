@@ -271,13 +271,16 @@
                                             <v-radio v-for="device in listDevice" :key="device.id" :label="`${device.hwName} (${device.serialNo})`" :value="device" ></v-radio>
                                         </v-radio-group>
                                     </v-card-text>
+                                    <v-card-text v-else-if="listDevice.length == 1">
+                                        ระบบจะ {{ listDevice[0].status ? 'ปิด': 'เปิด'}} ใช้งาน {{ listDevice[0].hwName }} ({{ listDevice[0].serialNo }} ) อัตโนมัติ
+                                    </v-card-text>
                                     <v-card-text v-else>
                                         ไม่สามารถปิด อุปกรณ์นี้ได้ เนื่องจาก ไม่มีอุปกรณ์อื่นมาใช้งานแทน
                                     </v-card-text>
                                     <v-card-actions>
                                         <v-spacer></v-spacer>
                                         <v-btn color="blue darken-1" text @click.prevent="dialogConfirmStatus=false">Cancel</v-btn>
-                                        <v-btn color="blue darken-1" text v-if="listDevice.length > 1" @click.prevent="confirmHardwareStatus()" >OK</v-btn>
+                                        <v-btn color="blue darken-1" text v-if="listDevice.length > 0" @click.prevent="confirmHardwareStatus()" >OK</v-btn>
                                         <v-btn color="blue darken-1" text v-else @click.prevent="confirmHardwareStatus()" disabled>OK</v-btn>
                                         <v-spacer></v-spacer>
                                     </v-card-actions>
@@ -963,36 +966,39 @@ const today = dayjs().format(dtFormat);
             }
         },
         confirmHardwareStatus () {
-            // TODO!!!!!
-            /**
-             * เช็คว่า อุปกรณ์ เปิดหรือปิดอยู่
-             * ถ้า เปิดอยู่ ต้องการจะ ปิด
-             * - ไล่ปิดทุกตัวก่อนแล้วค่อย เปิด ตัวที่ต้องการ
-             * ถ้า ปิดอยู่ ต้องการจะ เปิด
-             * - ไล่ปิดทุกตัวก่อนแล้วค่อย เปิด ตัวที่ต้องการ
-             */
-
-            // if(this.listDevice.length > 1) {
-            // if (this.listDevice.length > 1 && this.selectedDevice == "") {
-            //     alert(`กรุณาเลือกอุปกรณ์ที่ต้องการใช้แทน`);
-            //     return;
-            // } else {
-
-            // }
-            // if(!this.selectedHardware) {
-            //     //ต้องการเปิดอุปกรณ์
-            //     this.selectedHardware.status = !this.selectedHardware.status;
-            //     this.listDevice.forEach(e => {
-            //         e.status = !e.status;
-            //     });
-            // }
-            // // } else {
-            //     this.selectedHardware.status = !this.selectedHardware.status;
-            //     this.selectedHardware.expiredDate = dayjs().format(dtFormat);
-            //     this.selectedDevice.status = !this.selectedDevice.status;
-            // // }
-            
-            // this.dialogConfirmStatus = false;
+            if(this.selectedHardware.status) {
+                //ต้องการปิดอุปกรณ์
+                if(this.listDevice.length > 1) {
+                    if (this.selectedDevice == "") {
+                        alert("กรุณาเลือกอุปกรณ์ที่ต้องการเปิดใช้งาน");
+                        return;
+                    } else {
+                        this.closeSelectDevice();
+                    }
+                } else {
+                    this.selectedDevice = this.listDevice[0];
+                    this.closeSelectDevice();
+                }
+            } else {
+                //ต้องการเปิดอุปกรณ์
+                this.listDevice.forEach(e => {
+                    e.status = false;
+                    e.expiredDate = dayjs().format(dtFormat);
+                });
+                this.selectedHardware.status = true;
+            }
+            this.dialogConfirmStatus = false;
+        },
+        closeSelectDevice () {
+            this.selectedHardware.status = false;
+            this.selectedHardware.expiredDate = dayjs().format(dtFormat);
+            let checkEquip = this.hardwareLogsItems.find(
+                ele => ele.serialNo == this.selectedDevice.serialNo && ele.hwName == this.selectedDevice.hwName
+            );
+            if (checkEquip !== undefined) {
+                checkEquip.status = true;
+            }
+            this.selectedDevice = "";
         },
         changeHardwareStatus(item) {
             this.dialogConfirmStatus = true;
