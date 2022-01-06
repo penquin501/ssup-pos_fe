@@ -93,6 +93,7 @@ export default {
       ];
 
       this.userInfo = JSON.parse(this.$store.state.userInfo);
+      
       if (this.userInfo.listUserPermission == undefined) {
         this.items = menuItems;
       } else {

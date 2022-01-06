@@ -607,8 +607,8 @@ const today = dayjs().format(dtFormat);
             this.listUser[this.editedIndex].listUserPermission = this.listUserPermission;
             this.$store.commit("setListUser", this.listUser); //save permission ในแต่ละเมนู
 
-            // this.userInfo.listUserPermission = this.listUserPermission; 
-            // this.$store.commit("updatePermission", JSON.stringify(this.userInfo)); //save ข้อมูลใน User login
+            this.userInfo.listUserPermission = this.listUserPermission; 
+            this.$store.commit("updatePermission", JSON.stringify(this.userInfo)); //save ข้อมูลใน User login
 
             this.dialog = false;
             this.$router.go();
