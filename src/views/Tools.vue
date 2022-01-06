@@ -297,8 +297,19 @@
                         </template>
                     </v-data-table>
                 </b-tab>
-                <!-- <b-tab title="User Tree">
-                </b-tab> -->
+                <b-tab title="User Tree">
+                    <v-text-field v-model="searchUser" @change="defaultEmployee" append-icon="mdi-magnify" label="Search" clearable single-line clear-icon="mdi-close-circle-outline" hide-details ></v-text-field>
+                    <v-data-table style="margin-top: 10px;" :headers="headersEmployee" :items="displayDataFromSearch" :expanded.sync="expanded" item-key="empId" show-expand class="elevation-1">
+                        <template v-slot:item.empName="{ item }">
+                            {{ item.empName }}({{ item.children.length }})
+                        </template>
+                        <template v-slot:expanded-item="{ headers, item }">
+                            <td :colspan="headers.length">
+                                <v-treeview :items="item.children"></v-treeview>
+                            </td>
+                        </template>
+                    </v-data-table>
+                </b-tab>
                 <!-- <b-tab title="Invoice Templates">
                 </b-tab> -->
                 <!-- <b-tab title="Software Logs">
@@ -494,7 +505,17 @@ const today = dayjs().format(dtFormat);
           { value: 'WEBCAM', text: 'WEBCAM' }
         ],
         listDevice: [],
-        selectedDevice: ''
+        selectedDevice: '',
+        dataEmployee: [],
+        searchUser: null,
+        listEmployee: [],
+        headersEmployee: [
+          { text: 'Employee ID', value: 'empId'},
+          { text: 'Employee Name', value: 'empName' },
+          { text: '', value: 'data-table-expand' },
+        ],
+        expanded: [],
+        displayDataFromSearch: [],
       }
     },
     mounted: function () {
@@ -515,6 +536,7 @@ const today = dayjs().format(dtFormat);
             this.setListUserToStore();
             this.getCurrentVersion();
             this.getHardwareInfo();
+            // this.defaultEmployee();
         }
     },
     methods: {
@@ -1013,6 +1035,62 @@ const today = dayjs().format(dtFormat);
 
             this.displayHardware = item.status ? 'ปิด': 'เปิด';
             this.displayHardware += " "+`${item.hwName} (${item.serialNo})`;
+        },
+        defaultEmployee() {
+            this.dataEmployee =[];
+            this.displayDataFromSearch =[];
+            if(this.searchUser.length >= 5) {
+                this.dataEmployee =[
+                    {
+                        empId: '10001',
+                        empName: 'test1 test1',
+                        empMember: '20001|20002|10001',
+                    },
+                    {
+                        empId: '10002',
+                        empName: 'test2 test2',
+                        empMember: '10001|10002',
+                    },
+                    {
+                        empId: '10003',
+                        empName: 'test3 test3',
+                        empMember: '10001|10003',
+                    },
+                    {
+                        empId: '10004',
+                        empName: 'test4 test4',
+                        empMember: '10001|10002|10004',
+                    },
+                ];
+                let checkMember = this.dataEmployee.find(ele => 
+                        this.searchUser == ele.empId
+                );
+                if(checkMember !== undefined) {
+                    this.generateDataToTreeFormat();
+                } else {
+                    this.dataEmployee =[];
+                }
+            }
+        },
+        generateDataToTreeFormat() {
+            this.dataEmployee.forEach((e) => {
+                e.member = e.empMember.split('|');
+                e.children = [];
+                
+                for(let el of e.member) {
+                    let checkMember = this.dataEmployee.find(ele => 
+                        el == ele.empId && el !== e.member[e.member.length-1]
+                    );
+                    if(checkMember !== undefined) {
+                        let obj = {};
+                        obj.name = e.empName;
+                        checkMember.children.push(obj);
+                    }
+                }
+            });
+            let checkMember = this.dataEmployee.find(ele => this.searchUser == ele.empId);
+
+            this.displayDataFromSearch = [checkMember];
         },
         isValidation(data, key, defaultValue) {
             if (data[key] == "") {
