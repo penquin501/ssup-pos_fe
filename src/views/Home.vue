@@ -6,40 +6,14 @@
           <v-card>
             <v-card-text class="v-application--wrap fill-height">
               <div class="layout column align-center">
-                <img
-                  src="img/auth/ssup-logo.svg"
-                  alt="Vue Vuetify Admin Logo"
-                  width="200"
-                  height="200"
-                />
+                <img src="img/auth/ssup-logo.svg" alt="Vue Vuetify Admin Logo" width="200" height="200"/>
                 <h1 class="text-center my-4 primary--text"></h1>
               </div>
               <v-form>
-                <v-text-field
-                  v-model="loginForm.username"
-                  ref="username"
-                  append-icon="mdi-account"
-                  name="username"
-                  type="text"
-                  required
-                  autocomplete="username"
-                />
-                <v-text-field
-                  v-model="loginForm.password"
-                  ref="password"
-                  append-icon="mdi-lock"
-                  name="password"
-                  type="password"
-                  required
-                  autocomplete="current-password"
-                />
+                <v-text-field v-model="loginForm.username" ref="username" append-icon="mdi-account" name="username" type="text" required autocomplete="username" />
+                <v-text-field v-model="loginForm.password" ref="password" append-icon="mdi-lock" name="password" type="password" required autocomplete="current-password"/>
                 <div>
-                  <v-btn
-                    class="form-control"
-                    color="success"
-                    @click.prevent="login"
-                    >login</v-btn
-                  >
+                  <v-btn class="form-control" color="success" @click.prevent="login">login</v-btn>
                 </div>
               </v-form>
             </v-card-text>
@@ -65,6 +39,7 @@ export default {
       loginForm: {
         username: "",
         password: "",
+        type: "UNLOCK_FINGER_LOGIN"
       },
       state: "login",
       showMain: false,
@@ -96,6 +71,7 @@ export default {
             );
             this.loginForm.username = "";
             this.loginForm.password = "";
+            this.$i18n.locale = 'en';
           }
         })
         .catch((err) => {

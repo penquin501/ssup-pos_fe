@@ -530,13 +530,12 @@ const today = dayjs().format(dtFormat);
             });
         } else {
             this.userInfo = JSON.parse(this.$store.state.userInfo);
-            this.userRoles = this.userInfo.roles == "Admin" ? false: true;
+            this.userRoles = this.userInfo.data.roles == "Admin" ? false: true;
 
             this.listUser = this.$store.state.listUser.length == 0? this.listUser: this.$store.state.listUser;
             this.setListUserToStore();
             this.getCurrentVersion();
             this.getHardwareInfo();
-            // this.defaultEmployee();
         }
     },
     methods: {
@@ -608,8 +607,8 @@ const today = dayjs().format(dtFormat);
             this.listUser[this.editedIndex].listUserPermission = this.listUserPermission;
             this.$store.commit("setListUser", this.listUser); //save permission ในแต่ละเมนู
 
-            this.userInfo.listUserPermission = this.listUserPermission; 
-            this.$store.commit("updatePermission", JSON.stringify(this.userInfo)); //save ข้อมูลใน User login
+            // this.userInfo.listUserPermission = this.listUserPermission; 
+            // this.$store.commit("updatePermission", JSON.stringify(this.userInfo)); //save ข้อมูลใน User login
 
             this.dialog = false;
             this.$router.go();
@@ -1062,9 +1061,7 @@ const today = dayjs().format(dtFormat);
                         empMember: '10001|10002|10004',
                     },
                 ];
-                let checkMember = this.dataEmployee.find(ele => 
-                        this.searchUser == ele.empId
-                );
+                let checkMember = this.dataEmployee.find(ele => this.searchUser == ele.empId);
                 if(checkMember !== undefined) {
                     this.generateDataToTreeFormat();
                 } else {

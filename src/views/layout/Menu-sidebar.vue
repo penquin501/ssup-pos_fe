@@ -93,11 +93,10 @@ export default {
       ];
 
       this.userInfo = JSON.parse(this.$store.state.userInfo);
-
       if (this.userInfo.listUserPermission == undefined) {
         this.items = menuItems;
       } else {
-        this.listUserPermission = this.userInfo.listUserPermission;
+        this.listUserPermission = JSON.parse(this.userInfo.listUserPermission);
         for (let item of this.listUserPermission) {
           for (const [key, value] of Object.entries(item)) {
             for (let ele of menuItems) {
