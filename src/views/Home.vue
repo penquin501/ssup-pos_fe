@@ -28,7 +28,8 @@
             <v-card-text class="v-application--wrap fill-height">
               <div class="layout column align-center">
                 <img src="img/auth/ssup-logo.svg" alt="Vue Vuetify Admin Logo" width="200" height="200"/>
-                <img src="img/auth/fingerprint.png" width="200" height="200"/>
+
+                <b-button variant="light" @click.prevent="login()"><img src="img/auth/fingerprint.png" width="200" height="200"/></b-button>
               </div>
               <v-form style="text-align: center;">
                 <div>
@@ -92,7 +93,7 @@ export default {
       loginForm: {
         username: "",
         password: "",
-        type: ""
+        type: "UNLOCK_FINGER_LOGIN"
       },
       state: "login",
       showMain: false,
@@ -133,6 +134,7 @@ export default {
       if(this.loginForm.type == "LOCK_FINGER_SCAN") {
         this.loginForm.username = "Admin";
         this.loginForm.password = "123456";
+        this.loginForm.type = "UNLOCK_FINGER_LOGIN";
       } 
       if(this.loginForm.type == "LOCK_IDCARD_LOGIN") {
         if(this.passIdCard == ""){
@@ -189,3 +191,10 @@ export default {
   },
 };
 </script>
+<style>
+.btn-outline-secondary {
+    /* color: #fff;  */
+    background-color: transparent;
+    border-color: transparent;
+}
+</style>
