@@ -2,7 +2,7 @@
   <div>
       <b-card>
             <b-tabs content-class="mt-3">
-                <b-tab title="Permission" >
+                <b-tab v-if="listMenu.find(name => name=='Permission')" title="Permission" >
                     <v-data-table :headers="headersUser" :items="listUser" :search="search" sort-by="name" class="elevation-1">
                         <template v-slot:top>
                         <v-toolbar flat>
@@ -10,15 +10,19 @@
                             <v-divider class="mx-4" inset vertical></v-divider>
                             <v-spacer></v-spacer>
                             <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details></v-text-field>
-                            <v-dialog v-model="dialog" max-width="800px" :retain-focus="false" persistent>
+                            <v-dialog v-model="dialog" max-width="850px" :retain-focus="false" persistent>
                                 <v-card style="background-color: white; color: black; width: 200vw; height: auto; margin: 0;">
                                     <v-card-text>
                                         <v-container>
                                             <b-table :items="listPermission" :fields="headers" >
                                                 <template #cell(actions)="row" style="text-align: center;">
                                                     <b-form-group v-slot="{ ariaDescribedby }">
-                                                        <b-form-checkbox-group id="checkbox-group-2" style="display: flex;" v-model="row.item.selected" :aria-describedby="ariaDescribedby" name="flavour-2">
-                                                            <b-form-checkbox :disabled="userRoles" v-for="(option, index) in options" :key="option.id" :value="option.value">{{ option.text }} &nbsp;&nbsp;</b-form-checkbox>
+                                                        <b-form-checkbox-group id="checkbox-group-1" style="display: flex;" v-model="row.item.selected" :aria-describedby="ariaDescribedby" name="flavour-1">
+                                                            <b-form-checkbox :disabled="userRoles" v-for="(option, index) in options" :key="option.id" :value="option.value">&nbsp;{{ option.text }}&nbsp;&nbsp;</b-form-checkbox>
+                                                        </b-form-checkbox-group>
+                                                        <v-subheader style="padding-left: 0px;" v-if="row.item.menus.length !== 0 && row.item.selected.length !== 0">{{ $t("message.subMenu") }}</v-subheader>
+                                                        <b-form-checkbox-group v-if="row.item.menus.length !== 0 && row.item.selected.length !== 0" id="checkbox-group-2" style="display: flex;" v-model="row.item.selectedMenu" :aria-describedby="ariaDescribedby" name="flavour-2">
+                                                            <b-form-checkbox :disabled="userRoles" v-for="(menu, index) in row.item.menus" :key="menu.id" :value="menu.text">&nbsp;{{ menu.text }}&nbsp;&nbsp;</b-form-checkbox>
                                                         </b-form-checkbox-group>
                                                     </b-form-group>
                                                 </template>
@@ -39,7 +43,7 @@
                         </template>
                     </v-data-table>
                 </b-tab>
-                <b-tab title="Shop Info">
+                <b-tab v-if="listMenu.find(name => name=='Shop Info')" title="Shop Info">
                     <b-card no-body v-if="shopInfo[0].shop_id == '' && overlay == false">
                         <b-card-header><v-icon>mdi-key-variant</v-icon> Purchase Code</b-card-header>
                         <b-card-body class="text-center">
@@ -89,7 +93,7 @@
                         </b-card-body>
                     </b-card>
                 </b-tab>
-                <b-tab title="Test Equipment">
+                <b-tab v-if="listMenu.find(name => name=='Test Equipment')" title="Test Equipment">
                     <b-row style="text-align: center;">
                         <b-col sm="3">
                             <b-img center style="width: 150px;" src="img/setting/etc.png"></b-img>
@@ -145,7 +149,7 @@
                         </v-card>
                     </v-dialog>
                 </b-tab>
-                <b-tab title="Update Data">
+                <b-tab v-if="listMenu.find(name => name=='Update Data')" title="Update Data">
                     <v-data-table :headers="headersVersion" :items="lastestVersion" sort-by="type" class="elevation-1">
                         <template v-slot:item.index="{ item, index }">
                             {{ index + 1 }}
@@ -218,7 +222,7 @@
                         </template>
                     </v-data-table>
                 </b-tab>
-                <b-tab title="Hardware Logs">
+                <b-tab v-if="listMenu.find(name => name=='Hardware Logs')" title="Hardware Logs">
                     <v-data-table :headers="headersHardwareLogs" :items="hardwareLogsItems" sort-by="serialNo" sort-desc class="elevation-1">
                         <template v-slot:top>
                         <v-toolbar flat >
@@ -297,7 +301,7 @@
                         </template>
                     </v-data-table>
                 </b-tab>
-                <b-tab title="User Tree">
+                <b-tab v-if="listMenu.find(name => name=='User Tree')" title="User Tree">
                     <v-text-field v-model="searchUser" @change="defaultEmployee" append-icon="mdi-magnify" label="Search" clearable single-line clear-icon="mdi-close-circle-outline" hide-details ></v-text-field>
                     <v-data-table style="margin-top: 10px;" :headers="headersEmployee" :items="displayDataFromSearch" :expanded.sync="expanded" item-key="empId" show-expand class="elevation-1">
                         <template v-slot:item.empName="{ item }">
@@ -332,6 +336,7 @@ const today = dayjs().format(dtFormat);
     data () {
       return {
         search: "",
+        listMenu: [],
         listUserPermission: [],
         headers: [
           { key: 'name', label: 'Topic' },
@@ -350,21 +355,21 @@ const today = dayjs().format(dtFormat);
         //   { value: 'shopId', text: 'Shop Id' },
           { value: 'spec', text: 'Spec' },
           { value: 'group', text: 'Hardware Group' },
-        //   { value: 'ipAddress', text: 'Hardware IP' },
+          { value: 'ipAddress', text: 'Hardware IP' },
           { value: 'registerDate', text: 'Register Date' },
           { value: 'expiredDate', text: 'Expired Date' },
           { value: 'status', text: 'Status' },
           { value: 'actions', text: 'Actions' }
         ],
         listPermission: [
-          { name: 'Dashboard', selected: [] },
-          { name: 'Sale', selected: [] },
-          { name: 'Stock', selected: [] },
-          { name: 'Member Register', selected: [] },
-          { name: 'Off Promotion', selected: [] },
-          { name: 'Report', selected: [] },
-          { name: 'Tools', selected: [] },
-          { name: 'Audit', selected: [] },
+        //   { name: 'Dashboard', selected: [] },
+        //   { name: 'Sale', selected: [] },
+        //   { name: 'Stock', selected: [] },
+        //   { name: 'Member Register', selected: [] },
+        //   { name: 'Off Promotion', selected: [] },
+        //   { name: 'Report', selected: [] },
+        //   { name: 'Tools', selected: [] },
+        //   { name: 'Audit', selected: [] },
         ],
         options: [
           { text: 'Read', value: 'r', selected: 0, },
@@ -484,18 +489,18 @@ const today = dayjs().format(dtFormat);
         matchedVersion: false,
         hardwareLogsItems: [],
         formHardwareInfo: {
-                hwId: '',
-                hwName: '',
-                serialNo: Math.floor(Math.random() * 1000000000)+1,
-                brand: '',
-                shopId: '',
-                group: 'EDC',
-                ipAddress: '',
-                spec: '',
-                registerDate: dayjs().format("YYYY-MM-DD"),
-                expiredDate: '',
-                status: true,
-            },
+            hwId: '',
+            hwName: '',
+            serialNo: Math.floor(Math.random() * 1000000000)+1,
+            brand: '',
+            shopId: '',
+            group: 'EDC',
+            ipAddress: '',
+            spec: '',
+            registerDate: dayjs().format("YYYY-MM-DD"),
+            expiredDate: '',
+            status: true,
+        },
         displayHardware: '',
         selectedHardware: null,
         optionsGroup: [
@@ -532,6 +537,16 @@ const today = dayjs().format(dtFormat);
             this.userInfo = JSON.parse(this.$store.state.userInfo);
             this.userRoles = this.userInfo.data.roles == "Admin" ? false: true;
 
+            /* Default User Menu*/
+            let userMenu = JSON.parse(this.userInfo.listUserPermission);
+            for(let item of userMenu){
+                for (const [key, value] of Object.entries(item)) {
+                    if(key == this.$route.name) {
+                        this.listMenu = item.SubMenu;
+                    }
+                }
+            }
+
             this.listUser = this.$store.state.listUser.length == 0? this.listUser: this.$store.state.listUser;
             this.setListUserToStore();
             this.getCurrentVersion();
@@ -541,14 +556,31 @@ const today = dayjs().format(dtFormat);
     methods: {
         defaultPermission() {
             this.listPermission = [
-                { name: 'Dashboard', selected: [] },
-                { name: 'Sale', selected: [] },
-                { name: 'Stock', selected: [] },
-                { name: 'Member Register', selected: [] },
-                { name: 'Off Promotion', selected: [] },
-                { name: 'Report', selected: [] },
-                { name: 'Tools', selected: [] },
-                { name: 'Audit', selected: [] },
+                { name: 'Dashboard', menus: [], selectedMenu: [], selected: [] },
+                { 
+                    name: 'Sale', 
+                    menus: [
+                        { text: 'Sale Bill', selected: 0 }
+                    ], 
+                    selectedMenu: [],
+                    selected: [] },
+                { name: 'Stock', menus: [], selectedMenu: [], selected: [] },
+                { name: 'Member Register', menus: [], selectedMenu: [], selected: [] },
+                { name: 'Off Promotion', menus: [], selectedMenu: [], selected: [] },
+                { name: 'Report', menus: [], selectedMenu: [], selected: [] },
+                {   
+                    name: 'Tools', 
+                    menus: [
+                        { text: 'Permission', selected: 0 }, 
+                        { text: 'Shop Info', selected: 0 },
+                        { text: 'Test Equipment', selected: 0 },
+                        { text: 'Update Data', selected: 0 },
+                        { text: 'Hardware Logs', selected: 0 },
+                        { text: 'User Tree', selected: 0 },
+                    ],
+                    selectedMenu: [], 
+                    selected: [] },
+                { name: 'Audit', menus: [], selectedMenu: [], selected: [] },
             ];
         },
         setListUserToStore() {
@@ -562,8 +594,11 @@ const today = dayjs().format(dtFormat);
                 for (const [key, value] of Object.entries(item)) {
                     for (const [k, v] of Object.entries(value)) {
                         for(let ele of this.listPermission) {
-                            if(ele.name == key && v == 1) {
-                                ele.selected.push(k);
+                            if(ele.name == key) {
+                                if(v == 1) {
+                                    ele.selected.push(k);
+                                }
+                                ele.selectedMenu = item.SubMenu;
                             }
                         }
                     }
@@ -578,8 +613,7 @@ const today = dayjs().format(dtFormat);
                         this.lKey.push(key);
                     }
                 }
-                let selectedIndex = this.lKey.indexOf(selectedItem.name);    
-
+                let selectedIndex = this.lKey.indexOf(selectedItem.name);
                 if(selectedItem.selected.length == 0) {
                     if(selectedIndex !== -1) {
                         this.listUserPermission.splice(selectedIndex, 1);
@@ -601,13 +635,14 @@ const today = dayjs().format(dtFormat);
                     for(let opt of selectedItem.selected) {
                         obj[selectedItem.name][opt] = 1;
                     }
+                    obj["SubMenu"] = selectedItem.selectedMenu;
                     this.listUserPermission.push(obj);
                 }
             }
             this.listUser[this.editedIndex].listUserPermission = this.listUserPermission;
             this.$store.commit("setListUser", this.listUser); //save permission ในแต่ละเมนู
 
-            this.userInfo.listUserPermission = this.listUserPermission; 
+            this.userInfo.listUserPermission = JSON.stringify(this.listUserPermission);
             this.$store.commit("updatePermission", JSON.stringify(this.userInfo)); //save ข้อมูลใน User login
 
             this.dialog = false;

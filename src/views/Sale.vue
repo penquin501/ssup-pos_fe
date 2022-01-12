@@ -2,24 +2,24 @@
   <div>
     <b-card>
       <b-tabs content-class="mt-3">
-        <b-tab title="บิลขาย" active>
-          <v-data-table :headers="headers" :items="listInvoice" :search="searchInvoice" sort-by="orderDate" class="elevation-1">
-            <template v-slot:item.paymentMethod="{ item }">
+        <b-tab v-if="listMenu.find(name => name=='Sale Bill')" title="Sale Bill" active>
+          <!-- <v-data-table :headers="headers" :items="listInvoice" :search="searchInvoice" sort-by="orderDate" class="elevation-1"> -->
+            <!-- <template v-slot:item.paymentMethod="{ item }">
               {{ item.paymentMethod == "creditCard" ? "บัตรเครดิต" : "เงินสด" }}
-            </template>
-            <template v-slot:top>
-              <v-toolbar flat>
-                <v-toolbar-title>รายการขายสินค้า {{ today }}</v-toolbar-title>
-                <v-divider class="mx-4" inset vertical></v-divider>
+            </template> -->
+            <!-- <template v-slot:top> -->
+              <!-- <v-toolbar flat> -->
+                <!-- <v-toolbar-title>รายการขายสินค้า {{ today }}</v-toolbar-title> -->
+                <!-- <v-divider class="mx-4" inset vertical></v-divider> -->
 
-                <v-spacer></v-spacer>
-                <v-text-field
+                <!-- <v-spacer></v-spacer> -->
+                <!-- <v-text-field
                   v-model="searchInvoice"
                   append-icon="mdi-magnify"
                   label="ใส่เลข Invoice No"
                   single-line
                   hide-details
-                ></v-text-field>
+                ></v-text-field> -->
                 <v-spacer></v-spacer>
 
                 <v-dialog
@@ -935,15 +935,13 @@
                     </v-card-text>
                   </v-card>
                 </v-dialog>
-              </v-toolbar>
-            </template>
+              <!-- </v-toolbar> -->
+            <!-- </template> -->
             <template v-slot:item.actions="{ item }">
-              <v-icon small class="mr-2" @click="editItem(item)"
-                >mdi-pencil</v-icon
-              >
+              <v-icon small class="mr-2" @click="editItem(item)">mdi-pencil</v-icon>
               <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
             </template>
-          </v-data-table>
+          <!-- </v-data-table> -->
         </b-tab>
       </b-tabs>
     </b-card>
@@ -956,9 +954,9 @@ import dayjs from "dayjs";
 export default {
   data() {
     return {
-      dialog: false,
+      dialog: true,
       absolute: true,
-      overlay: false,
+      overlay: true,
       search: null,
       searchInvoice: "",
       dialogDelete: false,
@@ -970,6 +968,7 @@ export default {
       pause: false,
       today: dayjs().format("DD-MM-YYYY"),
       saleDate: dayjs().format("YYYY-MM-DD HH:mm"),
+      listMenu: [],
       headers: [
         { text: "Invoice No", value: "invoiceNo" },
         { text: "Order Date", sortable: true, value: "orderDate" },
@@ -1105,6 +1104,15 @@ export default {
       }
       this.userInfo = JSON.parse(this.$store.state.userInfo);
 
+      /* Default User Menu*/
+      let userMenu = JSON.parse(this.userInfo.listUserPermission);
+      for(let item of userMenu){
+          for (const [key, value] of Object.entries(item)) {
+              if(key == this.$route.name) {
+                  this.listMenu = item.SubMenu;
+              }
+          }
+      }
       this.generateNewInvoice();
     }
   },

@@ -10,7 +10,7 @@
                 <h1 class="text-center my-4 primary--text"></h1>
                 <v-form>
                   <v-text-field v-model="loginForm.username" ref="username" append-icon="mdi-account" name="username" type="text" required autocomplete="username" />
-                  <v-text-field v-model="loginForm.password" ref="password" append-icon="mdi-lock" name="password" type="password" required autocomplete="current-password"/>
+                  <v-text-field v-model="loginForm.password" ref="password" append-icon="mdi-lock" name="password" type="password" required autocomplete="current-password" @keyup.enter="login"/>
                   <div>
                     <v-btn class="form-control" color="success" @click.prevent="login">login</v-btn>
                   </div>

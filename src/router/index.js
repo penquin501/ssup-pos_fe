@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Sale from '../views/Sale.vue'
 import Tools from '../views/Tools.vue'
+import Report from '../views/Report.vue'
 
 Vue.use(VueRouter)
 
@@ -21,6 +22,11 @@ const routes = [
     path: '/tools',
     name: 'Tools',
     component: Tools
+  },
+  {
+    path: '/report',
+    name: 'Report',
+    component: Report
   },
   // {
   //   path: '/about',
