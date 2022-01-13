@@ -541,11 +541,13 @@ const today = dayjs().format(dtFormat);
             let userMenu = JSON.parse(this.userInfo.listUserPermission);
             for(let item of userMenu){
                 for (const [key, value] of Object.entries(item)) {
-                    if(key == this.$route.name) {
+                    if(key == this.$route.name && item.SubMenu !== undefined) {
                         this.listMenu = item.SubMenu;
                     }
                 }
             }
+            this.listMenu = this.listMenu.length !== 0? this.listMenu: 
+                ['Permission','Shop Info','Test Equipment','Update Data','Hardware Logs','User Tree'];
 
             this.listUser = this.$store.state.listUser.length == 0? this.listUser: this.$store.state.listUser;
             this.setListUserToStore();
@@ -560,14 +562,21 @@ const today = dayjs().format(dtFormat);
                 { 
                     name: 'Sale', 
                     menus: [
-                        { text: 'Sale Bill', selected: 0 }
+                        { text: 'Sale', selected: 0 }
                     ], 
                     selectedMenu: [],
                     selected: [] },
                 { name: 'Stock', menus: [], selectedMenu: [], selected: [] },
                 { name: 'Member Register', menus: [], selectedMenu: [], selected: [] },
                 { name: 'Off Promotion', menus: [], selectedMenu: [], selected: [] },
-                { name: 'Report', menus: [], selectedMenu: [], selected: [] },
+                { 
+                    name: 'Report', 
+                    menus: [
+                        { text: 'Sale Bill', selected: 0 }, 
+                    ], 
+                    selectedMenu: [], 
+                    selected: [] 
+                },
                 {   
                     name: 'Tools', 
                     menus: [
