@@ -29,5 +29,10 @@ npm i vue-flag-icon
 npm install --save moment
 ```
 
+### install dayjs
+```
+npm install --save dayjs
+```
+
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
