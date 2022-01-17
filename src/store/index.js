@@ -12,6 +12,7 @@ export default new Vuex.Store({
     lastOrder: [],
     listInvoice: [],
     listUser: [],
+    cashierBillInfo: null,
   },
   mutations: {
     doLogin(state, data) {
@@ -36,6 +37,9 @@ export default new Vuex.Store({
     },
     setListUser(state, data) {
       state.listUser = data;
+    }, 
+    saveCashierBillInfo(state, data) {
+      state.cashierBillInfo = data;
     }, 
   },
   actions: {
