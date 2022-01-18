@@ -3,8 +3,8 @@
     <b-card>
       <b-tabs content-class="mt-3">
         <b-tab v-if="listMenu.find(name => name=='Sale')" title="Sale" active>
-          <v-btn color="primary" @click.prevent="overlay = true, dialog = true">เปิดบิล+</v-btn>
-          <v-btn color="primary" @click.prevent="overlayCashier = true, dialogCashier = true">เงินหน้าร้าน</v-btn>
+          <!-- <v-btn color="primary" @click.prevent="overlay = true, dialog = true">เปิดบิล+</v-btn> -->
+          <!-- <v-btn color="primary" @click.prevent="overlayCashier = true, dialogCashier = true">เงินหน้าร้าน</v-btn> -->
 
           <v-dialog
             v-model="dialog"
@@ -1153,7 +1153,7 @@ export default {
         two: 0,
         one: 0,
         fiftyCent: 0,
-        twentyFiveCent: 0
+        twentyFiveCent: 0,
       },
     };
   },
@@ -1200,9 +1200,22 @@ export default {
 
       this.generateNewInvoice();
       this.formCashier = this.$store.state.cashierBillInfo == null? this.formCashier: this.$store.state.cashierBillInfo;
+      this.checkCashier();
     }
   },
   methods: {
+    checkCashier () {
+      /**
+       * TODO: API check ข้อมูลเงินใน cashier
+       */
+        if(this.$store.state.cashierBillInfo == null) {
+          this.dialogCashier = true;
+          this.overlayCashier = true;
+        } else {
+          this.dialog = true;
+          this.overlay = true;
+        }
+    },
     formatPrice(value) {
       let val = (value / 1).toFixed(2).replace(",", ".");
       return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -1634,6 +1647,7 @@ export default {
         this.$store.commit("saveCashierBillInfo", this.formCashier);
         this.dialogCashier=false; 
         this.overlayCashier=false;
+        this.checkCashier();
       }
     }
   },

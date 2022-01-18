@@ -22,6 +22,11 @@ export default new Vuex.Store({
     doLogout(state) {
       state.is_login = false;
       state.userInfo = "";
+      state.currentOrder = null;
+      state.lastOrder = [];
+      state.listInvoice = [];
+      state.listUser = [];
+      state.cashierBillInfo = null;
     },
     currentOrder(state, data) {
       state.currentOrder = data;
