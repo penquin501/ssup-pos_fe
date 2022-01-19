@@ -920,7 +920,6 @@
               </v-card-actions>
             </v-card>
           </v-dialog>
-
           <v-dialog v-model="dialogCashier" max-width="500px" :retain-focus="false" persistent>
             <v-overlay :absolute="absolute" :value="overlayCashier" responsive>
               <v-card class="mx-auto" max-width="500px" light>
@@ -933,6 +932,7 @@
                 <v-card-text class="text--primary">
                   <v-row>
                       <v-col style="background-color: orange;">
+                        <label>เงินทอน</label>
                         <b-form>
                           <label>1000 :</label>
                           <b-form-input size="sm" type="number" :state="validation(formCashier.thousand)" v-model="formCashier.thousand" trim></b-form-input>
@@ -959,6 +959,7 @@
                         </b-form>
                       </v-col>
                       <v-col style="background-color: yellow;">
+                        <label>ยอดขาย</label>
                         <b-form>
                           <label>1000 :</label>
                           <b-form-input size="sm" type="number" :state="validation(formCashier.thousand)" v-model="formCashier.thousand"></b-form-input>
@@ -985,6 +986,7 @@
                         </b-form>
                       </v-col>
                       <v-col style="background-color: lightgreen;">
+                        <label>เงินสดย่อย</label>
                         <b-form>
                           <label>1000 :</label>
                           <b-form-input size="sm" type="number" :state="validation(formCashier.thousand)" v-model="formCashier.thousand"></b-form-input>
@@ -1649,7 +1651,7 @@ export default {
         this.overlayCashier=false;
         this.checkCashier();
       }
-    }
+    },
   },
 };
 </script>
