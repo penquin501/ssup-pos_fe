@@ -16,109 +16,109 @@
                 <v-btn color="primary" @click.prevent="overlayCashier = true, dialogCashier = true">ปิดยอด</v-btn>
               </v-toolbar>
             </template>
+            <v-dialog v-model="dialogCashier" max-width="500px" :retain-focus="false" persistent>
+              <v-overlay :absolute="absolute" :value="overlayCashier" responsive>
+                <v-card class="mx-auto" max-width="500px" light>
+                  <v-card-title>
+                    <b>Cashier</b>
+                    <v-spacer></v-spacer>
+                    <v-btn icon @click.prevent="dialogCashier=false, overlayCashier=false"><v-icon>mdi-close</v-icon></v-btn>
+                  </v-card-title>
+                  <v-card-subtitle class="pb-0">กรุณากรอกจำนวนเงิน</v-card-subtitle>
+                  <v-card-text class="text--primary">
+                    <v-row>
+                        <v-col style="background-color: orange;">
+                          <label>เงินทอน</label>
+                          <b-form>
+                            <label>1000 :</label>
+                            <b-form-input size="sm" type="number" :state="validation(formCashier.thousand)" v-model="formCashier.thousand" trim></b-form-input>
+                            <label>500 :</label>
+                            <b-form-input size="sm" type="number" :state="validation(formCashier.fiveHundred)" v-model="formCashier.fiveHundred"></b-form-input>
+                            <label>100 :</label>
+                            <b-form-input size="sm" type="number" :state="validation(formCashier.oneHundred)" v-model="formCashier.oneHundred"></b-form-input>
+                            <label>50 :</label>
+                            <b-form-input size="sm" type="number" :state="validation(formCashier.fifty)" v-model="formCashier.fifty"></b-form-input>
+                            <label>20 :</label>
+                            <b-form-input size="sm" type="number" :state="validation(formCashier.twenty)" v-model="formCashier.twenty"></b-form-input>
+                            <label>10 :</label>
+                            <b-form-input size="sm" type="number" :state="validation(formCashier.ten)" v-model="formCashier.ten"></b-form-input>
+                            <label>5 :</label>
+                            <b-form-input size="sm" type="number" :state="validation(formCashier.five)" v-model="formCashier.five"></b-form-input>
+                            <label>2 :</label>
+                            <b-form-input size="sm" type="number" :state="validation(formCashier.two)" v-model="formCashier.two"></b-form-input>
+                            <label>1 :</label>
+                            <b-form-input size="sm" type="number" :state="validation(formCashier.one)" v-model="formCashier.one"></b-form-input>
+                            <!-- <label>0.50 :</label>
+                            <b-form-input size="sm" type="number" :state="validation(formCashier.fiftyCent)" v-model="formCashier.fiftyCent"></b-form-input>
+                            <label>0.25 :</label>
+                            <b-form-input size="sm" type="number" :state="validation(formCashier.twentyFiveCent)" v-model="formCashier.twentyFiveCent"></b-form-input> -->
+                          </b-form>
+                        </v-col>
+                        <v-col style="background-color: yellow;">
+                          <label>ยอดขาย</label>
+                          <b-form>
+                            <label>1000 :</label>
+                            <b-form-input size="sm" type="number" :state="validation(formCashier.thousand)" v-model="formCashier.thousand"></b-form-input>
+                            <label>500 :</label>
+                            <b-form-input size="sm" type="number" :state="validation(formCashier.fiveHundred)" v-model="formCashier.fiveHundred"></b-form-input>
+                            <label>100 :</label>
+                            <b-form-input size="sm" type="number" :state="validation(formCashier.oneHundred)" v-model="formCashier.oneHundred"></b-form-input>
+                            <label>50 :</label>
+                            <b-form-input size="sm" type="number" :state="validation(formCashier.fifty)" v-model="formCashier.fifty"></b-form-input>
+                            <label>20 :</label>
+                            <b-form-input size="sm" type="number" :state="validation(formCashier.twenty)" v-model="formCashier.twenty"></b-form-input>
+                            <label>10 :</label>
+                            <b-form-input size="sm" type="number" :state="validation(formCashier.ten)" v-model="formCashier.ten"></b-form-input>
+                            <label>5 :</label>
+                            <b-form-input size="sm" type="number" :state="validation(formCashier.five)" v-model="formCashier.five"></b-form-input>
+                            <label>2 :</label>
+                            <b-form-input size="sm" type="number" :state="validation(formCashier.two)" v-model="formCashier.two"></b-form-input>
+                            <label>1 :</label>
+                            <b-form-input size="sm" type="number" :state="validation(formCashier.one)" v-model="formCashier.one"></b-form-input>
+                            <!-- <label>0.50 :</label>
+                            <b-form-input size="sm" type="number" :state="validation(formCashier.fiftyCent)" v-model="formCashier.fiftyCent"></b-form-input>
+                            <label>0.25 :</label>
+                            <b-form-input size="sm" type="number" :state="validation(formCashier.twentyFiveCent)" v-model="formCashier.twentyFiveCent"></b-form-input> -->
+                          </b-form>
+                        </v-col>
+                        <v-col style="background-color: lightgreen;">
+                          <label>เงินสดย่อย</label>
+                          <b-form>
+                            <label>1000 :</label>
+                            <b-form-input size="sm" type="number" :state="validation(formCashier.thousand)" v-model="formCashier.thousand"></b-form-input>
+                            <label>500 :</label>
+                            <b-form-input size="sm" type="number" :state="validation(formCashier.fiveHundred)" v-model="formCashier.fiveHundred"></b-form-input>
+                            <label>100 :</label>
+                            <b-form-input size="sm" type="number" :state="validation(formCashier.oneHundred)" v-model="formCashier.oneHundred"></b-form-input>
+                            <label>50 :</label>
+                            <b-form-input size="sm" type="number" :state="validation(formCashier.fifty)" v-model="formCashier.fifty"></b-form-input>
+                            <label>20 :</label>
+                            <b-form-input size="sm" type="number" :state="validation(formCashier.twenty)" v-model="formCashier.twenty"></b-form-input>
+                            <label>10 :</label>
+                            <b-form-input size="sm" type="number" :state="validation(formCashier.ten)" v-model="formCashier.ten"></b-form-input>
+                            <label>5 :</label>
+                            <b-form-input size="sm" type="number" :state="validation(formCashier.five)" v-model="formCashier.five"></b-form-input>
+                            <label>2 :</label>
+                            <b-form-input size="sm" type="number" :state="validation(formCashier.two)" v-model="formCashier.two"></b-form-input>
+                            <label>1 :</label>
+                            <b-form-input size="sm" type="number" :state="validation(formCashier.one)" v-model="formCashier.one"></b-form-input>
+                            <!-- <label>0.50 :</label>
+                            <b-form-input size="sm" type="number" :state="validation(formCashier.fiftyCent)" v-model="formCashier.fiftyCent"></b-form-input>
+                            <label>0.25 :</label>
+                            <b-form-input size="sm" type="number" :state="validation(formCashier.twentyFiveCent)" v-model="formCashier.twentyFiveCent"></b-form-input> -->
+                          </b-form>
+                        </v-col>
+                    </v-row>
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="warning" text @click.prevent="clearCashierForm()">Reset</v-btn>
+                    <v-btn type="submit" color="success" text @click.prevent="saveFormCashier()">Save</v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-overlay>
+            </v-dialog>
           </v-data-table>
-          <v-dialog v-model="dialogCashier" max-width="500px" :retain-focus="false" persistent>
-            <v-overlay :absolute="absolute" :value="overlayCashier" responsive>
-              <v-card class="mx-auto" max-width="500px" light>
-                <v-card-title>
-                  <b>Cashier</b>
-                  <v-spacer></v-spacer>
-                  <v-btn icon @click.prevent="dialogCashier=false, overlayCashier=false"><v-icon>mdi-close</v-icon></v-btn>
-                </v-card-title>
-                <v-card-subtitle class="pb-0">กรุณากรอกจำนวนเงิน</v-card-subtitle>
-                <v-card-text class="text--primary">
-                  <v-row>
-                      <v-col style="background-color: orange;">
-                        <label>เงินทอน</label>
-                        <b-form>
-                          <label>1000 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.thousand)" v-model="formCashier.thousand" trim></b-form-input>
-                          <label>500 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.fiveHundred)" v-model="formCashier.fiveHundred"></b-form-input>
-                          <label>100 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.oneHundred)" v-model="formCashier.oneHundred"></b-form-input>
-                          <label>50 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.fifty)" v-model="formCashier.fifty"></b-form-input>
-                          <label>20 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.twenty)" v-model="formCashier.twenty"></b-form-input>
-                          <label>10 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.ten)" v-model="formCashier.ten"></b-form-input>
-                          <label>5 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.five)" v-model="formCashier.five"></b-form-input>
-                          <label>2 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.two)" v-model="formCashier.two"></b-form-input>
-                          <label>1 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.one)" v-model="formCashier.one"></b-form-input>
-                          <!-- <label>0.50 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.fiftyCent)" v-model="formCashier.fiftyCent"></b-form-input>
-                          <label>0.25 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.twentyFiveCent)" v-model="formCashier.twentyFiveCent"></b-form-input> -->
-                        </b-form>
-                      </v-col>
-                      <v-col style="background-color: yellow;">
-                        <label>ยอดขาย</label>
-                        <b-form>
-                          <label>1000 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.thousand)" v-model="formCashier.thousand"></b-form-input>
-                          <label>500 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.fiveHundred)" v-model="formCashier.fiveHundred"></b-form-input>
-                          <label>100 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.oneHundred)" v-model="formCashier.oneHundred"></b-form-input>
-                          <label>50 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.fifty)" v-model="formCashier.fifty"></b-form-input>
-                          <label>20 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.twenty)" v-model="formCashier.twenty"></b-form-input>
-                          <label>10 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.ten)" v-model="formCashier.ten"></b-form-input>
-                          <label>5 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.five)" v-model="formCashier.five"></b-form-input>
-                          <label>2 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.two)" v-model="formCashier.two"></b-form-input>
-                          <label>1 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.one)" v-model="formCashier.one"></b-form-input>
-                          <!-- <label>0.50 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.fiftyCent)" v-model="formCashier.fiftyCent"></b-form-input>
-                          <label>0.25 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.twentyFiveCent)" v-model="formCashier.twentyFiveCent"></b-form-input> -->
-                        </b-form>
-                      </v-col>
-                      <v-col style="background-color: lightgreen;">
-                        <label>เงินสดย่อย</label>
-                        <b-form>
-                          <label>1000 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.thousand)" v-model="formCashier.thousand"></b-form-input>
-                          <label>500 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.fiveHundred)" v-model="formCashier.fiveHundred"></b-form-input>
-                          <label>100 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.oneHundred)" v-model="formCashier.oneHundred"></b-form-input>
-                          <label>50 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.fifty)" v-model="formCashier.fifty"></b-form-input>
-                          <label>20 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.twenty)" v-model="formCashier.twenty"></b-form-input>
-                          <label>10 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.ten)" v-model="formCashier.ten"></b-form-input>
-                          <label>5 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.five)" v-model="formCashier.five"></b-form-input>
-                          <label>2 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.two)" v-model="formCashier.two"></b-form-input>
-                          <label>1 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.one)" v-model="formCashier.one"></b-form-input>
-                          <!-- <label>0.50 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.fiftyCent)" v-model="formCashier.fiftyCent"></b-form-input>
-                          <label>0.25 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.twentyFiveCent)" v-model="formCashier.twentyFiveCent"></b-form-input> -->
-                        </b-form>
-                      </v-col>
-                  </v-row>
-                </v-card-text>
-                <v-card-actions>
-                  <v-spacer></v-spacer>
-                  <v-btn color="warning" text @click.prevent="clearCashierForm()">Reset</v-btn>
-                  <v-btn type="submit" color="success" text @click.prevent="saveFormCashier()">Save</v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-overlay>
-          </v-dialog>
         </b-tab>
       </b-tabs>
     </b-card>
