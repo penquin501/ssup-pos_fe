@@ -138,7 +138,7 @@ export default {
     data() {
     return {
       searchMember: "",
-      today: dayjs().format("DD-MM-YYYY"),
+      today: dayjs().format("YYYY-MM-DD"),
       headers: [
         { text: 'No.', value: 'index' },
         { text: "Member Id", value: "memberId" },
@@ -318,6 +318,9 @@ export default {
             valid = false;
         }
         if(this.checkEmail(this.formRegister.email) === null) {
+            valid = false;
+        }
+        if(dayjs().diff(dayjs(this.formRegister.birthday), 'year') < 18) {
             valid = false;
         }
 
