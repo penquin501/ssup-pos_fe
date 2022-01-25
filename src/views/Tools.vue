@@ -566,8 +566,19 @@ const today = dayjs().format(dtFormat);
                     ], 
                     selectedMenu: [],
                     selected: [] },
-                { name: 'Stock', menus: [], selectedMenu: [], selected: [] },
-                { name: 'Member Register', menus: [], selectedMenu: [], selected: [] },
+                { 
+                    name: 'Stock', 
+                    menus: [
+                    ], 
+                    selectedMenu: [], 
+                    selected: [] },
+                { 
+                    name: 'Member Register', 
+                    menus: [
+                        { text: 'Member', selected: 0 }, 
+                    ], 
+                    selectedMenu: [], 
+                    selected: [] },
                 { name: 'Off Promotion', menus: [], selectedMenu: [], selected: [] },
                 { 
                     name: 'Report', 

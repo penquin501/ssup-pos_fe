@@ -207,13 +207,6 @@ export default {
       /**
        * TODO: API check ข้อมูลเงินใน cashier
        */
-        if(this.$store.state.cashierBillInfo == null) {
-          this.dialogCashier = true;
-          this.overlayCashier = true;
-        } else {
-          this.dialog = true;
-          this.overlay = true;
-        }
     },
     validation(value) {
       if(value == 0) {
@@ -234,7 +227,6 @@ export default {
         this.$store.commit("saveCashierBillInfo", this.formCashier);
         this.dialogCashier=false; 
         this.overlayCashier=false;
-        // this.checkCashier();
       }
     },
     clearCashierForm() {
