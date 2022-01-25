@@ -65,6 +65,7 @@ export default {
       loginForm: {
         username: "",
         password: "",
+        type: "UNLOCK_FINGER_LOGIN",
       },
       state: "login",
       showMain: false,
