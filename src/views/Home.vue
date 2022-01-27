@@ -99,7 +99,7 @@ export default {
       showMain: false,
       dialogIdCard: false,
       passIdCard: "",
-      url: "http://127.0.0.1:8100",
+      url: process.env.VUE_APP_SERVER_API,
     };
   },
   mounted: function () {
@@ -147,7 +147,7 @@ export default {
       } 
 
       axios
-        .post(this.url + "/api/login", this.loginForm)
+        .post(this.url + "/login", this.loginForm)
         .then((res) => {
           // console.log(JSON.stringify(res.data));
           if (res.status == 201 && res.data.message == 'login succeed') {

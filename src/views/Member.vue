@@ -7,9 +7,6 @@
                 <template v-slot:item.index="{ item, index }">
                     {{ index + 1 }}
                 </template>
-                <template v-slot:item.memberId="{ item }">
-                    {{ item.memberId }}
-                </template>
                 <template v-slot:item.memberName="{ item }">
                     {{ item.firstName }} {{ item.lastName }}
                 </template>
@@ -31,8 +28,11 @@
                         <v-spacer></v-spacer>
                         <v-text-field v-model="searchMember" append-icon="mdi-magnify" label="ใส่เลขรหัสสมาชิก" single-line hide-details></v-text-field>
                         <v-spacer></v-spacer>
-                        <v-btn color="primary" @click.prevent="overlayRegister = true, dialogRegister = true">สมัครสมาชิก</v-btn>
+                        <v-btn color="primary" @click.prevent="openDialog('add')">สมัครสมาชิก</v-btn>
                     </v-toolbar>
+                </template>
+                <template v-slot:item.actions="{ item }">
+                    <v-icon small class="mr-2" @click="editMemberData(item)">mdi-pencil</v-icon>
                 </template>
             </v-data-table>
             <v-dialog v-model="dialogRegister" max-width="500px" :retain-focus="false" persistent>
@@ -148,6 +148,7 @@ export default {
         { text: "Phone", value: "memberPhone" },
         { text: "Birthday Date", value: "birthdayDate" },
         { text: "Register Date", value: "registerDate" },
+        { text: 'Actions', value: 'actions' },
       ],
       listMember: [],
       userInfo: {},
@@ -183,11 +184,12 @@ export default {
           { value: '1', text: 'Type 1' },
           { value: '2', text: 'Type 2' },
       ],
-      url: "http://127.0.0.1:8100",
+      url: process.env.VUE_APP_SERVER_API,
       configHeader: {},
       selectedProvince: "",
       selectedDistrict: "",
       selectedSubDistrict: "",
+      actionForm: "",
     };
   },
   mounted: function () {
@@ -216,7 +218,7 @@ export default {
         }
         this.listMenu = this.listMenu.length !== 0? this.listMenu: ['Member'];
         this.configHeader = {
-                headers: { Authorization: `Bearer ${this.userInfo.token}` }
+            headers: { Authorization: `Bearer ${this.userInfo.token}` }
         };
         this.getListMember();
         this.getProvinces();
@@ -231,7 +233,7 @@ export default {
     getProvinces () {
         this.provincesOptions =[];
         axios
-        .get(this.url + "/api/province", this.configHeader)
+        .get(this.url + "/province", this.configHeader)
         .then((res) => {
             for(let e of (res.data.province)) {
                 let data = {};
@@ -241,7 +243,6 @@ export default {
 
                 this.provincesOptions.push(data);
             }
-
         })
         .catch((err) => {
             console.log('get province', err);
@@ -251,9 +252,15 @@ export default {
         this.districtsOptions =[];
         let params = {
             id: this.selectedProvince.id
-        };
+        }; 
+        if(this.selectedProvince.id !== this.formRegister.provinceId) {
+            this.formRegister.districtId = "";
+            this.formRegister.district = "";
+            this.formRegister.subDistrictId = "";
+            this.formRegister.subDistrict = "";
+        }
         var qs = queryString.stringify(params);
-        axios.post(this.url + "/api/province/getdistricts", qs, this.configHeader)
+        axios.post(this.url + "/province/getdistricts", qs, this.configHeader)
         .then((res) => {
             for(let e of (res.data.districts)) {
                 let data = {};
@@ -262,6 +269,13 @@ export default {
                 data.text = e.name_in_thai;
 
                 this.districtsOptions.push(data);
+            }
+            if(this.formRegister.districtId !== "") {
+                let checkDistrict = this.districtsOptions.find(ele => ele.id == this.formRegister.districtId);
+                if(checkDistrict !== undefined) {
+                    this.selectedDistrict = checkDistrict.value;
+                    this.getSubDistricts();
+                }
             }
         })
         .catch((err) => {
@@ -273,8 +287,12 @@ export default {
         let params = {
             id: this.selectedDistrict.id
         };
+        if(this.selectedDistrict.id !== this.formRegister.districtId) {
+            this.formRegister.subDistrictId = "";
+            this.formRegister.subDistrict = "";
+        }
         var qs = queryString.stringify(params);
-        axios.post(this.url + "/api/province/getsubdistricts", qs, this.configHeader)
+        axios.post(this.url + "/province/getsubdistricts", qs, this.configHeader)
         .then((res) => {
             for(let e of (res.data.subdistricts)) {
                 let data = {};
@@ -284,6 +302,12 @@ export default {
 
                 this.subdistrictsOptions.push(data);
             }
+            if(this.formRegister.subDistrictId !== "") {
+                let checkSubDistrict = this.subdistrictsOptions.find(ele => ele.id == this.formRegister.subDistrictId);
+                 if(checkSubDistrict !== undefined) {
+                    this.selectedSubDistrict = checkSubDistrict.value;
+                }
+            }
         })
         .catch((err) => {
             console.log('get sub districts', err);
@@ -291,6 +315,14 @@ export default {
     },
     getZipcode() {
         this.formRegister.zipcode = this.selectedSubDistrict.zip_code;
+    },
+    openDialog(action) {
+        this.overlayRegister = true; 
+        this.dialogRegister = true; 
+        if(action == 'add') {
+            this.clearForm();
+        }
+        this.actionForm = action;
     },
     saveFormRegister () {
         var valid = true;
@@ -303,16 +335,16 @@ export default {
         valid = this.isValidation(this.formRegister, "cardId", valid);
         valid = this.isValidation(this.formRegister, "phone", valid);
         valid = this.isValidation(this.formRegister, "address", valid);
-        valid = this.isValidation(this.formRegister, "subDistrictId", valid);
-        valid = this.isValidation(this.formRegister, "subDistrict", valid);
-        valid = this.isValidation(this.formRegister, "districtId", valid);
-        valid = this.isValidation(this.formRegister, "district", valid);
-        valid = this.isValidation(this.formRegister, "provinceId", valid);
-        valid = this.isValidation(this.formRegister, "province", valid);
         valid = this.isValidation(this.formRegister, "zipcode", valid);
         valid = this.isValidation(this.formRegister, "birthday", valid);
         valid = this.isValidation(this.formRegister, "email", valid);
-        valid = this.checkID(this.formRegister.cardId);
+
+        valid = this.isValidation(this.selectedSubDistrict, "id", valid);
+        valid = this.isValidation(this.selectedSubDistrict, "name_in_thai", valid);
+        valid = this.isValidation(this.selectedDistrict, "id", valid);
+        valid = this.isValidation(this.selectedDistrict, "name_in_thai", valid);
+        valid = this.isValidation(this.selectedProvince, "id", valid);
+        valid = this.isValidation(this.selectedProvince, "name_in_thai", valid);
 
         if(this.formRegister.phone.match(regexPhone) === null) {
             valid = false;
@@ -320,29 +352,44 @@ export default {
         if(this.checkEmail(this.formRegister.email) === null) {
             valid = false;
         }
-        if(dayjs().diff(dayjs(this.formRegister.birthday), 'year') < 18) {
-            valid = false;
-        }
+        // if(dayjs().diff(dayjs(this.formRegister.birthday), 'year') < 18) {
+        //     valid = false;
+        // }
 
         if(!valid) {
             alert("กรุณาใส่ข้อมูลให้ครบถ้วน");
             return;
         } else {
-            this.formRegister.memberId = "M" + (this.listMember.length + 1);
-            this.formRegister.subDistrictId = this.selectedSubDistrict.id;
-            this.formRegister.subDistrict = this.selectedSubDistrict.name_in_thai;
-            this.formRegister.districtId = this.selectedDistrict.id;
-            this.formRegister.district = this.selectedDistrict.name_in_thai;
-            this.formRegister.provinceId = this.selectedProvince.id;
-            this.formRegister.province = this.selectedProvince.name_in_thai;
-            this.formRegister.registerDate = dayjs().format("YYYY-MM-DD");
+            let validCardID = this.checkID(this.formRegister.cardId);
+            if(!validCardID) {
+                alert("กรุณาใส่ข้อมูลบัตรปชช. ให้ถูกต้อง");
+                return;
+            } else {
+                if(this.actionForm == 'add') {
+                    this.formRegister.memberId = "M" + (this.listMember.length + 1);
+                    this.formRegister.registerDate = dayjs().format("YYYY-MM-DD");
+                } else {
+                    let memberInfo = this.listMember.find(ele => ele.memberId == this.formRegister.memberId);
+                    let memberIndex = this.listMember.indexOf(memberInfo);
+                    if(memberIndex !== -1) {
+                        this.listMember.splice(memberIndex, 1);
+                    }
+                }
 
-            this.listMember.push(this.formRegister)
-            this.$store.commit("addListMember", this.listMember);
+                this.formRegister.subDistrictId = this.selectedSubDistrict.id;
+                this.formRegister.subDistrict = this.selectedSubDistrict.name_in_thai;
+                this.formRegister.districtId = this.selectedDistrict.id;
+                this.formRegister.district = this.selectedDistrict.name_in_thai;
+                this.formRegister.provinceId = this.selectedProvince.id;
+                this.formRegister.province = this.selectedProvince.name_in_thai;
+                
+                this.listMember.push(this.formRegister);
+                this.$store.commit("addListMember", this.listMember);
 
-            this.clearForm();
-            this.dialogRegister = false; 
-            this.overlayRegister = false;
+                this.clearForm();
+                this.dialogRegister = false; 
+                this.overlayRegister = false;
+            }
         }
     },
     clearForm() {
@@ -368,6 +415,14 @@ export default {
         this.selectedSubDistrict = {};
         this.selectedDistrict = {};
         this.selectedProvince = {};
+    },
+    editMemberData(data) {
+        this.openDialog('edit');
+        this.formRegister = data;
+        let checkProvince = this.provincesOptions.find(ele => ele.id == data.provinceId);
+        this.selectedProvince = checkProvince.value;
+
+        this.getDistricts();
     },
     onlyNumber($event) {
         let keyCode = $event.keyCode ? $event.keyCode : $event.which;

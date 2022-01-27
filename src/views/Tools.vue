@@ -569,6 +569,7 @@ const today = dayjs().format(dtFormat);
                 { 
                     name: 'Stock', 
                     menus: [
+                        { text: 'Check In', selected: 0 },
                     ], 
                     selectedMenu: [], 
                     selected: [] },
