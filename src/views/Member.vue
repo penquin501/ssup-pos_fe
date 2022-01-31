@@ -221,7 +221,6 @@ export default {
             headers: { Authorization: `Bearer ${this.userInfo.token}` }
         };
         this.getListMember();
-        this.getProvinces();
     }
   },
   methods: {
@@ -243,6 +242,14 @@ export default {
 
                 this.provincesOptions.push(data);
             }
+
+            if(this.formRegister.provinceId !== "") {
+                let checkProvince = this.provincesOptions.find(ele => ele.id == this.formRegister.provinceId);
+                 if(checkProvince !== undefined) {
+                    this.selectedProvince = checkProvince.value;
+                    this.getDistricts();
+                }
+            }
         })
         .catch((err) => {
             console.log('get province', err);
@@ -258,6 +265,9 @@ export default {
             this.formRegister.district = "";
             this.formRegister.subDistrictId = "";
             this.formRegister.subDistrict = "";
+
+            this.selectedSubDistrict = {};
+            this.selectedDistrict = {};
         }
         var qs = queryString.stringify(params);
         axios.post(this.url + "/province/getdistricts", qs, this.configHeader)
@@ -290,6 +300,8 @@ export default {
         if(this.selectedDistrict.id !== this.formRegister.districtId) {
             this.formRegister.subDistrictId = "";
             this.formRegister.subDistrict = "";
+
+            this.selectedSubDistrict = {};
         }
         var qs = queryString.stringify(params);
         axios.post(this.url + "/province/getsubdistricts", qs, this.configHeader)
@@ -304,7 +316,7 @@ export default {
             }
             if(this.formRegister.subDistrictId !== "") {
                 let checkSubDistrict = this.subdistrictsOptions.find(ele => ele.id == this.formRegister.subDistrictId);
-                 if(checkSubDistrict !== undefined) {
+                if(checkSubDistrict !== undefined) {
                     this.selectedSubDistrict = checkSubDistrict.value;
                 }
             }
@@ -321,6 +333,7 @@ export default {
         this.dialogRegister = true; 
         if(action == 'add') {
             this.clearForm();
+            this.getProvinces();
         }
         this.actionForm = action;
     },
@@ -419,10 +432,8 @@ export default {
     editMemberData(data) {
         this.openDialog('edit');
         this.formRegister = data;
-        let checkProvince = this.provincesOptions.find(ele => ele.id == data.provinceId);
-        this.selectedProvince = checkProvince.value;
-
-        this.getDistricts();
+        
+        this.getProvinces();
     },
     onlyNumber($event) {
         let keyCode = $event.keyCode ? $event.keyCode : $event.which;
