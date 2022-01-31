@@ -3,7 +3,7 @@
     <b-card>
       <b-tabs content-class="mt-3">
         <b-tab v-if="listMenu.find(name => name=='Check In')" title="Check In" active>
-          <v-data-table :headers="headersCheckInStock" :items="listCheckInStock" :search="searchInvoice" sort-by="orderDate" class="elevation-1">
+          <v-data-table :headers="headersStockInStock" :items="listStockInStock" :search="searchInvoice" sort-by="orderDate" class="elevation-1">
             <!-- <template v-slot:item.paymentMethod="{ item }">
               {{ item.paymentMethod == "creditCard" ? "บัตรเครดิต" : "เงินสด" }}
             </template> -->
@@ -25,76 +25,74 @@
             <v-overlay :absolute="absolute" :value="overlayAdjustStock" responsive>
               <v-card class="mx-auto" style="width: 80vw; height: auto; margin: 0;" light>
                 <v-card-title>
-                  <b>โอนเข้า(TI)</b>
+                  <b>เมนูระบบงานประจำวัน</b>
                   <v-spacer></v-spacer>
                   <v-btn icon @click.prevent="dialogAdjustStock=false, overlayAdjustStock=false"><v-icon>mdi-close</v-icon></v-btn>
                 </v-card-title>
-                <v-card-subtitle class="pb-0">โอนเข้า(TI)</v-card-subtitle>
                 <v-card-text style="background-color: #F0F4C3;" class="text--primary">
                   <v-row>
                         <v-col cols="2"><label>ประเภทการโอนเข้า :</label></v-col>
-                        <v-col cols="3"><b-form-input size="sm" type="text" v-model="checkInType" trim readonly></b-form-input></v-col>
+                        <v-col cols="3"><b-form-input size="sm" type="text" v-model="stockInType" trim readonly></b-form-input></v-col>
                         <v-col cols="2"></v-col>
-                        <v-col cols="2"><label>วันที่โอน :</label></v-col>
-                        <v-col cols="3"><b-form-input size="sm" type="date" v-model="formCheckIn.invoiceDate" trim></b-form-input></v-col>
+                        <v-col cols="2" v-if="actionForm !=='KeyIn'"><label>วันที่โอน :</label></v-col>
+                        <v-col cols="2" v-else><label>ประเภทสินค้า :</label></v-col>
+                        <v-col cols="3" v-if="actionForm !=='KeyIn'"><b-form-input size="sm" type="date" readonly v-model="formStockIn.invoiceDate" trim></b-form-input></v-col>
+                        <v-col cols="3" v-else><b-form-input size="sm" type="text" readonly v-model="productType" trim></b-form-input></v-col>
                   </v-row>
                   <v-row>
                         <v-col cols="2"><label>ป้อนเลขที่สินค้าเข้า :</label></v-col>
-                        <v-col cols="3"><b-form-input size="sm" type="text" v-model="formCheckIn.invoiceNo" trim></b-form-input></v-col>
+                        <v-col cols="3"><b-form-input size="sm" type="text" v-model="formStockIn.invoiceNo" @keypress="engOnly" @keyup.ctrl.112="dialogListInvoice=true, getListInvoiceStock()" trim></b-form-input></v-col>
                         <v-col cols="2"><v-btn small v-if="actionForm !== 'KeyIn'" @click="dialogListInvoice=true, getListInvoiceStock()"><v-icon>mdi-magnify</v-icon>(F1)</v-btn></v-col>
-                        <v-col cols="2"><label>รหัสผ่าน :</label></v-col>
-                        <v-col cols="3"><b-form-input size="sm" type="text" v-model="password" trim></b-form-input></v-col>
+                        <v-col cols="2" v-if="actionForm !=='KeyIn'"><label>รหัสผ่าน :</label></v-col>
+                        <v-col cols="2" v-else></v-col>
+                        <v-col cols="3" v-if="actionForm !=='KeyIn'"><b-form-input size="sm" type="text" v-model="password" trim></b-form-input></v-col>
+                        <v-col cols="3" v-else></v-col>
                   </v-row>
                   <v-row>
                         <v-col cols="2"><label>หมายเหตุ :</label></v-col>
-                        <v-col cols="10"><b-form-input maxlength=255 size="sm" type="text" v-model="formCheckIn.remark" trim></b-form-input></v-col>
+                        <v-col cols="10"><b-form-input maxlength=255 size="sm" type="text" v-model="formStockIn.remark" trim></b-form-input></v-col>
                   </v-row>
                   <v-row v-if="actionForm !== 'TI'">
                         <v-col cols="2"><label>รหัสสินค้า :</label></v-col>
-                        <v-col cols="3"><b-form-input size="sm" type="text" @change="addItem()" trim></b-form-input></v-col>
+                        <v-col cols="3"><b-form-input size="sm" type="text" ref="productInput" v-model="productInput" @keypress.enter="addItem()" trim></b-form-input></v-col>
                         <v-col cols="2"></v-col>
                         <v-col cols="2"><label>จำนวน :</label></v-col>
-                        <v-col cols="3"><b-form-input size="sm" type="number" v-model="qty" @keypress="validation(qty)" trim></b-form-input></v-col>
+                        <v-col cols="3"><b-form-input size="sm" type="number" v-model="qty" @keypress="validation(qty)" @keypress.enter="addItem()" trim></b-form-input></v-col>
                   </v-row>
                 </v-card-text>
                 <v-card-text>
-                    <div class="content-list-item">
-                    <b-table-simple striped>
-                        <b-thead>
-                            <b-tr>
-                                <b-td v-for="(item, index) in productfields" :key="item.id">{{ item.label }}</b-td>
-                            </b-tr>
-                        </b-thead>
-                        <b-tbody>
-                            <b-tr v-for="(item, index) in listInvoiceItem" :key="item.productId">
-                                <b-td>{{ index+1 }}</b-td>
-                                <b-td>{{ item.productId }}</b-td>
-                                <b-td>{{ item.productName }}</b-td>
-                                <b-td>{{ formatPrice(item.pricePerItem) }}</b-td>
-                                <b-td>{{ item.qty }}</b-td>
-                                <b-td>{{ formatPrice(item.qty * item.pricePerItem) }}</b-td>
-                                <b-td>{{ item.productType }}</b-td>
-                                <b-td>
-                                    <b-button size="sm" @click="deleteItem(item)" class="mr-1">
-                                        <v-icon small>mdi-delete</v-icon>
-                                    </b-button>
-                                </b-td>
-                            </b-tr>
-                        </b-tbody>
-                        <b-tfoot>
-                            <b-tr>
-                                <b-td colspan="6" class="text-right">จำนวนรายการ:</b-td>
-                                <b-td class="text-right">{{ listInvoiceItem.length }}</b-td>
-                                <b-td class="text-left">ชิ้น</b-td>
-                            </b-tr>
-                            <b-tr>
-                                <b-td colspan="6" class="text-right">Total:</b-td>
-                                <b-td class="text-right">{{ formCheckIn.sum }}</b-td>
-                                <b-td class="text-left">บาท</b-td>
-                            </b-tr>
-                        </b-tfoot>
-                    </b-table-simple>
-                    </div>
+                    <v-row>
+                        <div class="content-list-item" style="height: 30vh;">
+                        <b-table id="my-table" sticky-header :items="listInvoiceItem" :fields="productfields" :current-page="currentPage" :per-page="perPage" stacked="md" show-empty small>
+                            <template #cell(index)="row">
+                                {{ row.index + 1 }}
+                            </template>
+                            <template #cell(pricePerItem)="row">
+                                {{ formatPrice(row.item.pricePerItem) }}
+                            </template>
+                            <template #cell(total)="row">
+                                {{ formatPrice(row.item.total) }}
+                            </template>
+                            <template #cell(actions)="row">
+                                <b-button size="sm" @click="deleteItem(row.item, row.index, $event.target)" class="mr-1"><v-icon small>mdi-delete</v-icon></b-button>
+                            </template>
+                        </b-table>
+                        </div>
+                    </v-row>
+                    <v-row>
+                        <v-col cols="8"></v-col>
+                        <v-col cols="4">
+                            <b-pagination v-model="currentPage" :per-page="perPage" :total-rows="listInvoiceItem.length" small aria-controls="my-table"></b-pagination>
+                        </v-col>
+                    </v-row>
+                    <v-row style="text-align: center;">
+                        <v-col cols="2"><label>จำนวนรายการ :</label></v-col>
+                        <v-col cols="2">{{ listInvoiceItem.length }}</v-col>
+                        <v-col cols="2">ชิ้น</v-col>
+                        <v-col cols="2"><label>Total :</label></v-col>
+                        <v-col cols="2">{{ formatPrice(formStockIn.sum) }}</v-col>
+                        <v-col cols="2">บาท</v-col>
+                    </v-row>
                 </v-card-text>
                 <v-card-actions>
                   <v-spacer></v-spacer>
@@ -154,10 +152,10 @@ export default {
         return {
             searchInvoice: "",
             today: dayjs().format("DD-MM-YYYY"),
-            headersCheckInStock: [
+            headersStockInStock: [
                 { text: "Invoice No", value: "invoiceNo" },
                 { text: "วันที่โอน", sortable: true, value: "invoiceDate" },
-                { text: "ประเภทการโอนเข้า", value: "checkInType" },
+                { text: "ประเภทการโอนเข้า", value: "stockInType" },
                 { text: "หมายเหตุ", value: "remark" },
             ],
             productfields: [
@@ -166,14 +164,15 @@ export default {
                     label: "ลำดับ",
                     sortable: true,
                     sortDirection: "desc",
+                    class: "text-center",
                 },
-                {   key: "productId", label: "รหัสสินค้า", },
+                {   key: "productId", label: "รหัสสินค้า", class: "text-center", },
                 {   key: "productName", label: "รายละเอียดสินค้า", class: "text-center", },
-                {   key: "pricePerItem", label: "ราคา/หน่วย", class: "text-center", },
-                {   key: "qty", label: "จำนวน", class: "text-center" },
-                {   key: "total", label: "จำนวนเงิน", class: "text-center" },
+                {   key: "pricePerItem", label: "ราคา/หน่วย", class: "text-right", },
+                {   key: "qty", label: "จำนวน", class: "text-right" },
+                {   key: "total", label: "จำนวนเงิน", class: "text-right" },
                 {   key: "productType", label: "ประเภทสินค้า", class: "text-center" },
-                {   key: "actions", label: "Actions" },
+                {   key: "actions", label: "Actions", class: "text-center", },
             ],
             lastOrderfields: [
                 "selected",
@@ -182,29 +181,32 @@ export default {
                 { key: "totalQty", label: "จำนวน", class: "text-center" },
             ],
             listInvoiceItem: [],
-            listCheckInStock: [],
+            listStockInStock: [],
             userInfo: {},
-            actionForm: "Adjust",
+            actionForm: "",
             listMenu: [],
             listInvoiceStock: [],
+            currentPage: 1,
+            perPage: 10,
+            totalRows: 1,
             absolute: true,
-            dialogAdjustStock: true,
+            dialogAdjustStock: false,
             dialogListInvoice: false,
             dialogDelete: false,
-            overlayAdjustStock: true,
-            formCheckIn: {
+            overlayAdjustStock: false,
+            formStockIn: {
                 invoiceNo: "",
                 invoiceDate: dayjs().format('YYYY-MM-DD'),
-                // checkInType: "61 - โอนเข้า",
                 remark: "",
                 sum: 0,
-                // listProduct: [],
             },
-            checkInType: "69 - ปรับปรุงสต็อกเพิ่ม",
+            stockInType: "69 - ปรับปรุงสต็อกเพิ่ม",
             selectedInvoice: {},
             password: "",
+            productInput: "",
             qty: 1,
             itemIndex: 0,
+            productType: "N",
             url: process.env.VUE_APP_SERVER_API,
         };
     },
@@ -216,9 +218,6 @@ export default {
                 }
             });
         } else {
-            // if (this.$store.state.listInvoice !== []) {
-            //     this.listInvoice = this.$store.state.listInvoice;
-            // }
             this.userInfo = JSON.parse(this.$store.state.userInfo);
 
             /* Default User Menu*/
@@ -239,12 +238,6 @@ export default {
             return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         },
         getListInvoiceStock () {
-            // <b-td>{{ item.productId }}</b-td>
-            // <b-td>{{ item.productName }}</b-td>
-            // <b-td>{{ item.pricePerItem }}</b-td>
-            // <b-td>{{ item.qty }}</b-td>
-            // <b-td>{{ item.total }}</b-td>
-            // <b-td>{{ item.productType }}</b-td>
             this.listInvoiceStock = [
                 {
                     invoiceNo: "INV01",
@@ -275,16 +268,16 @@ export default {
                     remark: "test A",
                     listProduct: [
                         {
-                            productId: "1",
-                            productName: "Dickerson1",
-                            pricePerItem: "1000",
+                            productId: "3",
+                            productName: "Dickerson3",
+                            pricePerItem: "10",
                             productType: "Type1",
                             qty: 10,
                         },
                         {
-                            productId: "2",
-                            productName: "Dickerson2",
-                            pricePerItem: "1000",
+                            productId: "4",
+                            productName: "Dickerson4",
+                            pricePerItem: "10",
                             productType: "Type1",
                             qty: 10,
                         },
@@ -297,16 +290,16 @@ export default {
                     remark: "test A",
                     listProduct: [
                         {
-                            productId: "1",
-                            productName: "Dickerson1",
-                            pricePerItem: "1000",
+                            productId: "5",
+                            productName: "Dickerson5",
+                            pricePerItem: "100",
                             productType: "Type1",
                             qty: 10,
                         },
                         {
-                            productId: "2",
-                            productName: "Dickerson2",
-                            pricePerItem: "1000",
+                            productId: "6",
+                            productName: "Dickerson6",
+                            pricePerItem: "100",
                             productType: "Type1",
                             qty: 10,
                         },
@@ -315,17 +308,58 @@ export default {
             ];
         },
         addItem() {
-            // let product = {
-            //     productId: this.productInput,
-            //     productName: "Dickerson" + this.productInput,
-            //     productType: "Type1",
-            //     pricePerItem: "1000"
-            // };
-            //     this.items.push({
-            //     ...product,
-            //     qty: parseInt(this.qty),
-            //     total: parseInt(product.pricePerItem) * parseInt(this.qty),
-            //   }
+            if(this.productInput == "") {
+                alert("กรุณาใส่รหัสสินค้า");
+                return;
+            }
+            /* TODO: ยิง api เพื่อรับข้อมูลสินค้า */
+            let product = {
+                productId: this.productInput,
+                productName: "Dickerson" + this.productInput,
+                productType: "Type1",
+                pricePerItem: "1000",
+            };
+            /******************************/
+            if (this.listInvoiceItem.length !== 0) {
+                let selectProduct = this.listInvoiceItem.find(
+                    (ele) => ele.productId == this.productInput
+                );
+
+                if (selectProduct) {
+                    let qty = parseInt(selectProduct.qty);
+                    if (parseInt(this.qty) <= 0) {
+                        alert("จำนวนสินค้าไม่ถูกต้อง");
+                    } else {
+                        selectProduct.qty = qty + parseInt(this.qty);
+                        selectProduct.total = parseInt(selectProduct.pricePerItem) * parseInt(selectProduct.qty);
+                    }
+                } else {
+                    this.listInvoiceItem.push({
+                        ...product,
+                        qty: parseInt(this.qty),
+                        total: parseInt(product.pricePerItem) * parseInt(this.qty),
+                    });
+                }
+            } else {
+                    this.listInvoiceItem.push({
+                    ...product,
+                    qty: parseInt(this.qty),
+                    total: parseInt(product.pricePerItem) * parseInt(this.qty),
+                });
+            }
+            this.calTotal();
+
+            this.productInput = "";
+            this.qty = 1;
+            this.$refs.productInput.focus();
+        },
+        calTotal() {
+            let total = 0;
+
+            this.listInvoiceItem.forEach((e) => {
+                total += parseInt(e.total);
+            });
+            this.formStockIn.sum = total;
         },
         openDialog(action) {
             this.overlayAdjustStock = true;
@@ -333,14 +367,24 @@ export default {
 
             this.actionForm = action;
             if(action == "TI") {
-                this.checkInType = "61 - โอนเข้า";
+                this.stockInType = "61 - โอนเข้า";
             }
             if(action == "Adjust") {
-                this.checkInType = "69 - ปรับปรุงสต็อกเพิ่ม";
+                this.stockInType = "69 - ปรับปรุงสต็อกเพิ่ม";
             }
             if(action == "KeyIn") {
-                this.checkInType = "62 - Key In Data โอนเข้า";
+                this.stockInType = "62 - Key In Data โอนเข้า";
             }
+        },
+        engOnly ($event) {
+            var keyCode = $event.keyCode ? $event.keyCode : $event.which;
+            if(48 <= keyCode && keyCode <= 57)
+                return true;
+            if(65 <= keyCode && keyCode <= 90)
+                return true;
+            if(97 <= keyCode && keyCode <= 122)
+                return true;
+            return $event.preventDefault();
         },
         validation(value) {
             if(value == 0) {
@@ -349,19 +393,23 @@ export default {
             return parseInt(value) < 0? false: true;
         },
         confirmInvoice() {
-            this.formCheckIn ={
+            this.formStockIn ={
                 invoiceNo: this.selectedInvoice.invoiceNo,
                 invoiceDate: dayjs(this.selectedInvoice.invoiceDate).format('YYYY-MM-DD'),
                 remark: this.selectedInvoice.remark,
                 sum: 0
             },
             this.listInvoiceItem = this.selectedInvoice.listProduct;
+            this.listInvoiceItem.forEach(e => {
+                e.total = e.qty * e.pricePerItem
+            });
+            this.calTotal();
             this.dialogListInvoice = false;
         },
         onRowSelected(items) {
             this.selectedInvoice = items[0];
         },
-        deleteItem(item) {
+        deleteItem(item, index, event) {
             this.itemIndex = this.listInvoiceItem.indexOf(item);
             this.dialogDelete = true;
         },
@@ -370,19 +418,19 @@ export default {
             this.dialogDelete = false;
         },
         clearForm () {
-            this.formCheckIn ={
+            this.formStockIn ={
                 invoiceNo: "",
                 invoiceDate: dayjs().format('YYYY-MM-DD'),
                 remark: "",
                 sum: 0
             },
-            // this.checkInType
             this.listInvoiceItem = [];
         },
         saveStockInvoice () {
-            this.formCheckIn.listProduct = this.listInvoiceItem;
-            this.formCheckIn.checkInType = this.checkInType;
-            this.listCheckInStock.push(this.formCheckIn);
+            /* TODO: Check Validation */
+            this.formStockIn.listProduct = this.listInvoiceItem;
+            this.formStockIn.stockInType = this.stockInType;
+            this.listStockInStock.push(this.formStockIn);
 
             this.clearForm();
             this.dialogAdjustStock = false;
