@@ -13,6 +13,8 @@ export default new Vuex.Store({
     listInvoice: [],
     listUser: [],
     listMember: [],
+    listStockIn: [],
+    listInvoiceStockPending: [],
     cashierBillInfo: null,
   },
   mutations: {
@@ -28,6 +30,7 @@ export default new Vuex.Store({
       state.listInvoice = [];
       state.listUser = [];
       state.listMember = [];
+      state.listStockIn = [];
       state.cashierBillInfo = null;
     },
     currentOrder(state, data) {
@@ -41,6 +44,12 @@ export default new Vuex.Store({
     },
     addListMember(state, data) {
       state.listMember = data;
+    },
+    addListStockIn(state, data) {
+      state.listStockIn = data;
+    },
+    addListInvoiceStockPending(state, data) {
+      state.listInvoiceStockPending = data;
     },
     updatePermission(state, data) {
       state.userInfo = data;
