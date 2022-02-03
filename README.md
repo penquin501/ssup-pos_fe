@@ -34,5 +34,10 @@ npm install --save moment
 npm install --save dayjs
 ```
 
+### install npm install vue-zoomer
+```
+npm install vue-zoomer
+```
+
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
