@@ -211,6 +211,28 @@ export default {
     },
     checkMemberPromotion() {
         this.listPromotion = [];
+
+        this.listPromotion = [
+        {
+          code: "P010",
+          name: "P010",
+          img: "https://upload.wikimedia.org/wikipedia/commons/e/e0/Large_Scaled_Forest_Lizard.jpg",
+          startDate: dayjs().format("YYYY-MM-DD"),
+          endDate: dayjs().add(1, "month").format("YYYY-MM-DD"),
+          description: "1",
+        },
+        {
+          code: "P011",
+          name: "P011",
+          img: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Earth_poster_large.jpg/800px-Earth_poster_large.jpg",
+          startDate: dayjs().format("YYYY-MM-DD"),
+          endDate: dayjs().add(1, "month").format("YYYY-MM-DD"),
+          description:
+            "0123456789 01234567890 123456789012345678901234567890 12345678901234567890123456789 012345678901234567890123456789012345678901234567890123456789" +
+            " 01234567890123456789012345678901234567890123456789012345678901234567890123456 789012345678901234567890123456789012345678901234567890123456789" +
+            " 01234567890123456789012345678901234567890123456789012345678901234567890123456 789012345678901234567890123 456789012345678901234567890123456789",
+        },
+      ];
     },
     rotateRight() {
       this.rotation += 90;
