@@ -7,6 +7,7 @@ import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import FlagIcon from 'vue-flag-icon';
+import VueZoomer from 'vue-zoomer'
 
 import VueI18n from 'vue-i18n'
 import i18n from './i18n'
@@ -21,6 +22,7 @@ Vue.use(VueI18n)
 Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
 Vue.use(FlagIcon)
+Vue.use(VueZoomer)
 
 new Vue({
   router,

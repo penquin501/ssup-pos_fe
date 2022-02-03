@@ -2,7 +2,11 @@
   <div>
     <b-card>
       <b-tabs content-class="mt-3">
-        <b-tab v-if="listMenu.find(name => name=='Sale')" title="Sale" active>
+        <b-tab
+          v-if="listMenu.find((name) => name == 'Sale')"
+          title="Sale"
+          active
+        >
           <!-- <v-btn color="primary" @click.prevent="overlay = true, dialog = true">เปิดบิล+</v-btn> -->
           <!-- <v-btn color="primary" @click.prevent="overlayCashier = true, dialogCashier = true">เงินหน้าร้าน</v-btn> -->
 
@@ -196,8 +200,8 @@
                         show-empty
                         small
                       >
-                        <template #cell(pricePerItem)="row">
-                          {{ formatPrice(row.item.pricePerItem) }}
+                        <template #cell(price)="row">
+                          {{ formatPrice(row.item.price) }}
                         </template>
                         <template #cell(total)="row">
                           {{ formatPrice(row.item.total) }}
@@ -206,11 +210,7 @@
                           <b-button
                             size="sm"
                             @click="
-                              deleteItem(
-                                row.item,
-                                row.index,
-                                $event.target
-                              )
+                              deleteItem(row.item, row.index, $event.target)
                             "
                             class="mr-1"
                             ><v-icon small>mdi-delete</v-icon></b-button
@@ -219,10 +219,7 @@
                       </b-table>
                     </div>
                     <div class="Calc-Price">
-                      <v-row
-                        no-gutters
-                        style="padding: 10px 10px 0px 10px"
-                      >
+                      <v-row no-gutters style="padding: 10px 10px 0px 10px">
                         <b-col cols="6">
                           <b-row
                             style="
@@ -270,9 +267,7 @@
                               payment (F10)</v-btn
                             >
                           </b-row>
-                          <b-row
-                            style="margin-left: 0px; margin-right: 0px"
-                          >
+                          <b-row style="margin-left: 0px; margin-right: 0px">
                             <b-col cols="4" style="padding-bottom: 0px">
                               <v-btn
                                 block
@@ -402,29 +397,12 @@
                           <v-col class="d-flex" cols="12" sm="12" md="12">
                             <v-col cols="12" sm="6" md="6">
                               <v-btn elevation="2" color="primary"
-                                ><v-icon> mdi-worker </v-icon>
-                                Click</v-btn
+                                ><v-icon> mdi-worker </v-icon> Click</v-btn
                               >
                             </v-col>
                             <v-col cols="12" sm="6" md="6">
                               <v-btn elevation="2" color="primary"
-                                ><v-icon> mdi-worker </v-icon>
-                                Click</v-btn
-                              >
-                            </v-col>
-                          </v-col>
-
-                          <v-col class="d-flex" cols="12" sm="12" md="12">
-                            <v-col cols="12" sm="6" md="6">
-                              <v-btn elevation="2" color="primary"
-                                ><v-icon> mdi-worker </v-icon>
-                                Click</v-btn
-                              >
-                            </v-col>
-                            <v-col cols="12" sm="6" md="6">
-                              <v-btn elevation="2" color="primary"
-                                ><v-icon> mdi-worker </v-icon>
-                                Click</v-btn
+                                ><v-icon> mdi-worker </v-icon> Click</v-btn
                               >
                             </v-col>
                           </v-col>
@@ -432,14 +410,25 @@
                           <v-col class="d-flex" cols="12" sm="12" md="12">
                             <v-col cols="12" sm="6" md="6">
                               <v-btn elevation="2" color="primary"
-                                ><v-icon> mdi-worker </v-icon>
-                                Click</v-btn
+                                ><v-icon> mdi-worker </v-icon> Click</v-btn
                               >
                             </v-col>
                             <v-col cols="12" sm="6" md="6">
                               <v-btn elevation="2" color="primary"
-                                ><v-icon> mdi-worker </v-icon>
-                                Click</v-btn
+                                ><v-icon> mdi-worker </v-icon> Click</v-btn
+                              >
+                            </v-col>
+                          </v-col>
+
+                          <v-col class="d-flex" cols="12" sm="12" md="12">
+                            <v-col cols="12" sm="6" md="6">
+                              <v-btn elevation="2" color="primary"
+                                ><v-icon> mdi-worker </v-icon> Click</v-btn
+                              >
+                            </v-col>
+                            <v-col cols="12" sm="6" md="6">
+                              <v-btn elevation="2" color="primary"
+                                ><v-icon> mdi-worker </v-icon> Click</v-btn
                               >
                             </v-col>
                           </v-col>
@@ -559,11 +548,7 @@
               </div>
             </v-overlay>
           </v-dialog>
-          <v-dialog
-            v-model="dialogLastOrder"
-            persistent
-            max-width="500px"
-          >
+          <v-dialog v-model="dialogLastOrder" persistent max-width="500px">
             <v-card>
               <v-card-title class="text-h5"
                 >กรุณาเลือก รายการที่ทำค้างไว้?</v-card-title
@@ -594,11 +579,7 @@
                     <b-button
                       size="sm"
                       @click="
-                        deletePauseInvoice(
-                          row.item,
-                          row.index,
-                          $event.target
-                        )
+                        deletePauseInvoice(row.item, row.index, $event.target)
                       "
                       class="mr-1"
                       ><v-icon small>mdi-delete</v-icon></b-button
@@ -608,16 +589,10 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn
-                  color="blue darken-1"
-                  text
-                  @click="closeDialogLastOrder"
+                <v-btn color="blue darken-1" text @click="closeDialogLastOrder"
                   >Cancel</v-btn
                 >
-                <v-btn
-                  color="blue darken-1"
-                  text
-                  @click="confirmLastOrder"
+                <v-btn color="blue darken-1" text @click="confirmLastOrder"
                   >OK</v-btn
                 >
                 <v-spacer></v-spacer>
@@ -634,25 +609,17 @@
                 <v-btn color="blue darken-1" text @click="closeDelete"
                   >Cancel</v-btn
                 >
-                <v-btn
-                  color="blue darken-1"
-                  text
-                  @click="deleteItemConfirm()"
+                <v-btn color="blue darken-1" text @click="deleteItemConfirm()"
                   >OK</v-btn
                 >
                 <v-spacer></v-spacer>
               </v-card-actions>
             </v-card>
           </v-dialog>
-          <v-dialog
-            v-model="dialogCancelOrder"
-            persistent
-            max-width="500px"
-          >
+          <v-dialog v-model="dialogCancelOrder" persistent max-width="500px">
             <v-card>
               <v-card-title class="text-h5"
-                >ต้องการยกเลิกรายการสินค้าทั้งหมด
-                ใช่หรือไม่?</v-card-title
+                >ต้องการยกเลิกรายการสินค้าทั้งหมด ใช่หรือไม่?</v-card-title
               >
               <v-card-actions>
                 <v-spacer></v-spacer>
@@ -662,10 +629,7 @@
                   @click="closeDialogCancelOrder"
                   >Cancel</v-btn
                 >
-                <v-btn
-                  color="blue darken-1"
-                  text
-                  @click="confirmCancelOrder"
+                <v-btn color="blue darken-1" text @click="confirmCancelOrder"
                   >OK</v-btn
                 >
                 <v-spacer></v-spacer>
@@ -702,9 +666,7 @@
           <v-dialog v-model="dialogConfirmInvoice">
             <v-card style="width: 200vw; height: auto">
               <v-toolbar flat>
-                <v-card-title class="text-h5"
-                  >สรุปรายการสินค้า</v-card-title
-                >
+                <v-card-title class="text-h5">สรุปรายการสินค้า</v-card-title>
                 <v-spacer></v-spacer>
                 <v-btn icon @click="dialogConfirmInvoice = false"
                   ><v-icon>mdi-close</v-icon></v-btn
@@ -752,17 +714,13 @@
                           <b-tbody>
                             <b-tr
                               v-for="(item, index) in items"
-                              :key="item.productId"
+                              :key="item.barcode"
                             >
-                              <b-td>{{ item.productId }}</b-td>
-                              <b-td>{{ item.productName }}</b-td>
+                              <b-td>{{ item.barcode }}</b-td>
+                              <b-td>{{ item.name_product }}</b-td>
                               <b-td>{{ item.saleQty }}</b-td>
-                              <b-td class="text-right">{{
-                                item.pricePerItem
-                              }}</b-td>
-                              <b-td class="text-right">{{
-                                item.total
-                              }}</b-td>
+                              <b-td class="text-right">{{ item.price }}</b-td>
+                              <b-td class="text-right">{{ item.total }}</b-td>
                             </b-tr>
                           </b-tbody>
                           <b-tfoot>
@@ -846,7 +804,7 @@
                       <b-row>
                         <b-col cols="6"><p>Tax ::</p></b-col>
                         <b-col cols="6"
-                          ><p>{{ taxsTotal.toFixed(2) }}</p></b-col
+                          ><p>{{ taxTotal.toFixed(2) }}</p></b-col
                         >
                       </b-row>
                       <b-row>
@@ -885,8 +843,7 @@
                         >
                         <b-col cols="6"
                           ><v-btn @click="paymentMethod = 'creditCard'"
-                            ><v-icon>mdi-credit-card</v-icon>Credit
-                            Card</v-btn
+                            ><v-icon>mdi-credit-card</v-icon>Credit Card</v-btn
                           ></b-col
                         >
                       </b-row>
@@ -914,110 +871,277 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="dialogConfirmEmp = false">Cancel</v-btn>
-                <v-btn color="blue darken-1" text @click.prevent="getEmpInfo()">OK</v-btn>
+                <v-btn
+                  color="blue darken-1"
+                  text
+                  @click="dialogConfirmEmp = false"
+                  >Cancel</v-btn
+                >
+                <v-btn color="blue darken-1" text @click.prevent="getEmpInfo()"
+                  >OK</v-btn
+                >
                 <v-spacer></v-spacer>
               </v-card-actions>
             </v-card>
           </v-dialog>
-          <v-dialog v-model="dialogCashier" max-width="500px" :retain-focus="false" persistent>
+          <v-dialog
+            v-model="dialogCashier"
+            max-width="500px"
+            :retain-focus="false"
+            persistent
+          >
             <v-overlay :absolute="absolute" :value="overlayCashier" responsive>
               <v-card class="mx-auto" max-width="500px" light>
                 <v-card-title>
                   <b>Cashier</b>
                   <v-spacer></v-spacer>
-                  <v-btn icon @click.prevent="dialogCashier=false, overlayCashier=false"><v-icon>mdi-close</v-icon></v-btn>
+                  <v-btn
+                    icon
+                    @click.prevent="
+                      (dialogCashier = false), (overlayCashier = false)
+                    "
+                    ><v-icon>mdi-close</v-icon></v-btn
+                  >
                 </v-card-title>
-                <v-card-subtitle class="pb-0">กรุณากรอกจำนวนเงิน</v-card-subtitle>
+                <v-card-subtitle class="pb-0"
+                  >กรุณากรอกจำนวนเงิน</v-card-subtitle
+                >
                 <v-card-text class="text--primary">
                   <v-row>
-                      <v-col style="background-color: orange;">
-                        <label>เงินทอน</label>
-                        <b-form>
-                          <label>1000 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.thousand)" v-model="formCashier.thousand" trim></b-form-input>
-                          <label>500 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.fiveHundred)" v-model="formCashier.fiveHundred"></b-form-input>
-                          <label>100 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.oneHundred)" v-model="formCashier.oneHundred"></b-form-input>
-                          <label>50 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.fifty)" v-model="formCashier.fifty"></b-form-input>
-                          <label>20 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.twenty)" v-model="formCashier.twenty"></b-form-input>
-                          <label>10 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.ten)" v-model="formCashier.ten"></b-form-input>
-                          <label>5 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.five)" v-model="formCashier.five"></b-form-input>
-                          <label>2 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.two)" v-model="formCashier.two"></b-form-input>
-                          <label>1 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.one)" v-model="formCashier.one"></b-form-input>
-                          <!-- <label>0.50 :</label>
+                    <v-col style="background-color: orange">
+                      <label>เงินทอน</label>
+                      <b-form>
+                        <label>1000 :</label>
+                        <b-form-input
+                          size="sm"
+                          type="number"
+                          :state="validation(formCashier.thousand)"
+                          v-model="formCashier.thousand"
+                          trim
+                        ></b-form-input>
+                        <label>500 :</label>
+                        <b-form-input
+                          size="sm"
+                          type="number"
+                          :state="validation(formCashier.fiveHundred)"
+                          v-model="formCashier.fiveHundred"
+                        ></b-form-input>
+                        <label>100 :</label>
+                        <b-form-input
+                          size="sm"
+                          type="number"
+                          :state="validation(formCashier.oneHundred)"
+                          v-model="formCashier.oneHundred"
+                        ></b-form-input>
+                        <label>50 :</label>
+                        <b-form-input
+                          size="sm"
+                          type="number"
+                          :state="validation(formCashier.fifty)"
+                          v-model="formCashier.fifty"
+                        ></b-form-input>
+                        <label>20 :</label>
+                        <b-form-input
+                          size="sm"
+                          type="number"
+                          :state="validation(formCashier.twenty)"
+                          v-model="formCashier.twenty"
+                        ></b-form-input>
+                        <label>10 :</label>
+                        <b-form-input
+                          size="sm"
+                          type="number"
+                          :state="validation(formCashier.ten)"
+                          v-model="formCashier.ten"
+                        ></b-form-input>
+                        <label>5 :</label>
+                        <b-form-input
+                          size="sm"
+                          type="number"
+                          :state="validation(formCashier.five)"
+                          v-model="formCashier.five"
+                        ></b-form-input>
+                        <label>2 :</label>
+                        <b-form-input
+                          size="sm"
+                          type="number"
+                          :state="validation(formCashier.two)"
+                          v-model="formCashier.two"
+                        ></b-form-input>
+                        <label>1 :</label>
+                        <b-form-input
+                          size="sm"
+                          type="number"
+                          :state="validation(formCashier.one)"
+                          v-model="formCashier.one"
+                        ></b-form-input>
+                        <!-- <label>0.50 :</label>
                           <b-form-input size="sm" type="number" :state="validation(formCashier.fiftyCent)" v-model="formCashier.fiftyCent"></b-form-input>
                           <label>0.25 :</label>
                           <b-form-input size="sm" type="number" :state="validation(formCashier.twentyFiveCent)" v-model="formCashier.twentyFiveCent"></b-form-input> -->
-                        </b-form>
-                      </v-col>
-                      <v-col style="background-color: yellow;">
-                        <label>ยอดขาย</label>
-                        <b-form>
-                          <label>1000 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.thousand)" v-model="formCashier.thousand"></b-form-input>
-                          <label>500 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.fiveHundred)" v-model="formCashier.fiveHundred"></b-form-input>
-                          <label>100 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.oneHundred)" v-model="formCashier.oneHundred"></b-form-input>
-                          <label>50 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.fifty)" v-model="formCashier.fifty"></b-form-input>
-                          <label>20 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.twenty)" v-model="formCashier.twenty"></b-form-input>
-                          <label>10 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.ten)" v-model="formCashier.ten"></b-form-input>
-                          <label>5 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.five)" v-model="formCashier.five"></b-form-input>
-                          <label>2 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.two)" v-model="formCashier.two"></b-form-input>
-                          <label>1 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.one)" v-model="formCashier.one"></b-form-input>
-                          <!-- <label>0.50 :</label>
+                      </b-form>
+                    </v-col>
+                    <v-col style="background-color: yellow">
+                      <label>ยอดขาย</label>
+                      <b-form>
+                        <label>1000 :</label>
+                        <b-form-input
+                          size="sm"
+                          type="number"
+                          :state="validation(formCashier.thousand)"
+                          v-model="formCashier.thousand"
+                        ></b-form-input>
+                        <label>500 :</label>
+                        <b-form-input
+                          size="sm"
+                          type="number"
+                          :state="validation(formCashier.fiveHundred)"
+                          v-model="formCashier.fiveHundred"
+                        ></b-form-input>
+                        <label>100 :</label>
+                        <b-form-input
+                          size="sm"
+                          type="number"
+                          :state="validation(formCashier.oneHundred)"
+                          v-model="formCashier.oneHundred"
+                        ></b-form-input>
+                        <label>50 :</label>
+                        <b-form-input
+                          size="sm"
+                          type="number"
+                          :state="validation(formCashier.fifty)"
+                          v-model="formCashier.fifty"
+                        ></b-form-input>
+                        <label>20 :</label>
+                        <b-form-input
+                          size="sm"
+                          type="number"
+                          :state="validation(formCashier.twenty)"
+                          v-model="formCashier.twenty"
+                        ></b-form-input>
+                        <label>10 :</label>
+                        <b-form-input
+                          size="sm"
+                          type="number"
+                          :state="validation(formCashier.ten)"
+                          v-model="formCashier.ten"
+                        ></b-form-input>
+                        <label>5 :</label>
+                        <b-form-input
+                          size="sm"
+                          type="number"
+                          :state="validation(formCashier.five)"
+                          v-model="formCashier.five"
+                        ></b-form-input>
+                        <label>2 :</label>
+                        <b-form-input
+                          size="sm"
+                          type="number"
+                          :state="validation(formCashier.two)"
+                          v-model="formCashier.two"
+                        ></b-form-input>
+                        <label>1 :</label>
+                        <b-form-input
+                          size="sm"
+                          type="number"
+                          :state="validation(formCashier.one)"
+                          v-model="formCashier.one"
+                        ></b-form-input>
+                        <!-- <label>0.50 :</label>
                           <b-form-input size="sm" type="number" :state="validation(formCashier.fiftyCent)" v-model="formCashier.fiftyCent"></b-form-input>
                           <label>0.25 :</label>
                           <b-form-input size="sm" type="number" :state="validation(formCashier.twentyFiveCent)" v-model="formCashier.twentyFiveCent"></b-form-input> -->
-                        </b-form>
-                      </v-col>
-                      <v-col style="background-color: lightgreen;">
-                        <label>เงินสดย่อย</label>
-                        <b-form>
-                          <label>1000 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.thousand)" v-model="formCashier.thousand"></b-form-input>
-                          <label>500 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.fiveHundred)" v-model="formCashier.fiveHundred"></b-form-input>
-                          <label>100 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.oneHundred)" v-model="formCashier.oneHundred"></b-form-input>
-                          <label>50 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.fifty)" v-model="formCashier.fifty"></b-form-input>
-                          <label>20 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.twenty)" v-model="formCashier.twenty"></b-form-input>
-                          <label>10 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.ten)" v-model="formCashier.ten"></b-form-input>
-                          <label>5 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.five)" v-model="formCashier.five"></b-form-input>
-                          <label>2 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.two)" v-model="formCashier.two"></b-form-input>
-                          <label>1 :</label>
-                          <b-form-input size="sm" type="number" :state="validation(formCashier.one)" v-model="formCashier.one"></b-form-input>
-                          <!-- <label>0.50 :</label>
+                      </b-form>
+                    </v-col>
+                    <v-col style="background-color: lightgreen">
+                      <label>เงินสดย่อย</label>
+                      <b-form>
+                        <label>1000 :</label>
+                        <b-form-input
+                          size="sm"
+                          type="number"
+                          :state="validation(formCashier.thousand)"
+                          v-model="formCashier.thousand"
+                        ></b-form-input>
+                        <label>500 :</label>
+                        <b-form-input
+                          size="sm"
+                          type="number"
+                          :state="validation(formCashier.fiveHundred)"
+                          v-model="formCashier.fiveHundred"
+                        ></b-form-input>
+                        <label>100 :</label>
+                        <b-form-input
+                          size="sm"
+                          type="number"
+                          :state="validation(formCashier.oneHundred)"
+                          v-model="formCashier.oneHundred"
+                        ></b-form-input>
+                        <label>50 :</label>
+                        <b-form-input
+                          size="sm"
+                          type="number"
+                          :state="validation(formCashier.fifty)"
+                          v-model="formCashier.fifty"
+                        ></b-form-input>
+                        <label>20 :</label>
+                        <b-form-input
+                          size="sm"
+                          type="number"
+                          :state="validation(formCashier.twenty)"
+                          v-model="formCashier.twenty"
+                        ></b-form-input>
+                        <label>10 :</label>
+                        <b-form-input
+                          size="sm"
+                          type="number"
+                          :state="validation(formCashier.ten)"
+                          v-model="formCashier.ten"
+                        ></b-form-input>
+                        <label>5 :</label>
+                        <b-form-input
+                          size="sm"
+                          type="number"
+                          :state="validation(formCashier.five)"
+                          v-model="formCashier.five"
+                        ></b-form-input>
+                        <label>2 :</label>
+                        <b-form-input
+                          size="sm"
+                          type="number"
+                          :state="validation(formCashier.two)"
+                          v-model="formCashier.two"
+                        ></b-form-input>
+                        <label>1 :</label>
+                        <b-form-input
+                          size="sm"
+                          type="number"
+                          :state="validation(formCashier.one)"
+                          v-model="formCashier.one"
+                        ></b-form-input>
+                        <!-- <label>0.50 :</label>
                           <b-form-input size="sm" type="number" :state="validation(formCashier.fiftyCent)" v-model="formCashier.fiftyCent"></b-form-input>
                           <label>0.25 :</label>
                           <b-form-input size="sm" type="number" :state="validation(formCashier.twentyFiveCent)" v-model="formCashier.twentyFiveCent"></b-form-input> -->
-                        </b-form>
-                      </v-col>
+                      </b-form>
+                    </v-col>
                   </v-row>
                 </v-card-text>
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn color="warning" text @click.prevent="clearCashierForm()">Reset</v-btn>
-                  <v-btn type="submit" color="success" text @click.prevent="saveFormCashier()">Save</v-btn>
+                  <v-btn
+                    color="warning"
+                    text
+                    @click.prevent="clearCashierForm()"
+                    >Reset</v-btn
+                  >
+                  <v-btn
+                    type="submit"
+                    color="success"
+                    text
+                    @click.prevent="saveFormCashier()"
+                    >Save</v-btn
+                  >
                 </v-card-actions>
               </v-card>
             </v-overlay>
@@ -1030,7 +1154,9 @@
 
 <script>
 import dayjs from "dayjs";
-// import axios from 'axios';
+import axios from "axios";
+const queryString = require("query-string");
+
 export default {
   data() {
     return {
@@ -1055,13 +1181,13 @@ export default {
       listInvoice: [],
       productfields: [
         {
-          key: "productId",
+          key: "barcode",
           label: "รหัสสินค้า",
           sortable: true,
           sortDirection: "desc",
         },
         {
-          key: "productName",
+          key: "name_product",
           label: "รายละเอียดสินค้า",
           sortable: true,
           class: "text-center",
@@ -1073,7 +1199,7 @@ export default {
           class: "text-center",
         },
         {
-          key: "pricePerItem",
+          key: "price",
           label: "ราคา/หน่วย",
           sortable: true,
           class: "text-center",
@@ -1133,8 +1259,8 @@ export default {
       saleTotal: 0,
       discountTotal: 0,
       net: 0,
-      taxs: 0,
-      taxsTotal: 0,
+      tax: 0,
+      taxTotal: 0,
       cashIn: 0,
       remark: "",
       selectCancelInvoiceIndex: 0,
@@ -1157,6 +1283,7 @@ export default {
         fiftyCent: 0,
         twentyFiveCent: 0,
       },
+      url: process.env.VUE_APP_SERVER_API,
     };
   },
   mounted: function () {
@@ -1172,9 +1299,6 @@ export default {
         }
       });
     } else {
-      if (this.$store.state.listInvoice !== []) {
-        this.listInvoice = this.$store.state.listInvoice;
-      }
       if (this.$store.state.currentOrder !== null) {
         let currentOrder = JSON.parse(this.$store.state.currentOrder);
         this.invoiceNo = currentOrder.invoiceNo;
@@ -1191,98 +1315,128 @@ export default {
 
       /* Default User Menu*/
       let userMenu = JSON.parse(this.userInfo.listUserPermission);
-      for(let item of userMenu){
-          for (const [key, value] of Object.entries(item)) {
-              if(key == this.$route.name && item.SubMenu !== undefined) {
-                  this.listMenu = item.SubMenu;
-              }
+      for (let item of userMenu) {
+        for (const [key, value] of Object.entries(item)) {
+          if (key == this.$route.name && item.SubMenu !== undefined) {
+            this.listMenu = item.SubMenu;
           }
+        }
       }
-      this.listMenu = this.listMenu.length !== 0? this.listMenu: ['Sale'];
+      this.listMenu = this.listMenu.length !== 0 ? this.listMenu : ["Sale"];
+      this.configHeader = {
+        headers: { Authorization: `Bearer ${this.userInfo.token}` },
+      };
 
+      this.getListInvoice();
       this.generateNewInvoice();
-      this.formCashier = this.$store.state.cashierBillInfo == null? this.formCashier: this.$store.state.cashierBillInfo;
+      this.formCashier =
+        this.$store.state.cashierBillInfo == null
+          ? this.formCashier
+          : this.$store.state.cashierBillInfo;
       this.checkCashier();
     }
   },
   methods: {
-    checkCashier () {
+    getListInvoice() {
+      if (this.$store.state.listInvoice !== []) {
+        this.listInvoice = this.$store.state.listInvoice;
+      }
+    },
+    checkCashier() {
       /**
        * TODO: API check ข้อมูลเงินใน cashier
        */
-        if(this.$store.state.cashierBillInfo == null) {
-          this.dialogCashier = true;
-          this.overlayCashier = true;
-        } else {
-          this.dialog = true;
-          this.overlay = true;
-        }
+      if (this.$store.state.cashierBillInfo == null) {
+        this.dialogCashier = true;
+        this.overlayCashier = true;
+      } else {
+        this.dialog = true;
+        this.overlay = true;
+      }
     },
     formatPrice(value) {
       let val = (value / 1).toFixed(2).replace(",", ".");
       return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     },
     addItem() {
-      /* TODO: ยิง api เพื่อรับข้อมูลสินค้า */
-      let product = {
-        productId: this.productInput,
-        productName: "Dickerson" + this.productInput,
-        pricePerItem: "1000",
-        discount: "5",
-        point: 10,
-        taxs: 7,
-      };
-      /******************************/
-      if (this.items.length !== 0) {
-        let selectProduct = this.items.find(
-          (ele) => ele.productId == this.productInput
-        );
-        if (selectProduct) {
-          let qty = parseInt(selectProduct.saleQty);
-          // qty = this.saleQty == 1 ? qty + 1 : parseInt(this.saleQty);
-          if (parseInt(this.saleQty) <= 0) {
-            alert("จำนวนสินค้าไม่ถูกต้อง");
-          } else {
-            selectProduct.saleQty = qty + parseInt(this.saleQty);
-            selectProduct.total = parseInt(selectProduct.pricePerItem) * parseInt(selectProduct.saleQty);
-          }
-        } else {
-          this.items.push({
-            ...product,
-            saleQty: parseInt(this.saleQty),
-            total: parseInt(product.pricePerItem) * parseInt(this.saleQty),
-            taxs: (parseInt(product.pricePerItem) * parseInt(this.saleQty) * parseInt(product.taxs)) / 100,
-          });
-        }
-      } else {
-        this.items.push({
-          ...product,
-          saleQty: parseInt(this.saleQty),
-          total: parseInt(product.pricePerItem) * parseInt(this.saleQty),
-          taxs: (parseInt(product.pricePerItem) * parseInt(this.saleQty) * parseInt(product.taxs)) / 100,
-        });
+      if (this.productInput == "") {
+        alert("กรุณาใส่รหัสสินค้า");
+        return;
       }
-      this.calSaleTotal();
-      this.calPoints();
+      let params = {
+        // product: "8850080252361",
+        product: this.productInput,
+      };
+      var qs = queryString.stringify(params);
+      axios
+        .post(this.url + "/cart/product", qs, this.configHeader)
+        .then((res) => {
+          if (res.status == 200) {
+            var product = res.data.product;
+            if (product.length == 0) {
+              alert("ไม่พบข้อมูลสินค้า");
+              return;
+            } else {
+              product = product[0];
+              if (this.items.length !== 0) {
+                let selectProduct = this.items.find(
+                  (ele) => ele.barcode == params.product
+                );
+                if (selectProduct) {
+                  let qty = parseInt(selectProduct.saleQty);
+                  // qty = this.saleQty == 1 ? qty + 1 : parseInt(this.saleQty);
+                  if (parseInt(this.saleQty) <= 0) {
+                    alert("จำนวนสินค้าไม่ถูกต้อง");
+                  } else {
+                    selectProduct.saleQty = qty + parseInt(this.saleQty);
+                    selectProduct.total =
+                      parseInt(selectProduct.price) *
+                      parseInt(selectProduct.saleQty);
+                    selectProduct.point = 0;
+                  }
+                } else {
+                  this.items.push({
+                    ...product,
+                    saleQty: parseInt(this.saleQty),
+                    total: parseInt(product.price) * parseInt(this.saleQty),
+                    point: 0,
+                  });
+                }
+              } else {
+                this.items.push({
+                  ...product,
+                  saleQty: parseInt(this.saleQty),
+                  total: parseInt(product.price) * parseInt(this.saleQty),
+                  point: 0,
+                });
+              }
+              this.calSaleTotal();
+              this.calPoints();
 
-      this.productInput = "";
-      this.saleQty = 1;
-      this.$refs.productInput.focus();
-      this.currentOrder();
+              this.productInput = "";
+              this.saleQty = 1;
+              this.$refs.productInput.focus();
+              this.currentOrder();
+            }
+          } else {
+            alert("ไม่สามารถค้นหาข้อมูลสินค้านี้ได้ กรุณาติดต่อ....");
+            return;
+          }
+        });
     },
     calSaleTotal() {
       this.saleTotal = 0;
       this.discountTotal = 0;
       this.net = 0;
-      this.taxsTotal = 0;
+      this.taxTotal = 0;
 
       this.items.forEach((e) => {
-        this.taxsTotal += parseFloat(e.taxs);
+        this.taxTotal += parseInt(e.total) * (parseInt(e.tax) / 100);
         this.saleTotal += parseInt(e.total);
-        this.discountTotal += parseInt(e.discount);
+        // this.discountTotal += parseInt(e.discount);
       });
-
-      this.net = this.saleTotal - this.discountTotal;
+      this.net = this.saleTotal;
+      //   this.net = this.saleTotal - this.discountTotal;
     },
     calPoints() {
       this.points = 0;
@@ -1485,7 +1639,7 @@ export default {
     confirmCancelOrder() {
       this.items = [];
       this.pointsUsed = 0;
-      this.empSaleInfo ={};
+      this.empSaleInfo = {};
 
       this.calSaleTotal();
       this.calPoints();
@@ -1524,7 +1678,10 @@ export default {
           invoiceNo: this.invoiceNo,
           orderDate: dayjs(this.saleDate).format("YYYY-MM-DD HH:mm:ss"),
           userInfo: this.empSaleInfo,
-          memberInfo: Object.keys(this.memberInfo).length === 0 ? "Walk-in customer" : this.memberInfo,
+          memberInfo:
+            Object.keys(this.memberInfo).length === 0
+              ? "Walk-in customer"
+              : this.memberInfo,
           orderInfo: this.items,
           qty: this.items.length,
           paymentMethod: this.paymentMethod,
@@ -1593,33 +1750,33 @@ export default {
     },
     getEmpInfo() {
       this.empSaleInfo = {
-        "id": this.empSaleInput,
-        "username": "Admin",
-        "roles": "Admin",
-        "fing_path": "fing_path",
-        "numoffice_d": "123456",
-        "emp_name": "admin",
-        "emp_surname": "suername",
-        "emp_name_e": "emp_name_e",
-        "emp_surname_e": "emp_surname_e",
-        "img_profile": "img_profile.jpg",
-        "card_id": "1010121210123",
-        "emp_status": 1,
-        "regis_date": "2022-01-13",
-        "regis_time": "09:50:15",
-        "start_date": "2022-01-13",
-        "start_time": "09:50:15",
-        "end_date": "2022-01-13",
-        "end_time": "09:50:15",
-        "reg_user": "system"
+        id: this.empSaleInput,
+        username: "Admin",
+        roles: "Admin",
+        fing_path: "fing_path",
+        numoffice_d: "123456",
+        emp_name: "admin",
+        emp_surname: "suername",
+        emp_name_e: "emp_name_e",
+        emp_surname_e: "emp_surname_e",
+        img_profile: "img_profile.jpg",
+        card_id: "1010121210123",
+        emp_status: 1,
+        regis_date: "2022-01-13",
+        regis_time: "09:50:15",
+        start_date: "2022-01-13",
+        start_time: "09:50:15",
+        end_date: "2022-01-13",
+        end_time: "09:50:15",
+        reg_user: "system",
       };
       this.dialogConfirmEmp = false;
     },
     validation(value) {
-      if(value == 0) {
+      if (value == 0) {
         return null;
       }
-      return parseInt(value) < 0? false: true;
+      return parseInt(value) < 0 ? false : true;
     },
     clearCashierForm() {
       this.formCashier = {
@@ -1633,22 +1790,22 @@ export default {
         two: 0,
         one: 0,
         fiftyCent: 0,
-        twentyFiveCent: 0
+        twentyFiveCent: 0,
       };
     },
     saveFormCashier() {
       var valid = true;
       for (const [key, value] of Object.entries(this.formCashier)) {
-          if(value < 0) {
-              valid = false;
-          }
+        if (value < 0) {
+          valid = false;
+        }
       }
-      if(!valid) {
-          alert("กรุณาใส่จำนวนเงินใน cashier ให้ถูกต้อง");
+      if (!valid) {
+        alert("กรุณาใส่จำนวนเงินใน cashier ให้ถูกต้อง");
       } else {
         this.$store.commit("saveCashierBillInfo", this.formCashier);
-        this.dialogCashier=false; 
-        this.overlayCashier=false;
+        this.dialogCashier = false;
+        this.overlayCashier = false;
         this.checkCashier();
       }
     },

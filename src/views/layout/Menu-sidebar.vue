@@ -16,7 +16,12 @@
 
     <v-list dense nav>
       <v-list-item-group v-model="selectedItem" color="primary">
-        <v-list-item v-for="(item, i) in items" :key="i" :to="item.link" style="margin-bottom: 2px; padding: 12px">
+        <v-list-item
+          v-for="(item, i) in items"
+          :key="i"
+          :to="item.link"
+          style="margin-bottom: 2px; padding: 12px"
+        >
           <v-list-item-icon>
             <v-icon v-text="item.icon"></v-icon>
           </v-list-item-icon>
@@ -57,14 +62,34 @@ export default {
   methods: {
     setMenu() {
       var menuItems = [
-        { title: "Dashboard", icon: "mdi-monitor mdi-48px", link: "/dashboard" },
+        {
+          title: "Dashboard",
+          icon: "mdi-monitor mdi-48px",
+          link: "/dashboard",
+        },
         { title: "Sale", icon: "mdi-cart-plus mdi-48px", link: "/sale" },
         { title: "Stock", icon: "mdi-bank mdi-48px", link: "/stock" },
-        { title: "Member Register", icon: "mdi-account-card-details mdi-48px", link: "/member" },
-        { title: "Off Promotion", icon: "mdi-wallet-giftcard mdi-48px", link: "/offpromotion" },
-        { title: "Report", icon: "mdi-chart-areaspline mdi-48px", link: "/report" },
+        {
+          title: "Member Register",
+          icon: "mdi-account-card-details mdi-48px",
+          link: "/member",
+        },
+        {
+          title: "Offer Promotion",
+          icon: "mdi-wallet-giftcard mdi-48px",
+          link: "/promotion",
+        },
+        {
+          title: "Report",
+          icon: "mdi-chart-areaspline mdi-48px",
+          link: "/report",
+        },
         { title: "Tools", icon: "mdi-settings mdi-48px", link: "/tools" },
-        { title: "Audit", icon: "mdi-briefcase-check mdi-48px", link: "/audit" },
+        {
+          title: "Audit",
+          icon: "mdi-briefcase-check mdi-48px",
+          link: "/audit",
+        },
       ];
 
       this.userInfo = JSON.parse(this.$store.state.userInfo);

@@ -66,7 +66,6 @@ export default {
 
           title: "logout",
           click: (e) => {
-            console.log(e);
             this.$store.commit("doLogout");
             window.localStorage.removeItem("vuex");
             // this.logout();

@@ -6,6 +6,7 @@ import Tools from '../views/Tools.vue'
 import Report from '../views/Report.vue'
 import Member from '../views/Member.vue'
 import Stock from '../views/Stock.vue'
+import Promotion from '../views/Promotion.vue'
 
 Vue.use(VueRouter)
 
@@ -39,6 +40,11 @@ const routes = [
     path: '/stock',
     name: 'Stock',
     component: Stock
+  },
+  {
+    path: '/promotion',
+    name: 'Promotion',
+    component: Promotion
   },
   // {
   //   path: '/about',
