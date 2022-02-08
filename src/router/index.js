@@ -7,6 +7,7 @@ import Report from '../views/Report.vue'
 import Member from '../views/Member.vue'
 import Stock from '../views/Stock.vue'
 import Promotion from '../views/Promotion.vue'
+import PromotionDetail from '../views/PromotionDetail.vue'
 
 Vue.use(VueRouter)
 
@@ -45,6 +46,11 @@ const routes = [
     path: '/promotion',
     name: 'Promotion',
     component: Promotion
+  },
+  {
+    path: '/promodetail',
+    name: 'PromotionDetail',
+    component: PromotionDetail
   },
   // {
   //   path: '/about',
