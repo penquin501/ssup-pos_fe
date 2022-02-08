@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import VuexPersistence from 'vuex-persist'
-import vuexI18n from "vuex-i18n";
 
 Vue.use(Vuex)
 
@@ -13,6 +12,11 @@ export default new Vuex.Store({
     lastOrder: [],
     listInvoice: [],
     listUser: [],
+    listMember: [],
+    listStockIn: [],
+    listStockOut: [],
+    listInvoiceStockPending: [],
+    cashierBillInfo: null,
   },
   mutations: {
     doLogin(state, data) {
@@ -22,6 +26,15 @@ export default new Vuex.Store({
     doLogout(state) {
       state.is_login = false;
       state.userInfo = "";
+      state.currentOrder = null;
+      state.lastOrder = [];
+      state.listInvoice = [];
+      state.listUser = [];
+      state.listMember = [];
+      state.listStockIn = [];
+      state.listStockOut = [];
+      state.listInvoiceStockPending = [];
+      state.cashierBillInfo = null;
     },
     currentOrder(state, data) {
       state.currentOrder = data;
@@ -32,11 +45,26 @@ export default new Vuex.Store({
     addListInvoice(state, data) {
       state.listInvoice = data;
     },
+    addListMember(state, data) {
+      state.listMember = data;
+    },
+    addListStockIn(state, data) {
+      state.listStockIn = data;
+    },
+    addListStockOut(state, data) {
+      state.listStockOut = data;
+    },
+    addListInvoiceStockPending(state, data) {
+      state.listInvoiceStockPending = data;
+    },
     updatePermission(state, data) {
       state.userInfo = data;
     },
     setListUser(state, data) {
       state.listUser = data;
+    }, 
+    saveCashierBillInfo(state, data) {
+      state.cashierBillInfo = data;
     }, 
   },
   actions: {

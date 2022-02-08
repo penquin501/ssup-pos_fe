@@ -1,6 +1,7 @@
 {
   "message": {
-    "hello": "{msg} world"
+    "hello": "{msg} world",
+    "subMenu": "Sub Menu"
   },
   "$vuetify": {
     "badge": "Badge",
