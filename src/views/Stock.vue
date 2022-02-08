@@ -84,7 +84,7 @@
                     <v-col class="stock-head" cols="3">
                       <b-form-input v-if="actionForm == 'KI'" size="sm" type="text" v-model="formStock.invoiceNo" @keypress="engOnly" trim></b-form-input>
                       <b-form-input v-else-if="actionForm == 'TO'" disabled size="sm" type="text" v-model="formStock.invoiceNo" @keypress="engOnly" trim></b-form-input>
-                      <b-form-input v-else size="sm" type="text" v-model="formStock.invoiceNo" @keypress="engOnly" @keyup.enter="checkInvoiceStock()" @keyup.ctrl.f1="dialogListInvoice = true, getListInvoiceStock()" trim></b-form-input>
+                      <b-form-input v-else size="sm" type="text" v-model="formStock.invoiceNo" @keypress="engOnly" @keyup.enter="checkInvoiceStock()" v-shortkey="['f1']" @shortkey="dialogListInvoice = true, getListInvoiceStock()" trim></b-form-input>
                     </v-col>
                     <v-col class="stock-head" cols="2">
                       <v-btn small v-if="actionForm !== 'KI' && actionForm !== 'TO'" @click="dialogListInvoice = true, getListInvoiceStock()"><v-icon>mdi-magnify</v-icon>(F1)</v-btn>
@@ -414,6 +414,9 @@ export default {
     }
   },
   methods: {
+    help() {
+      console.log('eee');
+    },
     formatPrice(value) {
       let val = (value / 1).toFixed(2).replace(",", ".");
       return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
