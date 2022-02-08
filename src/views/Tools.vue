@@ -1039,7 +1039,10 @@ export default {
         },
         {
           name: "Stock",
-          menus: [{ text: "Stock In", selected: 0 }],
+          menus: [
+            { text: "Stock In", selected: 0 },
+            { text: "Stock Out", selected: 0 }
+          ],
           selectedMenu: [],
           selected: [],
         },

@@ -14,6 +14,7 @@ export default new Vuex.Store({
     listUser: [],
     listMember: [],
     listStockIn: [],
+    listStockOut: [],
     listInvoiceStockPending: [],
     cashierBillInfo: null,
   },
@@ -31,6 +32,8 @@ export default new Vuex.Store({
       state.listUser = [];
       state.listMember = [];
       state.listStockIn = [];
+      state.listStockOut = [];
+      state.listInvoiceStockPending = [];
       state.cashierBillInfo = null;
     },
     currentOrder(state, data) {
@@ -47,6 +50,9 @@ export default new Vuex.Store({
     },
     addListStockIn(state, data) {
       state.listStockIn = data;
+    },
+    addListStockOut(state, data) {
+      state.listStockOut = data;
     },
     addListInvoiceStockPending(state, data) {
       state.listInvoiceStockPending = data;

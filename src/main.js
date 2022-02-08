@@ -23,6 +23,7 @@ Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
 Vue.use(FlagIcon)
 Vue.use(VueZoomer)
+Vue.use(require('vue-shortkey'))
 
 new Vue({
   router,
