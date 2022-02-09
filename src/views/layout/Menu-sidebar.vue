@@ -112,17 +112,6 @@ export default {
     goto(link) {
       if (this.$route.path == link) {
         this.$router.go();
-      } else {
-        this.$router.push({ path: link }).catch((error) => {
-          if (
-            error.name !== "NavigationDuplicated" &&
-            !error.message.includes(
-              "Avoided redundant navigation to current location"
-            )
-          ) {
-            console.log(error);
-          }
-        });
       }
     },
   },
