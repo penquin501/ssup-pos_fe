@@ -15,5 +15,29 @@ npm run serve
 npm run build
 ```
 
+### install vue-i18n
+```
+npm i i18n
+```
+### install vue-flag-icon
+```
+npm i vue-flag-icon
+```
+
+### install moment
+```
+npm install --save moment
+```
+
+### install dayjs
+```
+npm install --save dayjs
+```
+
+### install npm install vue-zoomer
+```
+npm install vue-zoomer
+```
+
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
