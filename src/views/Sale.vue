@@ -1174,6 +1174,7 @@ export default {
       dialogConfirmEmp: false,
       dialogCashier: false,
       invoiceNo: "",
+      qty: "1",
       pause: false,
       today: dayjs().format("DD-MM-YYYY"),
       saleDate: dayjs().format("YYYY-MM-DD HH:mm"),
@@ -1328,7 +1329,7 @@ export default {
       };
 
       this.getListInvoice();
-      this.generateNewInvoice();
+      // this.generateNewInvoice();
       this.formCashier =
         this.$store.state.cashierBillInfo == null
           ? this.formCashier
@@ -1366,27 +1367,50 @@ export default {
       let params = {
         // product: "8850080252361",
         product: this.productInput,
+        qty: this.qty,
+        shop: this.userInfo.shop.shop_code,
+        invoiceNo: this.invoiceNo,
       };
       var qs = queryString.stringify(params);
       axios
         .post(this.url + "/cart/product", qs, this.configHeader)
         .then((res) => {
-          if (res.status == 200) {
+          if (res.status != 200) {
+            var error = res.data.error;
+            // console.log(error);
+            if (error != "") {
+              alert(error);
+              return;
+            }
+          } else if (res.status == 200) {
             var product = res.data.product;
+
             if (product.length == 0) {
               alert("ไม่พบข้อมูลสินค้า");
+              this.productInput = "";
               return;
             } else {
               product = product[0];
+              if (product.invoiceNo != 0) {
+                this.invoiceNo = res.data.product.invoiceNo;
+              }
               if (this.items.length !== 0) {
                 let selectProduct = this.items.find(
-                  (ele) => ele.barcode == params.product
+                  (ele) =>
+                    ele.barcode == params.product ||
+                    ele.product_id == params.product
                 );
                 if (selectProduct) {
+                  if (parseInt(selectProduct.saleQty) > 0) {
+                    this.qty = selectProduct.saleQty;
+                  } else {
+                    this.qty = 1;
+                  }
                   let qty = parseInt(selectProduct.saleQty);
                   // qty = this.saleQty == 1 ? qty + 1 : parseInt(this.saleQty);
                   if (parseInt(this.saleQty) <= 0) {
                     alert("จำนวนสินค้าไม่ถูกต้อง");
+                    this.productInput = "";
                   } else {
                     selectProduct.saleQty = qty + parseInt(this.saleQty);
                     selectProduct.total =
@@ -1549,7 +1573,7 @@ export default {
         this.net = 0;
 
         this.$store.commit("currentOrder", null);
-        this.generateNewInvoice();
+        // this.generateNewInvoice();
       }
     },
     onRowSelected(items) {
