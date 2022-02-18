@@ -8,6 +8,7 @@ import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import FlagIcon from 'vue-flag-icon';
 import VueZoomer from 'vue-zoomer'
+import CKEditor from '@ckeditor/ckeditor5-vue2';
 
 import VueI18n from 'vue-i18n'
 import i18n from './i18n'
@@ -24,6 +25,7 @@ Vue.use(IconsPlugin)
 Vue.use(FlagIcon)
 Vue.use(VueZoomer)
 Vue.use(require('vue-shortkey'))
+Vue.use( CKEditor );
 
 new Vue({
   router,
