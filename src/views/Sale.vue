@@ -107,7 +107,7 @@
                             size="sm"
                             v-model="productInput"
                             ref="productInput"
-                            @change="addItem()"
+                            @keypress.enter="addItem()"
                           ></b-form-input
                         ></b-col>
                       </b-row>
@@ -1328,7 +1328,7 @@ export default {
         headers: { Authorization: `Bearer ${this.userInfo.token}` },
       };
 
-      this.getListInvoice();
+      // this.getListInvoice();
       // this.generateNewInvoice();
       this.formCashier =
         this.$store.state.cashierBillInfo == null
@@ -1364,14 +1364,28 @@ export default {
         alert("กรุณาใส่รหัสสินค้า");
         return;
       }
+      if (parseInt(this.saleQty) <= 0) {
+        alert("จำนวนสินค้าไม่ถูกต้อง");
+        return;
+      }
       let params = {
-        // product: "8850080252361",
         product: this.productInput,
-        qty: this.qty,
-        shop: this.userInfo.shop.shop_code,
-        invoiceNo: this.invoiceNo,
+        invoice: this.invoiceNo !== "" ? this.invoiceNo : "",
+        branch: this.userInfo.shop.shop_code,
       };
+      let selectProduct = this.items.find(
+        (ele) => ele.barcode == params.product || ele.barcode == params.product
+      );
+      if (selectProduct) {
+        selectProduct.saleQty =
+          parseInt(selectProduct.saleQty) + parseInt(this.saleQty);
+        params.qty = selectProduct.saleQty;
+      } else {
+        params.qty = this.saleQty;
+      }
+
       var qs = queryString.stringify(params);
+      console.log(qs);
       axios
         .post(this.url + "/cart/product", qs, this.configHeader)
         .then((res) => {
@@ -1437,10 +1451,10 @@ export default {
               this.calSaleTotal();
               this.calPoints();
 
-              this.productInput = "";
-              this.saleQty = 1;
-              this.$refs.productInput.focus();
-              this.currentOrder();
+              //   this.productInput = "";
+              //   this.saleQty = 1;
+              //   this.$refs.productInput.focus();
+              //   this.currentOrder();
             }
           } else {
             alert("ไม่สามารถค้นหาข้อมูลสินค้านี้ได้ กรุณาติดต่อ....");
