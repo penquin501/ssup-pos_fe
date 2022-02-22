@@ -1361,8 +1361,12 @@ export default {
     },
     addItem() {
       if (this.productInput == "") {
-        alert("กรุณาใส่รหัสสินค้า");
-        return;
+          alert("กรุณาใส่รหัสสินค้า");
+          return;
+      }
+      if (parseInt(this.saleQty) <= 0) {
+          alert("จำนวนสินค้าไม่ถูกต้อง");
+          return;
       }
       if (parseInt(this.saleQty) <= 0) {
         alert("จำนวนสินค้าไม่ถูกต้อง");
@@ -1370,6 +1374,7 @@ export default {
       }
       let params = {
         product: this.productInput,
+<<<<<<< HEAD
         invoice: this.invoiceNo !== "" ? this.invoiceNo : "",
         branch: this.userInfo.shop.shop_code,
       };
@@ -1379,6 +1384,14 @@ export default {
       if (selectProduct) {
         selectProduct.saleQty =
           parseInt(selectProduct.saleQty) + parseInt(this.saleQty);
+=======
+        invoice: this.invoiceNo !== ""? this.invoiceNo: "",
+        branch: this.userInfo.shop.shop_code
+      };
+      let selectProduct = this.items.find((ele) => ele.barcode == params.product || ele.barcode == params.product);
+      if (selectProduct) {
+        selectProduct.saleQty = parseInt(selectProduct.saleQty) + parseInt(this.saleQty);
+>>>>>>> a17a073ed1f31e26b713328ae9b5365cbbdd4b54
         params.qty = selectProduct.saleQty;
       } else {
         params.qty = this.saleQty;
@@ -1398,6 +1411,7 @@ export default {
             }
           } else if (res.status == 200) {
             var product = res.data.product;
+<<<<<<< HEAD
 
             if (product.length == 0) {
               alert("ไม่พบข้อมูลสินค้า");
@@ -1456,6 +1470,49 @@ export default {
               //   this.$refs.productInput.focus();
               //   this.currentOrder();
             }
+=======
+            console.log(product);
+            // if (product.length == 0) {
+            //   alert("ไม่พบข้อมูลสินค้า");
+            //   return;
+            // } else {
+            //   product = product[0];
+            //   if (this.items.length !== 0) {
+            //     let selectProduct = this.items.find((ele) => ele.barcode == params.product || ele.barcode == params.product);
+            //     if (selectProduct) {
+            //       let qty = parseInt(selectProduct.saleQty);
+            //       if (parseInt(this.saleQty) <= 0) {
+            //         alert("จำนวนสินค้าไม่ถูกต้อง");
+            //       } else {
+            //         // selectProduct.saleQty = qty + parseInt(this.saleQty);
+            //         selectProduct.total = parseInt(selectProduct.price) * parseInt(selectProduct.saleQty);
+            //         selectProduct.point = 0;
+            //       }
+            //     } else {
+            //       this.items.push({
+            //         ...product,
+            //         saleQty: parseInt(this.saleQty),
+            //         total: parseInt(product.price) * parseInt(this.saleQty),
+            //         point: 0,
+            //       });
+            //     }
+            //   } else {
+            //     this.items.push({
+            //       ...product,
+            //       saleQty: parseInt(this.saleQty),
+            //       total: parseInt(product.price) * parseInt(this.saleQty),
+            //       point: 0,
+            //     });
+            //   }
+            //   this.calSaleTotal();
+            //   this.calPoints();
+
+            //   this.productInput = "";
+            //   this.saleQty = 1;
+            //   this.$refs.productInput.focus();
+            //   this.currentOrder();
+            // }
+>>>>>>> a17a073ed1f31e26b713328ae9b5365cbbdd4b54
           } else {
             alert("ไม่สามารถค้นหาข้อมูลสินค้านี้ได้ กรุณาติดต่อ....");
             return;
