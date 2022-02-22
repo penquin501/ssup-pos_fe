@@ -754,7 +754,7 @@
             v-model="searchUser"
             @change="defaultEmployee"
             append-icon="mdi-magnify"
-            label="Search"
+            label="Search Ex.10001"
             clearable
             single-line
             clear-icon="mdi-close-circle-outline"
@@ -763,7 +763,7 @@
           <v-data-table
             style="margin-top: 10px"
             :headers="headersEmployee"
-            :items="displayDataFromSearch"
+            :items="dataEmpArr"
             :expanded.sync="expanded"
             item-key="empId"
             show-expand
@@ -779,8 +779,64 @@
             </template>
           </v-data-table>
         </b-tab>
-        <!-- <b-tab title="Invoice Templates">
-                </b-tab> -->
+        <b-tab v-if="listMenu.find((name) => name == 'Invoice Templates')" title="Invoice Templates">
+          <v-data-table style="margin-top: 10px" :headers="headersInvoiceTemp" :items="listInvoiceTemp" item-key="id" class="elevation-1">
+            <!-- <template v-slot:item.empName="{ item }">
+              {{ item.empName }}({{ item.children.length }})
+            </template> -->
+            <template v-slot:item.actions="{ item }">
+              <v-icon small class="mr-2" @click.prevent="openDialogInvoiceTemp(item)">mdi-pencil</v-icon>
+            </template>
+          </v-data-table>
+          <v-dialog v-model="dialogInvoiceTemp" max-width="500px" :retain-focus="false" persistent>
+            <v-overlay :absolute="absolute" :value="overlayInvoiceTemp" responsive>
+              <v-card class="mx-auto" max-width="300vw;" light>
+                <v-card-title>
+                  <b>Edit Invoice Templete</b>
+                  <v-spacer></v-spacer>
+                  <v-btn icon @click.prevent="dialogInvoiceTemp = false, overlayInvoiceTemp = false"><v-icon>mdi-close</v-icon></v-btn>
+                </v-card-title>
+                <v-card-text class="text--primary">
+                  <v-row>
+                    <v-col >
+                        <ckeditor style="border: 1px grey solid; max-height: 240px;" :editor="editor" v-model="editorData" :config="editorConfig" @ready="onReady" ></ckeditor>
+                    </v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col>
+                      <p style="margin-bottom: 0px;">Header</p>
+                      <div>
+                        <v-tooltip top v-for="item in headChips" :key="item.id">
+                          <template v-slot:activator="{ on, attrs }">
+                            <v-chip class="ma-2" v-bind="attrs" v-on="on" outlined>{ {{ item }} }</v-chip>
+                          </template>
+                          <span>{{ item }}</span>
+                        </v-tooltip>
+                      </div>
+                    </v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col>
+                      <p style="margin-bottom: 0px;">Table</p>
+                      <div>
+                        <v-tooltip top v-for="item in tableChips" :key="item.id">
+                          <template v-slot:activator="{ on, attrs }">
+                            <v-chip class="ma-2" v-bind="attrs" v-on="on" outlined>{ {{ item }} }</v-chip>
+                          </template>
+                          <span>{{ item }}</span>
+                        </v-tooltip>
+                        </div>
+                    </v-col>
+                  </v-row>
+                </v-card-text>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn type="submit" color="success" text @click.prevent="saveInvoiceTemp()">Save</v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-overlay>
+          </v-dialog>
+        </b-tab>
         <!-- <b-tab title="Software Logs">
                 </b-tab> -->
         <!-- <b-tab title="History">
@@ -791,9 +847,12 @@
 </template>
 
 <script>
+// import axios from 'axios';
 import dayjs from "dayjs";
 import moment from "moment";
-// import axios from 'axios';
+
+import DecoupledEditor from '@ckeditor/ckeditor5-build-decoupled-document';
+
 const dtFormat = "MM-DD-YYYY";
 const today = dayjs().format(dtFormat);
 
@@ -826,6 +885,10 @@ export default {
         { value: "status", text: "Status" },
         { value: "actions", text: "Actions" },
       ],
+      headersInvoiceTemp: [
+        { value: "name", text: "Title" },
+        { value: "actions", text: "Actions" },
+      ],
       listPermission: [],
       options: [
         { text: "Read", value: "r", selected: 0 },
@@ -842,6 +905,7 @@ export default {
       dialogCheckVersion: false,
       dialogAddHardware: false,
       dialogConfirmStatus: false,
+      dialogInvoiceTemp: false,
       headersUser: [
         {
           text: "Name",
@@ -922,6 +986,7 @@ export default {
       absolute: true,
       opacity: 1,
       overlay: false,
+      overlayInvoiceTemp: false,
       loadingStatus: false,
       responseCheckEquip: [],
       equipType: "",
@@ -978,7 +1043,16 @@ export default {
         { text: "", value: "data-table-expand" },
       ],
       expanded: [],
-      displayDataFromSearch: [],
+      dataEmpArr: [],
+      listInvoiceTemp: [],
+      editor: DecoupledEditor,
+      editorData: "",
+      editorConfig: {
+          // The configuration of the editor.
+      },
+      selectInvoice: "",
+      headChips: [],
+      tableChips: [],
     };
   },
   mounted: function () {
@@ -1016,6 +1090,7 @@ export default {
               "Update Data",
               "Hardware Logs",
               "User Tree",
+              "Invoice Templates",
             ];
 
       this.listUser =
@@ -1025,9 +1100,13 @@ export default {
       this.setListUserToStore();
       this.getCurrentVersion();
       this.getHardwareInfo();
+      this.getListInvoiceTemplate();
     }
   },
   methods: {
+    onReady( editor )  {
+        editor.ui.getEditableElement().parentElement.insertBefore(editor.ui.view.toolbar.element,editor.ui.getEditableElement());
+    },
     defaultPermission() {
       this.listPermission = [
         { name: "Dashboard", menus: [], selectedMenu: [], selected: [] },
@@ -1070,6 +1149,7 @@ export default {
             { text: "Update Data", selected: 0 },
             { text: "Hardware Logs", selected: 0 },
             { text: "User Tree", selected: 0 },
+            { text: "Invoice Templates", selected: 0 },
           ],
           selectedMenu: [],
           selected: [],
@@ -1338,11 +1418,7 @@ export default {
       this.lastestPromotionData = [];
       for (let lPromo of this.listPromotion) {
         let checkCurrentPro = this.currentPromotionData.find(
-          (ele) =>
-            dayjs(ele.updated_at).format(dtFormat) ==
-              dayjs(lPromo.updated_at).format(dtFormat) &&
-            ele.version == lPromo.version
-        ); //check pro ที่มีอยู่ก่อนแล้ว
+          (ele) => dayjs(ele.updated_at).format(dtFormat) == dayjs(lPromo.updated_at).format(dtFormat) && ele.version == lPromo.version); //check pro ที่มีอยู่ก่อนแล้ว
         if (checkCurrentPro == undefined) {
           if (dayjs(lPromo.updated_at) >= dayjs(today)) {
             this.lastestPromotionData.push(lPromo);
@@ -1581,7 +1657,7 @@ export default {
     },
     defaultEmployee() {
       this.dataEmployee = [];
-      this.displayDataFromSearch = [];
+      this.dataEmpArr = [];
       if (this.searchUser.length >= 5) {
         this.dataEmployee = [
           {
@@ -1635,7 +1711,77 @@ export default {
         (ele) => this.searchUser == ele.empId
       );
 
-      this.displayDataFromSearch = [checkMember];
+      this.dataEmpArr = [checkMember];
+    },
+    getListInvoiceTemplate() {
+      this.listInvoiceTemp = this.$store.state.listInvoiceTemplate.length == 0 ? 
+        [{
+          id: "1",
+          name: "Sale Invoice",
+          type: "sale",
+          width: "70mm",
+          meta: "",
+        },
+        {
+          id: "2",
+          name: "Purchase Invoice",
+          type: "purchase",
+          width: "70mm",
+          meta: "",
+        },
+        // {
+        //   id: "3",
+        //   name: "Large Invoice",
+        //   type: "",
+        //   width: "140mm",
+        //   meta: "",
+        // },
+        // {
+        //   id: "4",
+        //   name: "Large Vat Invoice",
+        //   type: "",
+        //   width: "140mm",
+        //   meta: "",
+        // },
+        ] : this.$store.state.listInvoiceTemplate;
+    },
+    getInvoiceTemplate() {
+      let checkListInvoiceTemplate = this.listInvoiceTemp.find(
+        (ele) => ele.type == this.selectInvoice.type
+      );
+      if (checkListInvoiceTemplate !== undefined) {
+        this.editorData = checkListInvoiceTemplate.meta;
+      }
+      if(this.selectInvoice.type == 'sale') {
+        // this.editorData = `<table><tbody><tr><td><p style="text-align:center;"><span class="text-huge" style="color:rgba(0,0,0,0.87);"><strong>{ app_logo }</strong></span></p><p style="text-align:center;"><span class="text-huge"><strong>{app_name}</strong></span></p><p style="text-align:center;"><strong>SALES INVOICE</strong></p><p style="text-align:center;"><strong>{date} - {time}</strong></p><p><strong>Invoice ID: {invoice_id}</strong></p><p><strong>Sold To: {customer_name}</strong></p><p><strong>Sold By: {employee_name}</strong></p><p><strong>Phone: {phone_number}</strong></p><p><strong>Address: {address}</strong></p><p><strong>Note: {note}</strong></p></td></tr><tr><td><table><thead><tr><th><span style="color:rgb(33,37,41);"><strong>Price</strong></span></th><th><span style="color:rgb(33,37,41);"><strong>Qty</strong></span></th><th><span style="color:rgb(33,37,41);"><strong>Disc%</strong></span></th><th><span style="color:rgb(33,37,41);"><strong>Total</strong></span></th></tr></thead><tbody><tr><td colspan="4">{item_details}</td></tr><tr><td colspan="2" rowspan="1"><p>Subtotal</p><p>Tax</p><p>Discount</p><p>Total</p><p>Exchange</p></td><td colspan="2" rowspan="1"><p style="text-align:right;">{sub_total}</p><p style="text-align:right;">{tax}</p><p style="text-align:right;">{discount}</p><p style="text-align:right;">{total}</p><p style="text-align:right;">{exchange}</p></td></tr><tr><td colspan="4"><p>{payment_details}</p><p>{shipment_address}</p></td></tr></tbody></table></td></tr><tr><td><p style="text-align:center;">{barcode}</p></td></tr></tbody></table>`;
+
+        this.headChips = ['app_logo','app_name','date','time','invoice_id','customer_name','employee_name','phone_number','address','note'];
+        this.tableChips = ['item_details','sub_total','tax','discount','total','exchange','payment_details','shipment_address','barcode'];
+      } 
+      if(this.selectInvoice.type == 'purchase') {
+        // this.editorData = `<table><tbody><tr><td><p style="text-align:center;"><span class="text-huge"><strong>{ app_logo }</strong></span></p><p style="text-align:center;"><span class="text-huge"><strong>{app_name}</strong></span></p><p style="text-align:center;"><strong>PURCHASE&nbsp;INVOICE</strong></p><p style="text-align:center;"><strong>{date} - {time}</strong></p><p><strong>Invoice ID: </strong>{invoice_id}</p><p><strong>Supplier: </strong>{supplier_name}</p><p><strong>Purchased By: </strong>{employee_name}</p></td></tr><tr><td><table><thead><tr><th><strong>Price</strong></th><th><strong>Qty</strong></th><th><strong>Disc%</strong></th><th><strong>Total</strong></th></tr></thead><tbody><tr><td colspan="4">{item_details}</td></tr><tr><td colspan="2" rowspan="1"><p>Subtotal</p><p>Tax</p><p>Discount</p><p>Total</p><p>Exchange</p></td><td colspan="2" rowspan="1"><p style="text-align:right;">{sub_total}</p><p style="text-align:right;">{tax}</p><p style="text-align:right;">{discount}</p><p style="text-align:right;">{total}</p><p style="text-align:right;">{exchange}</p></td></tr><tr><td colspan="4">{payment_details}</td></tr></tbody></table></td></tr><tr><td><p style="text-align:center;">{barcode}</p></td></tr></tbody></table>`;
+
+        this.headChips = ['app_logo','app_name','table_name','supplier_name','date','time','invoice_id','customer_name','employee_name','phone_number','address','note'];
+        this.tableChips = ['item_details','sub_total','tax','discount','total','exchange','payment_details','shipment_address','due','barcode'];
+      }
+    },
+    openDialogInvoiceTemp(invoiceType) {
+        this.dialogInvoiceTemp = true;
+        this.overlayInvoiceTemp = true;
+
+        this.selectInvoice = invoiceType;
+        this.getInvoiceTemplate();
+    },
+    saveInvoiceTemp() {
+      let checkListInvoiceTemplate = this.listInvoiceTemp.find(
+        (ele) => ele.type == this.selectInvoice.type
+      );
+      if (checkListInvoiceTemplate !== undefined) {
+        checkListInvoiceTemplate.meta = this.editorData;
+      }
+      this.$store.commit("updateInvoiceTemplate", this.listInvoiceTemp);
+      this.dialogInvoiceTemp = false;
+      this.overlayInvoiceTemp = false;
     },
     isValidation(data, key, defaultValue) {
       if (data[key] == "") {
@@ -1654,4 +1800,19 @@ export default {
 </script>
 
 <style>
+.ck-content .text-tiny {
+    font-size: 0.7em;
+}
+
+.ck-content .text-small {
+    font-size: 0.85em;
+}
+
+.ck-content .text-big {
+    font-size: 1.4em;
+}
+
+.ck-content .text-huge {
+    font-size: 1.8em;
+}
 </style>

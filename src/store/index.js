@@ -16,6 +16,7 @@ export default new Vuex.Store({
     listStockIn: [],
     listStockOut: [],
     listInvoiceStockPending: [],
+    listInvoiceTemplate: [],
     cashierBillInfo: null,
   },
   mutations: {
@@ -34,6 +35,7 @@ export default new Vuex.Store({
       state.listStockIn = [];
       state.listStockOut = [];
       state.listInvoiceStockPending = [];
+      state.listInvoiceTemplate = [];
       state.cashierBillInfo = null;
     },
     currentOrder(state, data) {
@@ -65,6 +67,9 @@ export default new Vuex.Store({
     }, 
     saveCashierBillInfo(state, data) {
       state.cashierBillInfo = data;
+    }, 
+    updateInvoiceTemplate(state, data) {
+      state.listInvoiceTemplate = data;
     }, 
   },
   actions: {
