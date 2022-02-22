@@ -39,5 +39,16 @@ npm install --save dayjs
 npm install vue-zoomer
 ```
 
+###npm install @ckeditor/ckeditor5-vue2
+```
+npm install @ckeditor/ckeditor5-vue2
+```
+
+###npm install @ckeditor/ckeditor5-build-decoupled-document
+```
+npm install @ckeditor/ckeditor5-build-decoupled-document
+```
+
+
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
