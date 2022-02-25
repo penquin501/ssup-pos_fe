@@ -219,8 +219,6 @@ export default {
       axios
         .post(this.url + "/login", this.loginForm)
         .then((res) => {
-          console.log(this.url);
-          // console.log(JSON.stringify(res.data));
           if (res.status == 201 && res.data.message == "login succeed") {
             this.$store.commit("doLogin", JSON.stringify(res.data));
           } else {

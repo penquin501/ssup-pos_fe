@@ -20,6 +20,7 @@
           v-for="(item, i) in items"
           :key="i"
           :to="item.link"
+          @click.prevent="goto(item.link)"
           style="margin-bottom: 2px; padding: 12px"
         >
           <v-list-item-icon>
@@ -106,6 +107,11 @@ export default {
             }
           }
         }
+      }
+    },
+    goto(link) {
+      if (this.$route.path == link) {
+        this.$router.go();
       }
     },
   },

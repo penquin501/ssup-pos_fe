@@ -107,7 +107,7 @@
                             size="sm"
                             v-model="productInput"
                             ref="productInput"
-                            @change="addItem()"
+                            @keypress.enter="addItem()"
                           ></b-form-input
                         ></b-col>
                       </b-row>
@@ -1174,6 +1174,7 @@ export default {
       dialogConfirmEmp: false,
       dialogCashier: false,
       invoiceNo: "",
+      qty: "1",
       pause: false,
       today: dayjs().format("DD-MM-YYYY"),
       saleDate: dayjs().format("YYYY-MM-DD HH:mm"),
@@ -1327,8 +1328,8 @@ export default {
         headers: { Authorization: `Bearer ${this.userInfo.token}` },
       };
 
-      this.getListInvoice();
-      this.generateNewInvoice();
+      // this.getListInvoice();
+      // this.generateNewInvoice();
       this.formCashier =
         this.$store.state.cashierBillInfo == null
           ? this.formCashier
@@ -1363,30 +1364,71 @@ export default {
         alert("กรุณาใส่รหัสสินค้า");
         return;
       }
+      if (parseInt(this.saleQty) <= 0) {
+        alert("จำนวนสินค้าไม่ถูกต้อง");
+        return;
+      }
+      if (parseInt(this.saleQty) <= 0) {
+        alert("จำนวนสินค้าไม่ถูกต้อง");
+        return;
+      }
       let params = {
-        // product: "8850080252361",
         product: this.productInput,
+        invoice: this.invoiceNo !== "" ? this.invoiceNo : "",
+        branch: this.userInfo.shop.shop_code,
       };
+      let selectProduct = this.items.find(
+        (ele) => ele.barcode == params.product || ele.barcode == params.product
+      );
+      if (selectProduct) {
+        selectProduct.saleQty =
+          parseInt(selectProduct.saleQty) + parseInt(this.saleQty);
+        params.qty = selectProduct.saleQty;
+      } else {
+        params.qty = this.saleQty;
+      }
+
       var qs = queryString.stringify(params);
+      console.log(qs);
       axios
         .post(this.url + "/cart/product", qs, this.configHeader)
         .then((res) => {
-          if (res.status == 200) {
+          if (res.status != 200) {
+            var error = res.data.error;
+            // console.log(error);
+            if (error != "") {
+              alert(error);
+              return;
+            }
+          } else if (res.status == 200) {
             var product = res.data.product;
+
             if (product.length == 0) {
               alert("ไม่พบข้อมูลสินค้า");
+              this.productInput = "";
               return;
             } else {
               product = product[0];
+              if (product.invoice_id != 0) {
+                this.invoiceNo = res.data.product.invoice_id;
+              }
               if (this.items.length !== 0) {
                 let selectProduct = this.items.find(
-                  (ele) => ele.barcode == params.product
+                  (ele) =>
+                    ele.barcode == params.product ||
+                    ele.product_id == params.product
                 );
                 if (selectProduct) {
+                  if (parseInt(selectProduct.saleQty) > 0) {
+                    this.qty = selectProduct.saleQty;
+                  } else {
+                    this.qty = 1;
+                  }
                   let qty = parseInt(selectProduct.saleQty);
                   // qty = this.saleQty == 1 ? qty + 1 : parseInt(this.saleQty);
                   if (parseInt(this.saleQty) <= 0) {
                     alert("จำนวนสินค้าไม่ถูกต้อง");
+                    this.productInput = "";
                   } else {
                     selectProduct.saleQty = qty + parseInt(this.saleQty);
                     selectProduct.total =
@@ -1413,10 +1455,10 @@ export default {
               this.calSaleTotal();
               this.calPoints();
 
-              this.productInput = "";
-              this.saleQty = 1;
-              this.$refs.productInput.focus();
-              this.currentOrder();
+              //   this.productInput = "";
+              //   this.saleQty = 1;
+              //   this.$refs.productInput.focus();
+              //   this.currentOrder();
             }
           } else {
             alert("ไม่สามารถค้นหาข้อมูลสินค้านี้ได้ กรุณาติดต่อ....");
@@ -1549,7 +1591,7 @@ export default {
         this.net = 0;
 
         this.$store.commit("currentOrder", null);
-        this.generateNewInvoice();
+        // this.generateNewInvoice();
       }
     },
     onRowSelected(items) {
