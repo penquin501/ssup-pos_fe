@@ -20,10 +20,10 @@
               <div class="containers">
                 <div class="navbar">
                   <v-row no-gutters>
-                    <b-col cols="7">
+                    <b-col cols="6">
                       <b-row style="margin-left: 0px; margin-right: 0px">
                         <b-col
-                          cols="4"
+                          cols="3"
                           style="
                             border: 0px solid black;
                             text-align: center;
@@ -48,7 +48,7 @@
                         <b-col cols="1" style="text-align: right"
                           >วันที่:</b-col
                         >
-                        <b-col cols="2">
+                        <b-col cols="3">
                           <b-form-input
                             style="font-size: 12px !important"
                             id="input-small"
@@ -59,15 +59,15 @@
                         </b-col>
                       </b-row>
                       <b-row style="margin-left: 0px; margin-right: 0px">
-                        <b-col cols="3" style="padding-bottom: 0px">
+                        <!-- <b-col cols="3" style="padding-bottom: 0px">
                           <v-select
                             style="text-align: center; height: 40px"
                             v-model="selectedPlayPromo"
                             :items="optionsPromotion"
                             solo
                           ></v-select>
-                        </b-col>
-                        <b-col cols="3" style="padding-bottom: 0px">
+                        </b-col> -->
+                        <b-col cols="4" style="padding-bottom: 0px">
                           <v-select
                             style="text-align: center; height: 40px"
                             v-model="selectSale"
@@ -101,7 +101,7 @@
                           "
                           >รหัสสินค้า:</b-col
                         >
-                        <b-col cols="2"
+                        <b-col cols="3"
                           ><b-form-input
                             id="input-small"
                             size="sm"
@@ -112,7 +112,7 @@
                         ></b-col>
                       </b-row>
                     </b-col>
-                    <b-col cols="5">
+                    <b-col cols="6">
                       <v-card
                         style="
                           background-color: green;
@@ -180,16 +180,20 @@
                 </div>
                 <div class="bottom">
                   <div class="left-bottom">
-                    <v-card-title style="padding-top: 0px">
-                      <v-text-field
-                        style="padding-top: 0px"
+                    <div class="input-group mb-3">
+                      <span class="input-group-text" id="basic-addon1"
+                        >Search</span
+                      >
+                      <input
+                        type="text"
                         v-model="search"
-                        append-icon="mdi-magnify"
-                        label="Search"
-                        single-line
-                        hide-details
-                      ></v-text-field>
-                    </v-card-title>
+                        class="form-control search"
+                        aria-describedby="basic-addon1"
+                        style="color: white; font-size: 20px !important"
+                      />
+                      <span class="input-group-text"></span>
+                    </div>
+
                     <div class="content-list-item">
                       <b-table
                         :items="items"
@@ -717,10 +721,14 @@
                               :key="item.barcode"
                             >
                               <b-td>{{ item.barcode }}</b-td>
-                              <b-td>{{ item.name_product }}</b-td>
+                              <b-td>{{ item.product_name }}</b-td>
                               <b-td>{{ item.saleQty }}</b-td>
-                              <b-td class="text-right">{{ item.price }}</b-td>
-                              <b-td class="text-right">{{ item.total }}</b-td>
+                              <b-td class="text-right">{{
+                                formatPrice(item.price)
+                              }}</b-td>
+                              <b-td class="text-right">{{
+                                formatPrice(item.total)
+                              }}</b-td>
                             </b-tr>
                           </b-tbody>
                           <b-tfoot>
@@ -733,15 +741,16 @@
                             <b-tr>
                               <b-td class="text-left">Sub Total:</b-td>
                               <b-td colspan="4" class="text-right">{{
-                                saleTotal
+                                formatPrice(saleTotal.toFixed(2))
                               }}</b-td>
                             </b-tr>
                             <b-tr>
                               <b-td class="text-left">Discount:</b-td>
                               <b-td colspan="4" class="text-right">{{
-                                discountTotal
+                                formatPrice(discountTotal.toFixed(2))
                               }}</b-td>
                             </b-tr>
+
                             <b-tr>
                               <b-td class="text-left" variant="secondary"
                                 >Net:</b-td
@@ -750,7 +759,7 @@
                                 colspan="4"
                                 variant="secondary"
                                 class="text-right"
-                                ><b>{{ net }}</b></b-td
+                                ><b>{{ formatPrice(net.toFixed(2)) }}</b></b-td
                               >
                             </b-tr>
                             <b-tr v-if="cashIn > net">
@@ -804,7 +813,7 @@
                       <b-row>
                         <b-col cols="6"><p>Tax ::</p></b-col>
                         <b-col cols="6"
-                          ><p>{{ taxTotal.toFixed(2) }}</p></b-col
+                          ><p>{{ formatPrice(taxTotal.toFixed(2)) }}</p></b-col
                         >
                       </b-row>
                       <b-row>
@@ -1186,9 +1195,10 @@ export default {
           label: "รหัสสินค้า",
           sortable: true,
           sortDirection: "desc",
+          class: "text-center",
         },
         {
-          key: "name_product",
+          key: "product_name",
           label: "รายละเอียดสินค้า",
           sortable: true,
           class: "text-center",
@@ -1302,6 +1312,7 @@ export default {
     } else {
       if (this.$store.state.currentOrder !== null) {
         let currentOrder = JSON.parse(this.$store.state.currentOrder);
+
         this.invoiceNo = currentOrder.invoiceNo;
         this.items = currentOrder.orderInfo;
         this.memberInfo = currentOrder.memberInfo;
@@ -1375,10 +1386,10 @@ export default {
       let params = {
         product: this.productInput,
         invoice: this.invoiceNo !== "" ? this.invoiceNo : "",
-        branch: this.userInfo.shop.shop_code,
       };
       let selectProduct = this.items.find(
-        (ele) => ele.barcode == params.product || ele.barcode == params.product
+        (ele) =>
+          ele.product_id == params.product || ele.product_id == params.product
       );
       if (selectProduct) {
         selectProduct.saleQty =
@@ -1389,7 +1400,7 @@ export default {
       }
 
       var qs = queryString.stringify(params);
-      console.log(qs);
+      // console.log(qs);
       axios
         .post(this.url + "/cart/product", qs, this.configHeader)
         .then((res) => {
@@ -1402,15 +1413,15 @@ export default {
             }
           } else if (res.status == 200) {
             var product = res.data.product;
-
+            // console.log(res.data.product.invoice_id);
             if (product.length == 0) {
               alert("ไม่พบข้อมูลสินค้า");
               this.productInput = "";
               return;
             } else {
-              product = product[0];
               if (product.invoice_id != 0) {
                 this.invoiceNo = res.data.product.invoice_id;
+                this.taxTotal = res.data.product.sum_total_tax;
               }
               if (this.items.length !== 0) {
                 let selectProduct = this.items.find(
@@ -1455,10 +1466,10 @@ export default {
               this.calSaleTotal();
               this.calPoints();
 
-              //   this.productInput = "";
-              //   this.saleQty = 1;
-              //   this.$refs.productInput.focus();
-              //   this.currentOrder();
+              this.productInput = "";
+              this.saleQty = 1;
+              this.$refs.productInput.focus();
+              this.currentOrder();
             }
           } else {
             alert("ไม่สามารถค้นหาข้อมูลสินค้านี้ได้ กรุณาติดต่อ....");
@@ -1473,7 +1484,7 @@ export default {
       this.taxTotal = 0;
 
       this.items.forEach((e) => {
-        this.taxTotal += parseInt(e.total) * (parseInt(e.tax) / 100);
+        this.taxTotal += parseInt(e.total) * (parseInt(7) / 107);
         this.saleTotal += parseInt(e.total);
         // this.discountTotal += parseInt(e.discount);
       });
@@ -1876,7 +1887,10 @@ body {
   margin: 0;
   color: white;
 }
-
+.search {
+  background: #165f60 !important;
+  padding-top: 0px !important;
+}
 .containers {
   background: grey;
   width: 100vw !important;
@@ -1897,8 +1911,8 @@ body {
 }
 
 .left-bottom {
-  background: rgb(151, 151, 151);
-  width: 76%;
+  background: rgb(241, 241, 241) !important;
+  width: 76% !important;
   display: flex;
   flex-direction: column;
 }
