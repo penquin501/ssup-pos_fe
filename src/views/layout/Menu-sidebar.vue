@@ -5,10 +5,9 @@
         <v-list-item-title class="text-h6" style="text-align: center">
           <v-img src="img/auth/ssup-logo.svg" alt="Background Image"></v-img>
         </v-list-item-title>
-        <v-card elevation="5" class="branch text-left">
-          {{ shop_name }} ( {{ shop_code }} )
-        </v-card>
-
+        <v-card elevation="5" class="branch text-center"
+          >Branch :: {{ branchName }}</v-card
+        >
         <v-list-item-subtitle> </v-list-item-subtitle>
       </v-list-item-content>
     </v-list-item>
@@ -43,8 +42,7 @@ export default {
       right: null,
       userInfo: {},
       items: [],
-      shop_code: "",
-      shop_name: "",
+      branchName: ""
     };
   },
   mounted: function () {
@@ -97,12 +95,12 @@ export default {
       ];
 
       this.userInfo = JSON.parse(this.$store.state.userInfo);
-      this.shop_code = this.userInfo.shop.shop_code;
-      this.shop_name = this.userInfo.shop.brand;
-      if (this.userInfo.listUserPermission == undefined) {
+      this.branchName = this.userInfo.data.branch;
+      
+      if (this.userInfo.roles == null) {
         this.items = menuItems;
       } else {
-        this.listUserPermission = JSON.parse(this.userInfo.listUserPermission);
+        this.listUserPermission = this.userInfo.roles;
         for (let item of this.listUserPermission) {
           for (const [key, value] of Object.entries(item)) {
             for (let ele of menuItems) {

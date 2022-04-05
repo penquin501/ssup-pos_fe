@@ -20,10 +20,10 @@
               <div class="containers">
                 <div class="navbar">
                   <v-row no-gutters>
-                    <b-col cols="6">
+                    <b-col cols="7">
                       <b-row style="margin-left: 0px; margin-right: 0px">
                         <b-col
-                          cols="3"
+                          cols="4"
                           style="
                             border: 0px solid black;
                             text-align: center;
@@ -48,7 +48,7 @@
                         <b-col cols="1" style="text-align: right"
                           >วันที่:</b-col
                         >
-                        <b-col cols="3">
+                        <b-col cols="2">
                           <b-form-input
                             style="font-size: 12px !important"
                             id="input-small"
@@ -59,21 +59,21 @@
                         </b-col>
                       </b-row>
                       <b-row style="margin-left: 0px; margin-right: 0px">
-                        <!-- <b-col cols="3" style="padding-bottom: 0px">
-                          <v-select
+                        <b-col cols="3" style="padding-bottom: 0px">
+                          <!-- <v-select
                             style="text-align: center; height: 40px"
                             v-model="selectedPlayPromo"
                             :items="optionsPromotion"
                             solo
-                          ></v-select>
-                        </b-col> -->
-                        <b-col cols="4" style="padding-bottom: 0px">
-                          <v-select
+                          ></v-select> -->
+                        </b-col>
+                        <b-col cols="3" style="padding-bottom: 0px">
+                          <!-- <v-select
                             style="text-align: center; height: 40px"
                             v-model="selectSale"
                             :items="optionsSale"
                             solo
-                          ></v-select>
+                          ></v-select> -->
                         </b-col>
                         <b-col
                           cols="1"
@@ -101,7 +101,7 @@
                           "
                           >รหัสสินค้า:</b-col
                         >
-                        <b-col cols="3"
+                        <b-col cols="2"
                           ><b-form-input
                             id="input-small"
                             size="sm"
@@ -112,7 +112,7 @@
                         ></b-col>
                       </b-row>
                     </b-col>
-                    <b-col cols="6">
+                    <b-col cols="5">
                       <v-card
                         style="
                           background-color: green;
@@ -130,15 +130,22 @@
                               id="input-small"
                               size="sm"
                               @change="getMemberInfo()"
+                              @keypress.enter="getMemberInfo()"
                               v-model="memberInfo.memberId"
                             ></b-form-input
                           ></b-col>
                           <b-col cols="1"
-                            ><button @click.prevent="getMemberInfo">
-                              <v-icon>mdi-book-open</v-icon>
+                            ><button @click.prevent="getMemberInfo()">
+                              <v-icon>mdi-account-search</v-icon>
                             </button></b-col
                           >
-                          <b-col cols="2"></b-col>
+                          <b-col cols="1">
+                            <button @click.prevent="openDialog('add')">
+                              <!-- <v-icon>mdi-content-paste</v-icon>Register -->
+                              <i class="fa fa-id-card-o" aria-hidden="true"></i>
+                            </button>
+                          </b-col>
+                          <b-col cols="1"></b-col>
 
                           <b-col cols="3">
                             <v-btn @click.prevent="closePosDialog">
@@ -180,20 +187,16 @@
                 </div>
                 <div class="bottom">
                   <div class="left-bottom">
-                    <div class="input-group mb-3">
-                      <span class="input-group-text" id="basic-addon1"
-                        >Search</span
-                      >
-                      <input
-                        type="text"
+                    <v-card-title style="padding-top: 0px">
+                      <v-text-field
+                        style="padding-top: 0px"
                         v-model="search"
-                        class="form-control search"
-                        aria-describedby="basic-addon1"
-                        style="color: white; font-size: 20px !important"
-                      />
-                      <span class="input-group-text"></span>
-                    </div>
-
+                        append-icon="mdi-magnify"
+                        label="Search"
+                        single-line
+                        hide-details
+                      ></v-text-field>
+                    </v-card-title>
                     <div class="content-list-item">
                       <b-table
                         :items="items"
@@ -320,13 +323,13 @@
                     </div>
                   </div>
                   <div class="right-bottom">
-                    <v-expansion-panels>
-                      <v-expansion-panel>
+                    <v-expansion-panels v-model="panel" multiple>
+                      <v-expansion-panel @click.prevent="openPanelFunction()" >
                         <v-expansion-panel-header class="font-16">
                           ข้อมูลสมาชิก
                         </v-expansion-panel-header>
                         <v-expansion-panel-content>
-                          <v-col cols="12" sm="12" md="12">
+                          <v-col cols="12" sm="12" md="12" style="padding-top: 0px; padding-bottom: 0px;">
                             <v-text-field
                               v-model="memberInfo.memberName"
                               class="font-16"
@@ -337,7 +340,7 @@
                             </v-text-field>
                           </v-col>
 
-                          <v-col cols="12" sm="12" md="12">
+                          <v-col cols="12" sm="12" md="12" style="padding-top: 0px; padding-bottom: 0px;">
                             <v-text-field
                               v-model="memberInfo.registerDate"
                               class="font-16"
@@ -348,7 +351,7 @@
                             </v-text-field>
                           </v-col>
 
-                          <v-col cols="12" sm="12" md="12">
+                          <v-col cols="12" sm="12" md="12" style="padding-top: 0px; padding-bottom: 0px;">
                             <v-text-field
                               v-model="memberInfo.expiredDate"
                               class="font-16"
@@ -359,7 +362,7 @@
                             </v-text-field>
                           </v-col>
 
-                          <v-col cols="12" sm="12" md="12">
+                          <v-col cols="12" sm="12" md="12" style="padding-top: 0px; padding-bottom: 0px;">
                             <v-text-field
                               v-model="memberInfo.birthdayDate"
                               class="font-16"
@@ -370,7 +373,7 @@
                             </v-text-field>
                           </v-col>
 
-                          <v-col cols="12" sm="12" md="12">
+                          <v-col cols="12" sm="12" md="12" style="padding-top: 0px; padding-bottom: 0px;">
                             <v-text-field
                               v-model="memberInfo.opsDate"
                               class="font-16"
@@ -381,7 +384,7 @@
                             </v-text-field>
                           </v-col>
 
-                          <v-col cols="12" sm="12" md="12">
+                          <v-col cols="12" sm="12" md="12" style="padding-top: 0px; padding-bottom: 0px;">
                             <v-textarea
                               outlined
                               name="input-7-7"
@@ -393,7 +396,7 @@
                         </v-expansion-panel-content>
                       </v-expansion-panel>
 
-                      <v-expansion-panel class="v-item--active">
+                      <v-expansion-panel @click.prevent="openPanelFunction()">
                         <v-expansion-panel-header class="font-16">
                           ฟังก์ชั่น
                         </v-expansion-panel-header>
@@ -439,7 +442,7 @@
                         </v-expansion-panel-content>
                       </v-expansion-panel>
 
-                      <v-expansion-panel>
+                      <v-expansion-panel @click.prevent="openPanelFunction()">
                         <v-expansion-panel-header class="font-16">
                           อื่นๆ
                         </v-expansion-panel-header>
@@ -697,12 +700,8 @@
                       <p>Sales Receipt</p>
                       <p>Sold By: {{ empSaleInfo.emp_name }}</p>
                       <p>
-                        Sold To:
-                        {{
-                          Object.keys(this.memberInfo).length === 0
-                            ? "Walk-in customer"
-                            : memberInfo.memberName
-                        }}
+                        <!-- Sold To: {{ Object.keys(this.memberInfo).length === 0 ? "Walk-in customer" : memberInfo.memberName }} -->
+                        Sold To: {{ memberInfo.memberName == "" ? "Walk-in customer" : memberInfo.memberName }}
                       </p>
                       <p>
                         <b-table-simple striped>
@@ -721,14 +720,10 @@
                               :key="item.barcode"
                             >
                               <b-td>{{ item.barcode }}</b-td>
-                              <b-td>{{ item.product_name }}</b-td>
+                              <b-td>{{ item.name_product }}</b-td>
                               <b-td>{{ item.saleQty }}</b-td>
-                              <b-td class="text-right">{{
-                                formatPrice(item.price)
-                              }}</b-td>
-                              <b-td class="text-right">{{
-                                formatPrice(item.total)
-                              }}</b-td>
+                              <b-td class="text-right">{{ item.price }}</b-td>
+                              <b-td class="text-right">{{ item.total }}</b-td>
                             </b-tr>
                           </b-tbody>
                           <b-tfoot>
@@ -741,16 +736,15 @@
                             <b-tr>
                               <b-td class="text-left">Sub Total:</b-td>
                               <b-td colspan="4" class="text-right">{{
-                                formatPrice(saleTotal.toFixed(2))
+                                saleTotal
                               }}</b-td>
                             </b-tr>
                             <b-tr>
                               <b-td class="text-left">Discount:</b-td>
                               <b-td colspan="4" class="text-right">{{
-                                formatPrice(discountTotal.toFixed(2))
+                                discountTotal
                               }}</b-td>
                             </b-tr>
-
                             <b-tr>
                               <b-td class="text-left" variant="secondary"
                                 >Net:</b-td
@@ -759,7 +753,7 @@
                                 colspan="4"
                                 variant="secondary"
                                 class="text-right"
-                                ><b>{{ formatPrice(net.toFixed(2)) }}</b></b-td
+                                ><b>{{ net }}</b></b-td
                               >
                             </b-tr>
                             <b-tr v-if="cashIn > net">
@@ -813,7 +807,7 @@
                       <b-row>
                         <b-col cols="6"><p>Tax ::</p></b-col>
                         <b-col cols="6"
-                          ><p>{{ formatPrice(taxTotal.toFixed(2)) }}</p></b-col
+                          ><p>{{ taxTotal.toFixed(2) }}</p></b-col
                         >
                       </b-row>
                       <b-row>
@@ -871,7 +865,201 @@
               </v-card-text>
             </v-card>
           </v-dialog>
-          <v-dialog v-model="dialogConfirmEmp" persistent max-width="500px">
+          <v-dialog
+            v-model="dialogRegister"
+            max-width="500px"
+            :retain-focus="false"
+            persistent
+          >
+            <v-overlay :absolute="absolute" :value="overlayRegister" responsive>
+              <v-card class="mx-auto" max-width="500px" light>
+                <v-card-title>
+                  <b>Member Register</b>
+                  <v-spacer></v-spacer>
+                  <v-btn
+                    icon
+                    @click.prevent="
+                      (dialogRegister = false), (overlayRegister = false)
+                    "
+                    ><v-icon>mdi-close</v-icon></v-btn
+                  >
+                </v-card-title>
+                <v-card-subtitle class="pb-0">ข้อมูลสมาชิก</v-card-subtitle>
+                <v-card-text
+                  class="text--primary"
+                  style="background-color: orange"
+                >
+                  <v-row>
+                    <v-col>
+                      <label>ชื่อ :</label>
+                      <b-form-input
+                        size="sm"
+                        type="text"
+                        v-model="formRegister.firstName"
+                        @keypress="inputCheckFormatName"
+                      ></b-form-input>
+                    </v-col>
+                    <v-col>
+                      <label>นามสกุล :</label>
+                      <b-form-input
+                        size="sm"
+                        type="text"
+                        v-model="formRegister.lastName"
+                        @keypress="inputCheckFormatName"
+                      ></b-form-input>
+                    </v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col>
+                      <label>First Name :</label>
+                      <b-form-input
+                        size="sm"
+                        type="text"
+                        v-model="formRegister.firstNameEng"
+                        @keypress="inputCheckFormatName"
+                      ></b-form-input>
+                    </v-col>
+                    <v-col>
+                      <label>Lastname :</label>
+                      <b-form-input
+                        size="sm"
+                        type="text"
+                        v-model="formRegister.lastNameEng"
+                        @keypress="inputCheckFormatName"
+                      ></b-form-input>
+                    </v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col>
+                      <label>เลขที่บัตรประชาชน:</label>
+                      <b-form-input
+                        size="sm"
+                        type="text"
+                        maxlength="13"
+                        v-model="formRegister.cardId"
+                        @keypress="onlyNumber"
+                      ></b-form-input>
+                    </v-col>
+                    <v-col>
+                      <label>เบอร์โทรศัพท์ :</label>
+                      <b-form-input
+                        size="sm"
+                        type="tel"
+                        maxlength="10"
+                        v-model="formRegister.phone"
+                        @keypress="onlyNumber"
+                      ></b-form-input>
+                    </v-col>
+                    <v-col>
+                      <label>E-mail: </label>
+                      <b-form-input
+                        size="sm"
+                        type="email"
+                        v-model="formRegister.email"
+                      ></b-form-input>
+                    </v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col>
+                      <label>วันเกิด :</label>
+                      <b-form-input
+                        size="sm"
+                        type="date"
+                        v-model="formRegister.birthday"
+                      ></b-form-input>
+                    </v-col>
+                    <v-col>
+                      <label>Member Type :</label>
+                      <v-select
+                        style="text-align: center; height: 20px"
+                        background-color="white"
+                        v-model="formRegister.type"
+                        :items="options"
+                        label="Type"
+                        flat
+                        solo
+                      ></v-select>
+                    </v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col>
+                      <label>ที่อยู่ :</label>
+                      <b-form-input
+                        size="sm"
+                        type="text"
+                        v-model="formRegister.address"
+                      ></b-form-input>
+                    </v-col>
+                    <v-col>
+                      <label>จังหวัด :</label>
+                      <v-select
+                        style="text-align: center; height: 20px"
+                        background-color="white"
+                        v-model="selectedProvince"
+                        @change="getDistricts()"
+                        :items="provincesOptions"
+                        label="จังหวัด"
+                        flat
+                        solo
+                      ></v-select>
+                    </v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col>
+                      <label>อำเภอ :</label>
+                      <v-select
+                        style="text-align: center; height: 20px"
+                        background-color="white"
+                        v-model="selectedDistrict"
+                        @change="getSubDistricts()"
+                        :items="districtsOptions"
+                        label="อำเภอ"
+                        flat
+                        solo
+                      ></v-select>
+                    </v-col>
+                    <v-col>
+                      <label>ตำบล :</label>
+                      <v-select
+                        style="text-align: center; height: 20px"
+                        background-color="white"
+                        v-model="selectedSubDistrict"
+                        @change="getZipcode()"
+                        :items="subdistrictsOptions"
+                        label="ตำบล"
+                        flat
+                        solo
+                      ></v-select>
+                    </v-col>
+                    <v-col style="padding-bottom: 24px">
+                      <label>รหัสไปรษณีย์ :</label>
+                      <b-form-input
+                        size="sm"
+                        type="text"
+                        maxlength="5"
+                        v-model="formRegister.zipcode"
+                        @keypress="onlyNumber"
+                      ></b-form-input>
+                    </v-col>
+                  </v-row>
+                </v-card-text>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn color="warning" text @click.prevent="clearFormRegister()"
+                    >Reset</v-btn
+                  >
+                  <v-btn
+                    type="submit"
+                    color="success"
+                    text
+                    @click.prevent="saveFormRegister()"
+                    >Save</v-btn
+                  >
+                </v-card-actions>
+              </v-card>
+            </v-overlay>
+          </v-dialog>
+          <!-- <v-dialog v-model="dialogConfirmEmp" persistent max-width="500px">
             <v-card>
               <v-card-title class="text-h5">กรอกรหัสพนักงาน</v-card-title>
               <v-card-text>
@@ -892,7 +1080,7 @@
                 <v-spacer></v-spacer>
               </v-card-actions>
             </v-card>
-          </v-dialog>
+          </v-dialog> -->
           <v-dialog
             v-model="dialogCashier"
             max-width="500px"
@@ -1173,6 +1361,7 @@ export default {
       absolute: true,
       overlay: false,
       overlayCashier: false,
+      overlayRegister: false,
       search: null,
       searchInvoice: "",
       dialogDelete: false,
@@ -1181,10 +1370,11 @@ export default {
       dialogCancelInvoicePauseOrder: false,
       dialogConfirmInvoice: false,
       dialogConfirmEmp: false,
+      dialogRegister: false,
       dialogCashier: false,
       invoiceNo: "",
-      qty: "1",
       pause: false,
+      panel: [0],
       today: dayjs().format("DD-MM-YYYY"),
       saleDate: dayjs().format("YYYY-MM-DD HH:mm"),
       listMenu: [],
@@ -1195,10 +1385,9 @@ export default {
           label: "รหัสสินค้า",
           sortable: true,
           sortDirection: "desc",
-          class: "text-center",
         },
         {
-          key: "product_name",
+          key: "name_product",
           label: "รายละเอียดสินค้า",
           sortable: true,
           class: "text-center",
@@ -1244,18 +1433,18 @@ export default {
         { value: "creditCard", text: "Credit Card" },
       ],
       memberInfo: {
-        memberId: "12324",
-        memberType: "Exclusive CARD",
-        memberName: "Test Test",
-        memberAddress: "12/345",
-        memberPhone: "081-123-4567",
-        point: "100",
-        memberlevel: "99",
-        memberDiscount: "5",
-        registerDate: dayjs("01/11/2564").format("YYYY-MM-DD"),
-        expiredDate: dayjs("01/10/2564").format("YYYY-MM-DD"),
-        birthdayDate: dayjs("01/10/2564").format("YYYY-MM-DD"),
-        opsDate: dayjs("01/10/2564").format("YYYY-MM-DD"),
+        memberId: "",
+        memberType: "",
+        memberName: "",
+        memberAddress: "",
+        memberPhone: "",
+        point: "",
+        memberlevel: "",
+        memberDiscount: "",
+        registerDate: dayjs().format("YYYY-MM-DD"),
+        expiredDate: dayjs().format("YYYY-MM-DD"),
+        birthdayDate: dayjs().format("YYYY-MM-DD"),
+        opsDate: dayjs().format("YYYY-MM-DD"),
       },
       totalRows: 1,
       currentPage: 1,
@@ -1278,7 +1467,6 @@ export default {
       currentItemIndex: 0,
       itemIndex: 0,
       userInfo: {},
-      paymentMethod: undefined,
       empSaleInfo: {},
       empSaleInput: "",
       formCashier: {
@@ -1294,6 +1482,38 @@ export default {
         fiftyCent: 0,
         twentyFiveCent: 0,
       },
+      formRegister: {
+        firstName: "",
+        lastName: "",
+        firstNameEng: "",
+        lastNameEng: "",
+        cardId: "",
+        phone: "",
+        address: "",
+        subDistrictId: "",
+        subDistrict: "",
+        districtId: "",
+        district: "",
+        provinceId: "",
+        province: "",
+        zipcode: "",
+        type: "",
+        birthday: "",
+        email: "",
+      },
+      provincesOptions: [],
+      districtsOptions: [],
+      subdistrictsOptions: [],
+      options: [
+        { value: null, text: "เลือกประเภท" },
+        { value: "1", text: "Type 1" },
+        { value: "2", text: "Type 2" },
+      ],
+      configHeader: {},
+      selectedProvince: "",
+      selectedDistrict: "",
+      selectedSubDistrict: "",
+      actionForm: "",
       url: process.env.VUE_APP_SERVER_API,
     };
   },
@@ -1312,7 +1532,6 @@ export default {
     } else {
       if (this.$store.state.currentOrder !== null) {
         let currentOrder = JSON.parse(this.$store.state.currentOrder);
-
         this.invoiceNo = currentOrder.invoiceNo;
         this.items = currentOrder.orderInfo;
         this.memberInfo = currentOrder.memberInfo;
@@ -1326,7 +1545,8 @@ export default {
       this.userInfo = JSON.parse(this.$store.state.userInfo);
 
       /* Default User Menu*/
-      let userMenu = JSON.parse(this.userInfo.listUserPermission);
+      // let userMenu = JSON.parse(this.userInfo.listUserPermission);
+      let userMenu = this.userInfo.roles;
       for (let item of userMenu) {
         for (const [key, value] of Object.entries(item)) {
           if (key == this.$route.name && item.SubMenu !== undefined) {
@@ -1338,22 +1558,13 @@ export default {
       this.configHeader = {
         headers: { Authorization: `Bearer ${this.userInfo.token}` },
       };
-
-      // this.getListInvoice();
       // this.generateNewInvoice();
-      this.formCashier =
-        this.$store.state.cashierBillInfo == null
-          ? this.formCashier
-          : this.$store.state.cashierBillInfo;
+      this.formCashier = this.$store.state.cashierBillInfo == null ? this.formCashier : this.$store.state.cashierBillInfo;
       this.checkCashier();
+      this.getEmpInfo();
     }
   },
   methods: {
-    getListInvoice() {
-      if (this.$store.state.listInvoice !== []) {
-        this.listInvoice = this.$store.state.listInvoice;
-      }
-    },
     checkCashier() {
       /**
        * TODO: API check ข้อมูลเงินใน cashier
@@ -1379,17 +1590,13 @@ export default {
         alert("จำนวนสินค้าไม่ถูกต้อง");
         return;
       }
-      if (parseInt(this.saleQty) <= 0) {
-        alert("จำนวนสินค้าไม่ถูกต้อง");
-        return;
-      }
       let params = {
         product: this.productInput,
         invoice: this.invoiceNo !== "" ? this.invoiceNo : "",
+        branch: this.userInfo.shop.shop_code,
       };
       let selectProduct = this.items.find(
-        (ele) =>
-          ele.product_id == params.product || ele.product_id == params.product
+        (ele) => ele.barcode == params.product || ele.barcode == params.product
       );
       if (selectProduct) {
         selectProduct.saleQty =
@@ -1400,48 +1607,29 @@ export default {
       }
 
       var qs = queryString.stringify(params);
-      // console.log(qs);
+      console.log(qs);
       axios
         .post(this.url + "/cart/product", qs, this.configHeader)
         .then((res) => {
-          if (res.status != 200) {
-            var error = res.data.error;
-            // console.log(error);
-            if (error != "") {
-              alert(error);
-              return;
-            }
-          } else if (res.status == 200) {
+          if (res.status == 200) {
             var product = res.data.product;
-            // console.log(res.data.product.invoice_id);
             if (product.length == 0) {
               alert("ไม่พบข้อมูลสินค้า");
-              this.productInput = "";
               return;
             } else {
-              if (product.invoice_id != 0) {
-                this.invoiceNo = res.data.product.invoice_id;
-                this.taxTotal = res.data.product.sum_total_tax;
-              }
+              product = product[0];
               if (this.items.length !== 0) {
                 let selectProduct = this.items.find(
                   (ele) =>
                     ele.barcode == params.product ||
-                    ele.product_id == params.product
+                    ele.barcode == params.product
                 );
                 if (selectProduct) {
-                  if (parseInt(selectProduct.saleQty) > 0) {
-                    this.qty = selectProduct.saleQty;
-                  } else {
-                    this.qty = 1;
-                  }
                   let qty = parseInt(selectProduct.saleQty);
-                  // qty = this.saleQty == 1 ? qty + 1 : parseInt(this.saleQty);
                   if (parseInt(this.saleQty) <= 0) {
                     alert("จำนวนสินค้าไม่ถูกต้อง");
-                    this.productInput = "";
                   } else {
-                    selectProduct.saleQty = qty + parseInt(this.saleQty);
+                    // selectProduct.saleQty = qty + parseInt(this.saleQty);
                     selectProduct.total =
                       parseInt(selectProduct.price) *
                       parseInt(selectProduct.saleQty);
@@ -1484,7 +1672,7 @@ export default {
       this.taxTotal = 0;
 
       this.items.forEach((e) => {
-        this.taxTotal += parseInt(e.total) * (parseInt(7) / 107);
+        this.taxTotal += parseInt(e.total) * (parseInt(e.tax) / 100);
         this.saleTotal += parseInt(e.total);
         // this.discountTotal += parseInt(e.discount);
       });
@@ -1516,10 +1704,6 @@ export default {
     },
     closeDelete() {
       this.dialogDelete = false;
-      // this.$nextTick(() => {
-      //   this.editedItem = Object.assign({}, this.defaultItem);
-      //   this.editedIndex = -1;
-      // });
     },
     generateNewInvoice() {
       let generateInvNo = "" + (Math.floor(Math.random() * 10000) + 1);
@@ -1602,7 +1786,7 @@ export default {
         this.net = 0;
 
         this.$store.commit("currentOrder", null);
-        // this.generateNewInvoice();
+        this.generateNewInvoice();
       }
     },
     onRowSelected(items) {
@@ -1783,47 +1967,283 @@ export default {
     getMemberInfo() {
       this.dialogConfirmEmp = true;
       if (this.memberInfo.memberId.trim() == "") {
-        this.memberInfo = {};
+        // this.memberInfo = {};
+        this.memberInfo.memberType = "Walk-In Customer";
       } else {
         this.memberInfo = {
-          memberId: "56789",
-          memberType: "Exclusive CARD",
-          memberName: "Test2 Test2",
-          memberAddress: "12/345",
-          memberPhone: "081-123-4567",
-          point: "100",
-          memberlevel: "99",
-          memberDiscount: "5",
-          registerDate: dayjs("01/11/2564").format("YYYY-MM-DD"),
-          expiredDate: dayjs("01/10/2564").format("YYYY-MM-DD"),
-          birthdayDate: dayjs("01/10/2564").format("YYYY-MM-DD"),
-          opsDate: dayjs("01/10/2564").format("YYYY-MM-DD"),
-        };
+            "member_no": "IDX7250157688",
+            "qty": "0.00",
+            "amt": "0.00",
+            "net": "0.00",
+            "apply_date": "2014-06-21",
+            "expire_date": "2100-12-31",
+            "age_card": "4",
+            "status": "0",
+            "mem_status": "N",
+            "forgot_card": "",
+            "vip": "0",
+            "email": "",
+            "prefix_en": "Miss",
+            "fname_en": "Thunchanok",
+            "lname_en": "Krittayachaiwat",
+            "area": "",
+            "region_id": "0",
+            "cust_day": "OPS4",
+            "brand_id": "0",
+            "cardtype_id": "0",
+            "application_id": "REID",
+            "customer_id": "13",
+            "mobile_no": "0851512954",
+            "id_card": "3101800738173",
+            "prefix": "น.ส.",
+            "name": "ธันย์ชนก",
+            "surname": "กฤตยาไชยวัฒน",
+            "sex": "2",
+            "address": "357",
+            "road": "",
+            "province_name": "กรุงเทพมหานคร",
+            "district": "คลองเตย",
+            "sub_district": "คลองตัน",
+            "zip": "10600",
+            "birthday": "1971-07-05",
+            "shop": "7467",
+            "doc_no": "",
+            "doc_dt": "1900-01-01",
+            "send_company": "",
+            "send_address": "357",
+            "send_mu": "0",
+            "send_home_name": "",
+            "send_soi": "",
+            "send_road": "",
+            "send_tambon_id": "103302",
+            "send_tambon_name": "คลองตัน",
+            "send_amphur_id": "1033",
+            "send_amphur_name": "คลองเตย",
+            "send_province_id": "1",
+            "send_province_name": "กรุงเทพมหานคร",
+            "send_postcode": "10600",
+            "send_tel": "",
+            "send_mobile": "",
+            "send_fax": "",
+            "send_remark": "",
+            "card_level": "White",
+            "ops": "OPS4"
+          }
       }
     },
-    getEmpInfo() {
-      this.empSaleInfo = {
-        id: this.empSaleInput,
-        username: "Admin",
-        roles: "Admin",
-        fing_path: "fing_path",
-        numoffice_d: "123456",
-        emp_name: "admin",
-        emp_surname: "suername",
-        emp_name_e: "emp_name_e",
-        emp_surname_e: "emp_surname_e",
-        img_profile: "img_profile.jpg",
-        card_id: "1010121210123",
-        emp_status: 1,
-        regis_date: "2022-01-13",
-        regis_time: "09:50:15",
-        start_date: "2022-01-13",
-        start_time: "09:50:15",
-        end_date: "2022-01-13",
-        end_time: "09:50:15",
-        reg_user: "system",
+    getProvinces() {
+      this.provincesOptions = [];
+      axios
+        .get(this.url + "/province", this.configHeader)
+        .then((res) => {
+          for (let e of res.data.province) {
+            let data = {};
+            data.id = e.id;
+            data.value = e;
+            data.text = e.name_in_thai;
+
+            this.provincesOptions.push(data);
+          }
+
+          if (this.formRegister.provinceId !== "") {
+            let checkProvince = this.provincesOptions.find(
+              (ele) => ele.id == this.formRegister.provinceId
+            );
+            if (checkProvince !== undefined) {
+              this.selectedProvince = checkProvince.value;
+              this.getDistricts();
+            }
+          }
+        })
+        .catch((err) => {
+          console.log("get province", err);
+        });
+    },
+    getDistricts() {
+      this.districtsOptions = [];
+      let params = {
+        id: this.selectedProvince.id,
       };
+      if (this.selectedProvince.id !== this.formRegister.provinceId) {
+        this.formRegister.districtId = "";
+        this.formRegister.district = "";
+        this.formRegister.subDistrictId = "";
+        this.formRegister.subDistrict = "";
+
+        this.selectedSubDistrict = {};
+        this.selectedDistrict = {};
+      }
+      var qs = queryString.stringify(params);
+      axios
+        .post(this.url + "/province/getdistricts", qs, this.configHeader)
+        .then((res) => {
+          for (let e of res.data.districts) {
+            let data = {};
+            data.id = e.id;
+            data.value = e;
+            data.text = e.name_in_thai;
+
+            this.districtsOptions.push(data);
+          }
+          if (this.formRegister.districtId !== "") {
+            let checkDistrict = this.districtsOptions.find(
+              (ele) => ele.id == this.formRegister.districtId
+            );
+            if (checkDistrict !== undefined) {
+              this.selectedDistrict = checkDistrict.value;
+              this.getSubDistricts();
+            }
+          }
+        })
+        .catch((err) => {
+          console.log("get districts", err);
+        });
+    },
+    getSubDistricts() {
+      this.subdistrictsOptions = [];
+      let params = {
+        id: this.selectedDistrict.id,
+      };
+      if (this.selectedDistrict.id !== this.formRegister.districtId) {
+        this.formRegister.subDistrictId = "";
+        this.formRegister.subDistrict = "";
+
+        this.selectedSubDistrict = {};
+      }
+      var qs = queryString.stringify(params);
+      axios
+        .post(this.url + "/province/getsubdistricts", qs, this.configHeader)
+        .then((res) => {
+          for (let e of res.data.subdistricts) {
+            let data = {};
+            data.id = e.id;
+            data.value = e;
+            data.text = e.name_in_thai;
+
+            this.subdistrictsOptions.push(data);
+          }
+          if (this.formRegister.subDistrictId !== "") {
+            let checkSubDistrict = this.subdistrictsOptions.find(
+              (ele) => ele.id == this.formRegister.subDistrictId
+            );
+            if (checkSubDistrict !== undefined) {
+              this.selectedSubDistrict = checkSubDistrict.value;
+            }
+          }
+        })
+        .catch((err) => {
+          console.log("get sub districts", err);
+        });
+    },
+    getZipcode() {
+      this.formRegister.zipcode = this.selectedSubDistrict.zip_code;
+    },
+    getEmpInfo() {
+      this.empSaleInfo = this.userInfo.data;
       this.dialogConfirmEmp = false;
+    },
+    saveFormRegister() {
+      var valid = true;
+      var regexPhone = /^0\d{9}$/;
+
+      valid = this.isValidation(this.formRegister, "firstName", valid);
+      valid = this.isValidation(this.formRegister, "lastName", valid);
+      valid = this.isValidation(this.formRegister, "firstNameEng", valid);
+      valid = this.isValidation(this.formRegister, "lastNameEng", valid);
+      valid = this.isValidation(this.formRegister, "cardId", valid);
+      valid = this.isValidation(this.formRegister, "phone", valid);
+      valid = this.isValidation(this.formRegister, "address", valid);
+      valid = this.isValidation(this.formRegister, "zipcode", valid);
+      valid = this.isValidation(this.formRegister, "birthday", valid);
+      valid = this.isValidation(this.formRegister, "email", valid);
+
+      valid = this.isValidation(this.selectedSubDistrict, "id", valid);
+      valid = this.isValidation(this.selectedSubDistrict, "name_in_thai", valid);
+      valid = this.isValidation(this.selectedDistrict, "id", valid);
+      valid = this.isValidation(this.selectedDistrict, "name_in_thai", valid);
+      valid = this.isValidation(this.selectedProvince, "id", valid);
+      valid = this.isValidation(this.selectedProvince, "name_in_thai", valid);
+
+      if (this.formRegister.phone.match(regexPhone) === null) {
+        valid = false;
+      }
+      if (this.checkEmail(this.formRegister.email) === null) {
+        valid = false;
+      }
+      // if(dayjs().diff(dayjs(this.formRegister.birthday), 'year') < 18) {
+      //     valid = false;
+      // }
+
+      if (!valid) {
+        alert("กรุณาใส่ข้อมูลให้ครบถ้วน");
+        return;
+      } else {
+        let validCardID = this.checkID(this.formRegister.cardId);
+        if (!validCardID) {
+          alert("กรุณาใส่ข้อมูลบัตรปชช. ให้ถูกต้อง");
+          return;
+        } else {
+          if (this.actionForm == "add") {
+            this.formRegister.memberId = "M" + (this.listMember.length + 1);
+            this.formRegister.registerDate = dayjs().format("YYYY-MM-DD");
+          } else {
+            let memberInfo = this.listMember.find(
+              (ele) => ele.memberId == this.formRegister.memberId
+            );
+            let memberIndex = this.listMember.indexOf(memberInfo);
+            if (memberIndex !== -1) {
+              this.listMember.splice(memberIndex, 1);
+            }
+          }
+
+          this.formRegister.subDistrictId = this.selectedSubDistrict.id;
+          this.formRegister.subDistrict = this.selectedSubDistrict.name_in_thai;
+          this.formRegister.districtId = this.selectedDistrict.id;
+          this.formRegister.district = this.selectedDistrict.name_in_thai;
+          this.formRegister.provinceId = this.selectedProvince.id;
+          this.formRegister.province = this.selectedProvince.name_in_thai;
+
+          this.listMember.push(this.formRegister);
+          this.$store.commit("addListMember", this.listMember);
+
+          this.clearFormRegister();
+          this.dialogRegister = false;
+          this.overlayRegister = false;
+        }
+      }
+    },
+    clearFormRegister() {
+      this.formRegister = {
+        firstName: "",
+        lastName: "",
+        firstNameEng: "",
+        lastNameEng: "",
+        cardId: "",
+        phone: "",
+        address: "",
+        subDistrictId: "",
+        subDistrict: "",
+        districtId: "",
+        district: "",
+        provinceId: "",
+        province: "",
+        zipcode: "",
+        type: "",
+        birthday: "",
+        email: "",
+      };
+      this.selectedSubDistrict = {};
+      this.selectedDistrict = {};
+      this.selectedProvince = {};
+    },
+    openDialog(action) {
+      this.overlayRegister = true;
+      this.dialogRegister = true;
+      if (action == "add") {
+        this.clearFormRegister();
+        this.getProvinces();
+      }
+      this.actionForm = action;
     },
     validation(value) {
       if (value == 0) {
@@ -1862,6 +2282,51 @@ export default {
         this.checkCashier();
       }
     },
+    onlyNumber($event) {
+      let keyCode = $event.keyCode ? $event.keyCode : $event.which;
+      if (keyCode < 48 || keyCode > 57) {
+        $event.preventDefault();
+      }
+    },
+    inputCheckFormatName($event) {
+      var keyCode = $event.keyCode ? $event.keyCode : $event.which;
+      if (!(keyCode < 48 || keyCode > 57)) {
+        $event.preventDefault();
+      }
+    },
+    isValidation(data, key, defaultValue) {
+      if (data[key] == "") {
+        return false;
+      }
+      if (data[key] == null) {
+        return false;
+      }
+      if (data[key] == undefined) {
+        return false;
+      }
+      return defaultValue;
+    },
+    checkEmail(email) {
+      return String(email)
+        .toLowerCase()
+        .match(
+          /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+        );
+    },
+    checkID(id) {
+      let sum = 0;
+      if (id.length != 13) return false;
+      for (let i = 0; i < 12; i++) sum += parseFloat(id.charAt(i)) * (13 - i);
+      if ((11 - (sum % 11)) % 10 != parseFloat(id.charAt(12))) return false;
+      return true;
+    },
+    openPanelFunction() {
+      // console.log(this.panel);
+      if(this.panel.length !== 0) {
+        this.panel.shift();
+      }
+      console.log(this.panel);
+    },
   },
 };
 </script>
@@ -1887,10 +2352,7 @@ body {
   margin: 0;
   color: white;
 }
-.search {
-  background: #165f60 !important;
-  padding-top: 0px !important;
-}
+
 .containers {
   background: grey;
   width: 100vw !important;
@@ -1911,8 +2373,8 @@ body {
 }
 
 .left-bottom {
-  background: rgb(241, 241, 241) !important;
-  width: 76% !important;
+  background: rgb(151, 151, 151);
+  width: 76%;
   display: flex;
   flex-direction: column;
 }
