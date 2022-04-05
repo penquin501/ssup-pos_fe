@@ -1,7 +1,7 @@
 <template>
   <div v-show="!$store.state.is_login">
     <div
-      v-if="loginForm.type == 'UNLOCK_FINGER_LOGIN'"
+      v-if="loginForm.type == 'LOCK_KEYIN_LOGIN'"
       class="container--fluid fill-height success"
     >
       <v-row no-gutters align="center" justify="end">
@@ -52,7 +52,7 @@
       </v-row>
     </div>
     <div
-      v-if="loginForm.type == 'LOCK_FINGER_SCAN'"
+      v-if="loginForm.type == 'LOCK_FINGER_SCAN_LOGIN'"
       class="container--fluid fill-height success"
     >
       <v-row no-gutters align="center" justify="end">
@@ -163,7 +163,7 @@ export default {
       loginForm: {
         username: "",
         password: "",
-        type: "UNLOCK_FINGER_LOGIN",
+        type: "LOCK_KEYIN_LOGIN",
       },
       state: "login",
       showMain: false,
@@ -180,31 +180,45 @@ export default {
   },
   methods: {
     checkTypeToLogin() {
-      // TODO: api เช็คเงื่อนไขการ login
+      
+      /* เรียก hostname ไปเช็ค config 
+          location.toString() //http://localhost:8080/
+          location.host //localhost:8080
+          location.hostname //localhost
+          location.port //8080 
+          location.protocol //http:
+      */
+      let hostname = "172.63.1.24";
+      axios
+        .get(this.url + "/checkconfiglogin?ip=" + hostname)
+        .then((res) => {
+          let response = res.data;
+          let configLogin = response.configLogin;
+          this.loginForm.type = configLogin.config_type;
 
-      // this.loginForm.type = "UNLOCK_FINGER_LOGIN";
-      // this.loginForm.type = "LOCK_FINGER_SCAN";
-      // this.loginForm.type = "LOCK_IDCARD_LOGIN";
-
-      if (this.loginForm.type == "UNLOCK_FINGER_LOGIN") {
-        this.loginForm.username = "";
-        this.loginForm.password = "";
-        this.$refs.username.focus();
-      } else {
-        this.loginForm.type = "LOCK_FINGER_SCAN";
-      }
+          if (this.loginForm.type == "LOCK_KEYIN_LOGIN") {
+            this.loginForm.username = "";
+            this.loginForm.password = "";
+            this.$refs.username.focus();
+          } else {
+            this.loginForm.type = "LOCK_FINGER_SCAN_LOGIN";
+          }
+        })
+        .catch((err) => {
+          console.log("get error", err);
+        });
     },
     login() {
-      if (this.loginForm.type == "UNLOCK_FINGER_LOGIN") {
+      if (this.loginForm.type == "LOCK_KEYIN_LOGIN") {
         if (this.loginForm.password == "") {
           this.$refs.password.focus();
           return;
         }
       }
-      if (this.loginForm.type == "LOCK_FINGER_SCAN") {
+      if (this.loginForm.type == "LOCK_FINGER_SCAN_LOGIN") {
         this.loginForm.username = "Admin";
         this.loginForm.password = "123456";
-        this.loginForm.type = "UNLOCK_FINGER_LOGIN";
+        this.loginForm.type = "LOCK_KEYIN_LOGIN";
       }
       if (this.loginForm.type == "LOCK_IDCARD_LOGIN") {
         if (this.passIdCard == "") {
@@ -213,13 +227,13 @@ export default {
         }
         this.loginForm.username = "Admin";
         this.loginForm.password = this.passIdCard;
-        this.loginForm.type = "UNLOCK_FINGER_LOGIN";
+        this.loginForm.type = "LOCK_KEYIN_LOGIN";
       }
 
       axios
         .post(this.url + "/login", this.loginForm)
         .then((res) => {
-          if (res.status == 201 && res.data.message == "login succeed") {
+          if (res.status == 200 && res.data.message == "success") {
             this.$store.commit("doLogin", JSON.stringify(res.data));
           } else {
             alert(
