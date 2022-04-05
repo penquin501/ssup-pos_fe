@@ -233,6 +233,7 @@ export default {
       axios
         .post(this.url + "/login", this.loginForm)
         .then((res) => {
+          console.log(res.data);
           if (res.status == 200 && res.data.message == "success") {
             this.$store.commit("doLogin", JSON.stringify(res.data));
           } else {
@@ -246,24 +247,24 @@ export default {
         })
         .catch((err) => {
           console.log("login error = ", err);
-          if (err.response.status == 201) {
-            if (this.loginForm.type == "UNLOCK_FINGER_LOGIN") {
-              alert("Login ไม่สำเร็จ เนื่องจาก..." + res.data.message);
-              this.loginForm.username = "";
-              this.loginForm.password = "";
-              this.$refs.username.focus();
-              return;
-            }
-          }
-          if (err.response.status == 401) {
-            if (this.loginForm.type == "UNLOCK_FINGER_LOGIN") {
-              alert("Login ไม่สำเร็จ เนื่องจาก..." + res.data.message);
-              this.loginForm.username = "";
-              this.loginForm.password = "";
-              this.$refs.username.focus();
-              return;
-            }
-          }
+          // if (err.response.status == 201) {
+          //   if (this.loginForm.type == "UNLOCK_FINGER_LOGIN") {
+          //     alert("Login ไม่สำเร็จ เนื่องจาก..." + res.data.message);
+          //     this.loginForm.username = "";
+          //     this.loginForm.password = "";
+          //     this.$refs.username.focus();
+          //     return;
+          //   }
+          // }
+          // if (err.response.status == 401) {
+          //   if (this.loginForm.type == "UNLOCK_FINGER_LOGIN") {
+          //     alert("Login ไม่สำเร็จ เนื่องจาก..." + res.data.message);
+          //     this.loginForm.username = "";
+          //     this.loginForm.password = "";
+          //     this.$refs.username.focus();
+          //     return;
+          //   }
+          // }
         });
     },
     logout() {
