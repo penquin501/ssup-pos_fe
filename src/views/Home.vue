@@ -229,7 +229,7 @@ export default {
         this.loginForm.password = this.passIdCard;
         this.loginForm.type = "LOCK_KEYIN_LOGIN";
       }
-
+      console.log(this.loginForm);
       axios
         .post(this.url + "/login", this.loginForm)
         .then((res) => {
@@ -246,7 +246,7 @@ export default {
         })
         .catch((err) => {
           console.log("login error = ", err);
-          if (err.response.status !== 201) {
+          if (err.response.status == 201) {
             if (this.loginForm.type == "UNLOCK_FINGER_LOGIN") {
               alert("Login ไม่สำเร็จ เนื่องจาก..." + res.data.message);
               this.loginForm.username = "";
