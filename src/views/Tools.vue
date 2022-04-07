@@ -140,7 +140,7 @@
                   <b-col sm="9"
                     ><b-form-input
                       id="code"
-                      placeholder="Enter Code"
+                      placeholder="Enter Code Ex.7888"
                     ></b-form-input
                   ></b-col>
                 </b-row>
@@ -847,7 +847,7 @@
 </template>
 
 <script>
-// import axios from 'axios';
+import axios from 'axios';
 import dayjs from "dayjs";
 import moment from "moment";
 
@@ -913,55 +913,11 @@ export default {
           sortable: true,
           value: "name",
         },
+        { text: "ตำแหน่ง", value: "position" },
         { text: "Roles", value: "roles" },
         { text: "Actions", value: "actions" },
       ],
-      listUser: [
-        {
-          name: "AFrozen Yogurt",
-          roles: ["Admin"],
-        },
-        {
-          name: "BFrozen Yogurt",
-          roles: ["User"],
-        },
-        {
-          name: "CFrozen Yogurt",
-          roles: ["User"],
-        },
-        {
-          name: "DFrozen Yogurt",
-          roles: ["User"],
-        },
-        {
-          name: "EFrozen Yogurt",
-          roles: ["Admin"],
-        },
-        {
-          name: "FFrozen Yogurt",
-          roles: ["Admin"],
-        },
-        {
-          name: "GFrozen Yogurt",
-          roles: ["Admin"],
-        },
-        {
-          name: "HFrozen Yogurt",
-          roles: ["Admin"],
-        },
-        {
-          name: "IFrozen Yogurt",
-          roles: ["Admin"],
-        },
-        {
-          name: "JFrozen Yogurt",
-          roles: ["Admin"],
-        },
-        {
-          name: "KFrozen Yogurt",
-          roles: ["Admin"],
-        },
-      ],
+      listUser: [],
       editedIndex: -1,
       versionIndex: -1,
       userRoles: true,
@@ -1053,6 +1009,7 @@ export default {
       selectInvoice: "",
       headChips: [],
       tableChips: [],
+      url: process.env.VUE_APP_SERVER_API,
     };
   },
   mounted: function () {
@@ -1072,14 +1029,18 @@ export default {
       this.userRoles = this.userInfo.data.roles == "Admin" ? false : true;
 
       /* Default User Menu*/
-      let userMenu = JSON.parse(this.userInfo.listUserPermission);
-      for (let item of userMenu) {
-        for (const [key, value] of Object.entries(item)) {
-          if (key == this.$route.name && item.SubMenu !== undefined) {
-            this.listMenu = item.SubMenu;
+      let userMenu = this.userInfo.roles;
+      // let userMenu = JSON.parse(this.userInfo.listUserPermission);
+      if(userMenu !== null) {
+        for (let item of userMenu) {
+          for (const [key, value] of Object.entries(item)) {
+            if (key == this.$route.name && item.SubMenu !== undefined) {
+              this.listMenu = item.SubMenu;
+            }
           }
         }
       }
+      
       this.listMenu =
         this.listMenu.length !== 0
           ? this.listMenu
@@ -1092,12 +1053,11 @@ export default {
               "User Tree",
               "Invoice Templates",
             ];
+      this.configHeader = {
+        headers: { Authorization: `Bearer ${this.userInfo.token}` },
+      };
 
-      this.listUser =
-        this.$store.state.listUser.length == 0
-          ? this.listUser
-          : this.$store.state.listUser;
-      this.setListUserToStore();
+      this.getListUser();
       this.getCurrentVersion();
       this.getHardwareInfo();
       this.getListInvoiceTemplate();
@@ -1157,13 +1117,30 @@ export default {
         { name: "Audit", menus: [], selectedMenu: [], selected: [] },
       ];
     },
-    setListUserToStore() {
-      this.$store.commit("setListUser", this.listUser);
+    getListUser() {
+      this.listUser = [];
+        axios
+          .get(this.url + "/user/listuser?branch_id=" + this.userInfo.data.branch_id, this.configHeader)
+          .then((res) => {
+            let response = res.data;
+
+            response.users.forEach(e => {
+              let data = {
+                id: e.emp_id,
+                name: e.emp_name + " " + e.emp_surname,
+                position: e.emp_pos_name,
+                roles: e.roles,
+              };
+              this.listUser.push(data);
+            });
+          })
+          .catch((err) => {
+            console.log("get error", err);
+          });
     },
     setListMenuPermission(data) {
       this.defaultPermission();
-      this.listUserPermission =
-        data.listUserPermission == undefined ? [] : data.listUserPermission;
+      this.listUserPermission = data.listUserPermission == undefined ? [] : data.listUserPermission;
 
       for (let item of this.listUserPermission) {
         for (const [key, value] of Object.entries(item)) {
@@ -1214,17 +1191,16 @@ export default {
           this.listUserPermission.push(obj);
         }
       }
-      this.listUser[this.editedIndex].listUserPermission =
-        this.listUserPermission;
+      this.listUser[this.editedIndex].listUserPermission =this.listUserPermission;
       this.$store.commit("setListUser", this.listUser); //save permission ในแต่ละเมนู
 
-      this.userInfo.listUserPermission = JSON.stringify(
-        this.listUserPermission
-      );
-      this.$store.commit("updatePermission", JSON.stringify(this.userInfo)); //save ข้อมูลใน User login
+      this.userInfo.listUserPermission = JSON.stringify(this.listUserPermission);
+      console.log(this.userInfo);
+      console.log(this.userInfo.listUserPermission);
+      // this.$store.commit("updatePermission", JSON.stringify(this.userInfo)); //save ข้อมูลใน User login
 
-      this.dialog = false;
-      this.$router.go();
+      // this.dialog = false;
+      // this.$router.go();
     },
     editItem(item) {
       this.editedIndex = this.listUser.indexOf(item);

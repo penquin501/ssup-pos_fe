@@ -1547,13 +1547,17 @@ export default {
       /* Default User Menu*/
       // let userMenu = JSON.parse(this.userInfo.listUserPermission);
       let userMenu = this.userInfo.roles;
-      for (let item of userMenu) {
-        for (const [key, value] of Object.entries(item)) {
-          if (key == this.$route.name && item.SubMenu !== undefined) {
-            this.listMenu = item.SubMenu;
+      
+      if(userMenu !== null) {
+        for (let item of userMenu) {
+          for (const [key, value] of Object.entries(item)) {
+            if (key == this.$route.name && item.SubMenu !== undefined) {
+              this.listMenu = item.SubMenu;
+            }
           }
         }
       }
+      
       this.listMenu = this.listMenu.length !== 0 ? this.listMenu : ["Sale"];
       this.configHeader = {
         headers: { Authorization: `Bearer ${this.userInfo.token}` },

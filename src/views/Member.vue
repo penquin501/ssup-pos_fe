@@ -335,14 +335,19 @@ export default {
       this.userInfo = JSON.parse(this.$store.state.userInfo);
 
       /* Default User Menu*/
-      let userMenu = JSON.parse(this.userInfo.listUserPermission);
-      for (let item of userMenu) {
-        for (const [key, value] of Object.entries(item)) {
-          if (key == this.$route.name && item.SubMenu !== undefined) {
-            this.listMenu = item.SubMenu;
+      // let userMenu = JSON.parse(this.userInfo.listUserPermission);
+      let userMenu = this.userInfo.roles;
+      
+      if(userMenu !== null) {
+        for (let item of userMenu) {
+          for (const [key, value] of Object.entries(item)) {
+            if (key == this.$route.name && item.SubMenu !== undefined) {
+              this.listMenu = item.SubMenu;
+            }
           }
         }
       }
+      
       this.listMenu = this.listMenu.length !== 0 ? this.listMenu : ["Member"];
       this.configHeader = {
         headers: { Authorization: `Bearer ${this.userInfo.token}` },
@@ -359,7 +364,7 @@ export default {
     getProvinces() {
       this.provincesOptions = [];
       axios
-        .get(this.url + "/province", this.configHeader)
+        .get(this.url + "/address/provinces", this.configHeader)
         .then((res) => {
           for (let e of res.data.province) {
             let data = {};
