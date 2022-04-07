@@ -20,9 +20,8 @@
           </v-list-item-avatar>
 
           <v-list-item-content>
-            <v-list-item-title>{{
-              $t("message.hello", { msg: "hello" })
-            }}</v-list-item-title>
+            <!-- <v-list-item-title>{{ $t("message.hello", { msg: "hello" }) }}</v-list-item-title> -->
+            <v-list-item-title>{{  }}</v-list-item-title>
             <v-list-item-subtitle>tesdddd123</v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
@@ -49,10 +48,14 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   name: "Header",
   data() {
     return {
+      url: process.env.VUE_APP_SERVER_API,
+      userInfo: {},
       menuitems: [
         {
           icon: "mdi-account",
@@ -63,16 +66,38 @@ export default {
         },
         {
           icon: "mdi-exit-to-app",
-
           title: "logout",
           click: (e) => {
-            this.$store.commit("doLogout");
-            window.localStorage.removeItem("vuex");
-            // this.logout();
+              this.userInfo = JSON.parse(this.$store.state.userInfo);
+              console.log(this.url + "/logout");
+              axios
+                .post(this.url + "/logout", {"username" : this.userInfo.data.username})
+                .then((res) => {
+                  let response = res.data;
+
+                  if(response.message == "success") {
+                    this.$store.commit("doLogout");
+                    window.localStorage.removeItem("vuex");
+                  } else {
+                    alert("ไม่สามารถออกจากระบบได้ เนื่องจาก..." + response.message);
+                  }
+                })
+                .catch((err) => {
+                  console.log("get error", err);
+                  alert("ไม่สามารถออกจากระบบได้ เนื่องจาก..." + err);
+                });
           },
         },
       ],
     };
+  },
+  mounted: function () {
+    // this.$i18n.locale = "en";
+    if (this.$store.state.is_login == false) {
+      this.userInfo = JSON.parse(this.$store.state.userInfo);
+      console.log(this.userInfo);
+      // this.checkTypeToLogin();
+    }
   },
 };
 </script>
