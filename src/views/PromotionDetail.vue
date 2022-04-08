@@ -4,10 +4,10 @@
       <v-card-title>
         <b>รหัสโปรโมชั่น : </b> {{ promoInfo.code }}
         <v-spacer></v-spacer>
-        <v-btn outlined>
-            <v-icon>mdi-arrow-left-bold-circle-outline</v-icon>
-            <router-link style="text-decoration: none; color: black;" :to="{ name: 'Promotion' }">back</router-link>
-        </v-btn>
+        <router-link style="text-decoration: none; color: black;" :to="{ name: 'Promotion' }">
+          <v-btn outlined>
+              <v-icon>mdi-arrow-left-bold-circle-outline</v-icon>back</v-btn>
+        </router-link>
       </v-card-title>
       <v-card-subtitle>
           <p><b>รายละเอียด : </b>{{ promoInfo.description }}</p>

@@ -2,97 +2,27 @@
   <div>
     <b-card>
       <b-tabs content-class="mt-3">
-        <b-tab
-          v-if="listMenu.find((name) => name == 'Permission')"
-          title="Permission"
-        >
-          <v-data-table
-            :headers="headersUser"
-            :items="listUser"
-            :search="search"
-            sort-by="name"
-            class="elevation-1"
-          >
+        <b-tab v-if="listMenu.find((name) => name == 'Permission')" title="Permission">
+          <v-data-table :headers="headersUser" :items="listUser" :search="search" sort-by="name" class="elevation-1">
             <template v-slot:top>
               <v-toolbar flat>
                 <v-toolbar-title>รายชื่อ User</v-toolbar-title>
                 <v-divider class="mx-4" inset vertical></v-divider>
                 <v-spacer></v-spacer>
-                <v-text-field
-                  v-model="search"
-                  append-icon="mdi-magnify"
-                  label="Search"
-                  single-line
-                  hide-details
-                ></v-text-field>
-                <v-dialog
-                  v-model="dialog"
-                  max-width="850px"
-                  :retain-focus="false"
-                  persistent
-                >
-                  <v-card
-                    style="
-                      background-color: white;
-                      color: black;
-                      width: 200vw;
-                      height: auto;
-                      margin: 0;
-                    "
-                  >
+                <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details ></v-text-field>
+                <v-dialog v-model="dialog" max-width="850px" :retain-focus="false" persistent>
+                  <v-card style="background-color: white; color: black; width: 200vw; height: auto; margin: 0;">
                     <v-card-text>
                       <v-container>
                         <b-table :items="listPermission" :fields="headers">
-                          <template
-                            #cell(actions)="row"
-                            style="text-align: center"
-                          >
+                          <template #cell(actions)="row" style="text-align: center">
                             <b-form-group v-slot="{ ariaDescribedby }">
-                              <b-form-checkbox-group
-                                id="checkbox-group-1"
-                                style="display: flex"
-                                v-model="row.item.selected"
-                                :aria-describedby="ariaDescribedby"
-                                name="flavour-1"
-                              >
-                                <b-form-checkbox
-                                  :disabled="userRoles"
-                                  v-for="(option, index) in options"
-                                  :key="option.id"
-                                  :value="option.value"
-                                  >&nbsp;{{
-                                    option.text
-                                  }}&nbsp;&nbsp;</b-form-checkbox
-                                >
+                              <b-form-checkbox-group id="checkbox-group-1" style="display: flex" v-model="row.item.selected" :aria-describedby="ariaDescribedby" name="flavour-1">
+                                <b-form-checkbox :disabled="userRoles" v-for="(option, index) in options" :key="option.id" :value="option.value" >&nbsp;{{ option.text }}&nbsp;&nbsp;</b-form-checkbox>
                               </b-form-checkbox-group>
-                              <v-subheader
-                                style="padding-left: 0px"
-                                v-if="
-                                  row.item.menus.length !== 0 &&
-                                  row.item.selected.length !== 0
-                                "
-                                >{{ $t("message.subMenu") }}</v-subheader
-                              >
-                              <b-form-checkbox-group
-                                v-if="
-                                  row.item.menus.length !== 0 &&
-                                  row.item.selected.length !== 0
-                                "
-                                id="checkbox-group-2"
-                                style="display: flex"
-                                v-model="row.item.selectedMenu"
-                                :aria-describedby="ariaDescribedby"
-                                name="flavour-2"
-                              >
-                                <b-form-checkbox
-                                  :disabled="userRoles"
-                                  v-for="(menu, index) in row.item.menus"
-                                  :key="menu.id"
-                                  :value="menu.text"
-                                  >&nbsp;{{
-                                    menu.text
-                                  }}&nbsp;&nbsp;</b-form-checkbox
-                                >
+                              <v-subheader style="padding-left: 0px" v-if="row.item.menus.length !== 0 && row.item.selected.length !== 0">{{ $t("message.subMenu") }}</v-subheader>
+                              <b-form-checkbox-group v-if="row.item.menus.length !== 0 && row.item.selected.length !== 0" id="checkbox-group-2" style="display: flex" v-model="row.item.selectedMenu" :aria-describedby="ariaDescribedby" name="flavour-2">
+                                <b-form-checkbox :disabled="userRoles" v-for="(menu, index) in row.item.menus" :key="menu.id" :value="menu.text">&nbsp;{{ menu.text }}&nbsp;&nbsp;</b-form-checkbox>
                               </b-form-checkbox-group>
                             </b-form-group>
                           </template>
@@ -101,27 +31,15 @@
                     </v-card-text>
                     <v-card-actions>
                       <v-spacer></v-spacer>
-                      <v-btn
-                        color="blue darken-1"
-                        text
-                        @click.prevent="dialog = false"
-                        >Cancel</v-btn
-                      >
-                      <v-btn
-                        color="blue darken-1"
-                        text
-                        @click.prevent="savePermission()"
-                        >Save</v-btn
-                      >
+                      <v-btn color="blue darken-1" text @click.prevent="dialog = false">Cancel</v-btn>
+                      <v-btn color="blue darken-1" text @click.prevent="savePermission()">Save</v-btn>
                     </v-card-actions>
                   </v-card>
                 </v-dialog>
               </v-toolbar>
             </template>
             <template v-slot:item.actions="{ item }">
-              <v-icon small class="mr-2" @click="editItem(item)"
-                >mdi-pencil</v-icon
-              >
+              <v-icon small class="mr-2" @click="editItem(item)">mdi-pencil</v-icon>
             </template>
           </v-data-table>
         </b-tab>
@@ -909,15 +827,16 @@ export default {
       headersUser: [
         {
           text: "Name",
+          value: "fullName",
           align: "start",
           sortable: true,
-          value: "name",
         },
-        { text: "ตำแหน่ง", value: "position" },
+        { text: "Position", value: "emp_pos_name" },
         { text: "Roles", value: "roles" },
         { text: "Actions", value: "actions" },
       ],
       listUser: [],
+      editedUser: {},
       editedIndex: -1,
       versionIndex: -1,
       userRoles: true,
@@ -1030,7 +949,6 @@ export default {
 
       /* Default User Menu*/
       let userMenu = this.userInfo.roles;
-      // let userMenu = JSON.parse(this.userInfo.listUserPermission);
       if(userMenu !== null) {
         for (let item of userMenu) {
           for (const [key, value] of Object.entries(item)) {
@@ -1068,6 +986,7 @@ export default {
         editor.ui.getEditableElement().parentElement.insertBefore(editor.ui.view.toolbar.element,editor.ui.getEditableElement());
     },
     defaultPermission() {
+      //TODO
       this.listPermission = [
         { name: "Dashboard", menus: [], selectedMenu: [], selected: [] },
         {
@@ -1119,43 +1038,52 @@ export default {
     },
     getListUser() {
       this.listUser = [];
-        axios
-          .get(this.url + "/user/listuser?branch_id=" + this.userInfo.data.branch_id, this.configHeader)
-          .then((res) => {
-            let response = res.data;
+      axios
+        .get(this.url + "/user/listuser?branch_id=" + this.userInfo.data.branch_id, this.configHeader)
+        .then((res) => {
+          let response = res.data;
 
-            response.users.forEach(e => {
-              let data = {
-                id: e.emp_id,
-                name: e.emp_name + " " + e.emp_surname,
-                position: e.emp_pos_name,
-                roles: e.roles,
-              };
-              this.listUser.push(data);
-            });
-          })
-          .catch((err) => {
-            console.log("get error", err);
+          response.users.forEach(e => {
+            e.fullName = e.emp_name + " " + e.emp_surname;
+            this.listUser.push(e);
           });
+        })
+        .catch((err) => {
+          console.log("get error", err);
+        });
     },
     setListMenuPermission(data) {
       this.defaultPermission();
-      this.listUserPermission = data.listUserPermission == undefined ? [] : data.listUserPermission;
-
-      for (let item of this.listUserPermission) {
-        for (const [key, value] of Object.entries(item)) {
-          for (const [k, v] of Object.entries(value)) {
-            for (let ele of this.listPermission) {
-              if (ele.name == key) {
-                if (v == 1) {
-                  ele.selected.push(k);
+      
+      axios
+        .get(this.url + "/user/getUserInfo?branch_id=" + data.branch_id + "&emp_id=" + data.emp_id, this.configHeader)
+        .then((res) => {
+          if (res.status == 200 && res.data.message == "success") {
+            let response = res.data;
+            this.listUserPermission = response.roles;
+            for (let item of this.listUserPermission) {
+              for (const [key, value] of Object.entries(item)) {
+                for (const [k, v] of Object.entries(value)) {
+                  for (let ele of this.listPermission) {
+                    if (ele.name == key) {
+                      if (v == 1) {
+                        ele.selected.push(k);
+                      }
+                      ele.selectedMenu = item.SubMenu;
+                    }
+                  }
                 }
-                ele.selectedMenu = item.SubMenu;
               }
             }
+            this.dialog = true;
+          } else {
+            alert("ไม่สามารถแก้ไข user นี้ได้");
           }
-        }
-      }
+        })
+        .catch((err) => {
+          alert("ไม่สามารถแก้ไข user นี้ได้");
+          console.log("get user info error, ", err);
+        });
     },
     savePermission() {
       for (let selectedItem of this.listPermission) {
@@ -1191,21 +1119,43 @@ export default {
           this.listUserPermission.push(obj);
         }
       }
-      this.listUser[this.editedIndex].listUserPermission =this.listUserPermission;
-      this.$store.commit("setListUser", this.listUser); //save permission ในแต่ละเมนู
 
-      this.userInfo.listUserPermission = JSON.stringify(this.listUserPermission);
-      console.log(this.userInfo);
-      console.log(this.userInfo.listUserPermission);
-      // this.$store.commit("updatePermission", JSON.stringify(this.userInfo)); //save ข้อมูลใน User login
+      let dataBody = {
+        emp_id: this.editedUser.emp_id,
+        role_name: this.editedUser.roles,
+        brand_id: this.editedUser.brand_id,
+        permission: this.listUserPermission,
+      };
 
-      // this.dialog = false;
-      // this.$router.go();
+      axios
+        .post(this.url + "/user/update/permission", dataBody, this.configHeader)
+        .then((res) => {
+          if (res.status == 200 && res.data.message == "success") {
+            if (this.editedUser.emp_id == this.userInfo.data.emp_id) {
+              this.userInfo.roles = this.listUserPermission;
+              this.$store.commit("updatePermission", JSON.stringify(this.userInfo));
+              this.$router.go();
+            }
+            this.dialog = false;
+          } else {
+            let msg = "";
+            for (const [key, value] of Object.entries(res.data.message)) {
+              for(let m of value) {
+                msg += m + ", ";
+              }
+            }
+            alert("update permission ไม่สำเร็จ เนื่องจาก..." + msg);
+          }
+        })
+        .catch((err) => {
+          console.log("get error", err);
+        });
     },
     editItem(item) {
       this.editedIndex = this.listUser.indexOf(item);
+      this.editedUser = item;
       this.setListMenuPermission(item);
-      this.dialog = true;
+      // this.dialog = true;
     },
     closeCheckStatus() {
       this.loadingStatus = false;
