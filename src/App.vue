@@ -15,18 +15,12 @@
         <v-toolbar-title></v-toolbar-title>
         <v-spacer></v-spacer>
         <v-col class="d-flex" sm="1">
-          <v-select
-            v-model="selectedLang"
-            :items="languages"
-            dense
-            @change="setLang()"
-          >
+          <v-select v-model="selectedLang" :items="languages" dense @change="setLang()">
             <template v-slot:item="{ item, index }">
               <flag :iso="item.flag" /> {{ item.text }}
             </template>
           </v-select>
         </v-col>
-        <v-spacer></v-spacer>
         <Header />
       </v-app-bar>
 
