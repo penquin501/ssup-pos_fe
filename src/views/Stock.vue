@@ -396,8 +396,15 @@ export default {
       });
     } else {
       this.userInfo = JSON.parse(this.$store.state.userInfo);
-
-      /* Default User Menu*/
+      this.configHeader = {
+        headers: { Authorization: `Bearer ${this.userInfo.token}` },
+      };
+      this.defaultMenu();
+      this.getListStock();
+    }
+  },
+  methods: {
+    defaultMenu() {
       let userMenu = this.userInfo.roles;
       if(userMenu !== null) {
         for (let item of userMenu) {
@@ -408,16 +415,6 @@ export default {
           }
         }
       }
-      this.listMenu = this.listMenu.length !== 0 ? this.listMenu : ["Stock In", "Stock Out"];
-      this.configHeader = {
-        headers: { Authorization: `Bearer ${this.userInfo.token}` },
-      };
-      this.getListStock();
-    }
-  },
-  methods: {
-    help() {
-      console.log('eee');
     },
     formatPrice(value) {
       let val = (value / 1).toFixed(2).replace(",", ".");

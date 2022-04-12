@@ -333,11 +333,16 @@ export default {
       });
     } else {
       this.userInfo = JSON.parse(this.$store.state.userInfo);
-
-      /* Default User Menu*/
-      // let userMenu = JSON.parse(this.userInfo.listUserPermission);
+      this.defaultMenu(); 
+      this.configHeader = {
+        headers: { Authorization: `Bearer ${this.userInfo.token}` },
+      };
+      this.getListMember();
+    }
+  },
+  methods: {
+    defaultMenu() {
       let userMenu = this.userInfo.roles;
-      
       if(userMenu !== null) {
         for (let item of userMenu) {
           for (const [key, value] of Object.entries(item)) {
@@ -347,15 +352,7 @@ export default {
           }
         }
       }
-      
-      this.listMenu = this.listMenu.length !== 0 ? this.listMenu : ["Member"];
-      this.configHeader = {
-        headers: { Authorization: `Bearer ${this.userInfo.token}` },
-      };
-      this.getListMember();
-    }
-  },
-  methods: {
+    },
     getListMember() {
       if (this.$store.state.listMember !== []) {
         this.listMember = this.$store.state.listMember;

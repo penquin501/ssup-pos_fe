@@ -122,8 +122,12 @@ export default {
       });
     } else {
       this.userInfo = JSON.parse(this.$store.state.userInfo);
-
-      /* Default User Menu*/
+      this.defaultMenu(); 
+      this.getListPromotion();
+    }
+  },
+  methods: {
+    defaultMenu() {
       let userMenu = this.userInfo.roles;
       if(userMenu !== null) {
         for (let item of userMenu) {
@@ -134,11 +138,7 @@ export default {
           }
         }
       }
-      this.listMenu = this.listMenu.length !== 0 ? this.listMenu : ["Offer Promotion"];
-      this.getListPromotion();
-    }
-  },
-  methods: {
+    },
     getListPromotion() {
       this.listPromotion = [
         {

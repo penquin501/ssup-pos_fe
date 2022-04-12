@@ -22,7 +22,7 @@
                               </b-form-checkbox-group>
                               <v-subheader style="padding-left: 0px" v-if="row.item.menus.length !== 0 && row.item.selected.length !== 0">{{ $t("message.subMenu") }}</v-subheader>
                               <b-form-checkbox-group v-if="row.item.menus.length !== 0 && row.item.selected.length !== 0" id="checkbox-group-2" style="display: flex" v-model="row.item.selectedMenu" :aria-describedby="ariaDescribedby" name="flavour-2">
-                                <b-form-checkbox :disabled="userRoles" v-for="(menu, index) in row.item.menus" :key="menu.id" :value="menu.text">&nbsp;{{ menu.text }}&nbsp;&nbsp;</b-form-checkbox>
+                                <b-form-checkbox :disabled="userRoles" v-for="(menu, index) in row.item.menus" :key="menu.id" :value="menu.name">&nbsp;{{ menu.name }}&nbsp;&nbsp;</b-form-checkbox>
                               </b-form-checkbox-group>
                             </b-form-group>
                           </template>
@@ -824,17 +824,7 @@ export default {
       dialogAddHardware: false,
       dialogConfirmStatus: false,
       dialogInvoiceTemp: false,
-      headersUser: [
-        {
-          text: "Name",
-          value: "fullName",
-          align: "start",
-          sortable: true,
-        },
-        { text: "Position", value: "emp_pos_name" },
-        { text: "Roles", value: "roles" },
-        { text: "Actions", value: "actions" },
-      ],
+      headersUser: [],
       listUser: [],
       editedUser: {},
       editedIndex: -1,
@@ -946,8 +936,20 @@ export default {
     } else {
       this.userInfo = JSON.parse(this.$store.state.userInfo);
       this.userRoles = this.userInfo.data.roles == "Admin" ? false : true;
+      
+      this.configHeader = {
+        headers: { Authorization: `Bearer ${this.userInfo.token}` },
+      };
 
-      /* Default User Menu*/
+      this.defaultMenu();
+      this.getListUser();
+      this.getCurrentVersion();
+      this.getHardwareInfo();
+      this.getListInvoiceTemplate();
+    }
+  },
+  methods: {
+    defaultMenu() {
       let userMenu = this.userInfo.roles;
       if(userMenu !== null) {
         for (let item of userMenu) {
@@ -958,83 +960,25 @@ export default {
           }
         }
       }
-      
-      this.listMenu =
-        this.listMenu.length !== 0
-          ? this.listMenu
-          : [
-              "Permission",
-              "Shop Info",
-              "Test Equipment",
-              "Update Data",
-              "Hardware Logs",
-              "User Tree",
-              "Invoice Templates",
-            ];
-      this.configHeader = {
-        headers: { Authorization: `Bearer ${this.userInfo.token}` },
-      };
-
-      this.getListUser();
-      this.getCurrentVersion();
-      this.getHardwareInfo();
-      this.getListInvoiceTemplate();
-    }
-  },
-  methods: {
+    },
     onReady( editor )  {
         editor.ui.getEditableElement().parentElement.insertBefore(editor.ui.view.toolbar.element,editor.ui.getEditableElement());
     },
     defaultPermission() {
-      //TODO
-      this.listPermission = [
-        { name: "Dashboard", menus: [], selectedMenu: [], selected: [] },
-        {
-          name: "Sale",
-          menus: [{ text: "Sale", selected: 0 }],
-          selectedMenu: [],
-          selected: [],
-        },
-        {
-          name: "Stock",
-          menus: [
-            { text: "Stock In", selected: 0 },
-            { text: "Stock Out", selected: 0 }
-          ],
-          selectedMenu: [],
-          selected: [],
-        },
-        {
-          name: "Member Register",
-          menus: [{ text: "Member", selected: 0 }],
-          selectedMenu: [],
-          selected: [],
-        },
-        { name: "Offer Promotion", menus: [
-          { text: "Offer Promotion", selected: 0 }
-        ], selectedMenu: [], selected: [] },
-        {
-          name: "Report",
-          menus: [{ text: "Sale Bill", selected: 0 }],
-          selectedMenu: [],
-          selected: [],
-        },
-        {
-          name: "Tools",
-          menus: [
-            { text: "Permission", selected: 0 },
-            { text: "Shop Info", selected: 0 },
-            { text: "Test Equipment", selected: 0 },
-            { text: "Update Data", selected: 0 },
-            { text: "Hardware Logs", selected: 0 },
-            { text: "User Tree", selected: 0 },
-            { text: "Invoice Templates", selected: 0 },
-          ],
-          selectedMenu: [],
-          selected: [],
-        },
-        { name: "Audit", menus: [], selectedMenu: [], selected: [] },
-      ];
+      this.listPermission = [];
+      axios
+        .get(this.url + "/user/list/permission?type=POS&brand_id=" + this.userInfo.data.brand_id, this.configHeader)
+        .then((res) => {
+          let response = res.data;
+          response.forEach(e => {
+            e.selectedMenu = [];
+            e.selected = [];
+            this.listPermission.push(e);
+          });
+        })
+        .catch((err) => {
+          console.log("get error", err);
+        });
     },
     getListUser() {
       this.listUser = [];
@@ -1042,7 +986,17 @@ export default {
         .get(this.url + "/user/listuser?branch_id=" + this.userInfo.data.branch_id, this.configHeader)
         .then((res) => {
           let response = res.data;
-
+          this.headersUser = [
+            {
+              text: "Name",
+              value: "fullName",
+              align: "start",
+              sortable: true,
+            },
+            { text: "Position", value: "emp_pos_name" },
+            { text: "Roles", value: "roles" },
+            { text: "Actions", value: "actions" },
+          ];
           response.users.forEach(e => {
             e.fullName = e.emp_name + " " + e.emp_surname;
             this.listUser.push(e);
@@ -1119,7 +1073,6 @@ export default {
           this.listUserPermission.push(obj);
         }
       }
-
       let dataBody = {
         emp_id: this.editedUser.emp_id,
         role_name: this.editedUser.roles,

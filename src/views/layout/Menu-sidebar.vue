@@ -27,7 +27,7 @@
             <v-icon v-text="item.icon"></v-icon>
           </v-list-item-icon>
           <v-list-item-content>
-            <v-list-item-title v-text="item.title"></v-list-item-title>
+            <v-list-item-title v-text="item.name"></v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list-item-group>
@@ -35,14 +35,17 @@
   </v-card>
 </template>
 <script>
+import axios from 'axios';
 export default {
   data() {
     return {
       selectedItem: 1,
       right: null,
       userInfo: {},
+      configHeader: {},
       items: [],
-      branchName: ""
+      branchName: "",
+      url: process.env.VUE_APP_SERVER_API,
     };
   },
   mounted: function () {
@@ -58,59 +61,38 @@ export default {
         }
       });
     } else {
+      this.userInfo = JSON.parse(this.$store.state.userInfo);
+      this.configHeader = {
+        headers: { Authorization: `Bearer ${this.userInfo.token}` },
+      };
       this.setMenu();
     }
   },
   methods: {
     setMenu() {
-      var menuItems = [
-        {
-          title: "Dashboard",
-          icon: "mdi-monitor mdi-48px",
-          link: "/dashboard",
-        },
-        { title: "Sale", icon: "mdi-cart-plus mdi-48px", link: "/sale" },
-        { title: "Stock", icon: "mdi-bank mdi-48px", link: "/stock" },
-        {
-          title: "Member Register",
-          icon: "mdi-account-card-details mdi-48px",
-          link: "/member",
-        },
-        {
-          title: "Offer Promotion",
-          icon: "mdi-wallet-giftcard mdi-48px",
-          link: "/promotion",
-        },
-        {
-          title: "Report",
-          icon: "mdi-chart-areaspline mdi-48px",
-          link: "/report",
-        },
-        { title: "Tools", icon: "mdi-settings mdi-48px", link: "/tools" },
-        {
-          title: "Audit",
-          icon: "mdi-briefcase-check mdi-48px",
-          link: "/audit",
-        },
-      ];
+      var menuItems = [];
+      axios
+        .get(this.url + "/menu/listmenu?type=POS&brand_id=" + this.userInfo.data.brand_id, this.configHeader)
+        .then((res) => {
+          menuItems = res.data;
+          this.branchName = this.userInfo.data.branch;
+          if (this.userInfo.roles !== null) {
+            this.listUserPermission = this.userInfo.roles;
 
-      this.userInfo = JSON.parse(this.$store.state.userInfo);
-      this.branchName = this.userInfo.data.branch;
-      
-      if (this.userInfo.roles == null) {
-        this.items = menuItems;
-      } else {
-        this.listUserPermission = this.userInfo.roles;
-        for (let item of this.listUserPermission) {
-          for (const [key, value] of Object.entries(item)) {
-            for (let ele of menuItems) {
-              if (ele.title == key) {
-                this.items.push(ele);
+            for (let item of this.listUserPermission) {
+              for (const [key, value] of Object.entries(item)) {
+                for (let ele of menuItems) {
+                  if (ele.name == key) {
+                    this.items.push(ele);
+                  }
+                }
               }
             }
           }
-        }
-      }
+        })
+        .catch((err) => {
+          console.log("get error", err);
+        });
     },
     goto(link) {
       if (this.$route.path == link) {

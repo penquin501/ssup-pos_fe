@@ -1543,11 +1543,21 @@ export default {
         this.calPoints();
       }
       this.userInfo = JSON.parse(this.$store.state.userInfo);
-
-      /* Default User Menu*/
-      // let userMenu = JSON.parse(this.userInfo.listUserPermission);
-      let userMenu = this.userInfo.roles;
       
+      this.configHeader = {
+        headers: { Authorization: `Bearer ${this.userInfo.token}` },
+      };
+      // this.generateNewInvoice();
+      this.formCashier = this.$store.state.cashierBillInfo == null ? this.formCashier : this.$store.state.cashierBillInfo;
+
+      this.defaultMenu();
+      this.checkCashier();
+      this.getEmpInfo();
+    }
+  },
+  methods: {
+    defaultMenu() {
+      let userMenu = this.userInfo.roles;
       if(userMenu !== null) {
         for (let item of userMenu) {
           for (const [key, value] of Object.entries(item)) {
@@ -1557,18 +1567,7 @@ export default {
           }
         }
       }
-      
-      this.listMenu = this.listMenu.length !== 0 ? this.listMenu : ["Sale"];
-      this.configHeader = {
-        headers: { Authorization: `Bearer ${this.userInfo.token}` },
-      };
-      // this.generateNewInvoice();
-      this.formCashier = this.$store.state.cashierBillInfo == null ? this.formCashier : this.$store.state.cashierBillInfo;
-      this.checkCashier();
-      this.getEmpInfo();
-    }
-  },
-  methods: {
+    },
     checkCashier() {
       /**
        * TODO: API check ข้อมูลเงินใน cashier
