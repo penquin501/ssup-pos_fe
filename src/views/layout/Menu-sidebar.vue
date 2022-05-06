@@ -18,7 +18,7 @@
       <v-list-item-group v-model="selectedItem" color="primary">
         <v-list-item
           v-for="(item, i) in items"
-          :key="i"
+          :key="item.value"
           :to="item.link"
           @click.prevent="goto(item.link)"
           style="margin-bottom: 2px; padding: 12px"
@@ -82,7 +82,7 @@ export default {
             for (let item of this.listUserPermission) {
               for (const [key, value] of Object.entries(item)) {
                 for (let ele of menuItems) {
-                  if (ele.name == key) {
+                  if (ele.value == key) {
                     this.items.push(ele);
                   }
                 }

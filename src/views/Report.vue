@@ -309,7 +309,7 @@
 
 <script>
 import dayjs from "dayjs";
-// import axios from 'axios';
+import axios from 'axios';
 export default {
   data() {
     return {
@@ -346,6 +346,7 @@ export default {
         fiftyCent: 0,
         twentyFiveCent: 0,
       },
+      url: process.env.VUE_APP_SERVER_API,
     };
   },
   mounted: function () {
@@ -363,6 +364,21 @@ export default {
     } else {
       this.userInfo = JSON.parse(this.$store.state.userInfo);
       //TODO เช็คการเปิด tab หรือ หน้าต่าง ใหม่
+      /* เรียก hostname ไปเช็ค config 
+          location.toString() //http://localhost:8080/
+          location.host //localhost:8080
+          location.hostname //localhost
+          location.port //8080 
+          location.protocol //http:
+      */
+      let routeData = this.$router.resolve({name: 'Report'});
+      // window.open(routeData.href, '_blank');
+      // this.$store.state.countLogin
+      // this.$store.state.countLogin++; 
+      // if(this.$store.state.countLogin !== 1) {
+      //   alert("ข้อมูลทุกอย่างจะถูกลบออกทั้งหมด, กรุณา Login ใหม่อีกครั้ง");
+      //   this.logout();
+      // }
 
       //TODO เช็คการบันทึกเงินในเกะ
       this.formCashier = this.$store.state.cashierBillInfo == null ? this.formCashier : this.$store.state.cashierBillInfo;
@@ -372,6 +388,24 @@ export default {
     }
   },
   methods: {
+    logout()  {
+      axios
+        .post(this.url + "/logout", {"username" : this.userInfo.data.username})
+        .then((res) => {
+          let response = res.data;
+
+          if(response.message == "success") {
+            this.$store.commit("doLogout");
+            window.localStorage.removeItem("vuex");
+          } else {
+            alert("ไม่สามารถออกจากระบบได้ เนื่องจาก..." + response.message);
+          }
+        })
+        .catch((err) => {
+          console.log("get error", err);
+          alert("ไม่สามารถออกจากระบบได้ เนื่องจาก..." + err);
+        });
+    },
     defaultMenu() {
       let userMenu = this.userInfo.roles;
       if(userMenu !== null) {

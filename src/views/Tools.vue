@@ -18,7 +18,7 @@
                           <template #cell(actions)="row" style="text-align: center">
                             <b-form-group v-slot="{ ariaDescribedby }">
                               <b-form-checkbox-group id="checkbox-group-1" style="display: flex" v-model="row.item.selected" :aria-describedby="ariaDescribedby" name="flavour-1">
-                                <b-form-checkbox :disabled="userRoles" v-for="(option, index) in options" :key="option.id" :value="option.value" >&nbsp;{{ option.text }}&nbsp;&nbsp;</b-form-checkbox>
+                                <b-form-checkbox :disabled="userRoles" v-for="(option, index) in options" :key="option.id" :value="option.value">&nbsp;{{ option.text }}&nbsp;&nbsp;</b-form-checkbox>
                               </b-form-checkbox-group>
                               <v-subheader style="padding-left: 0px" v-if="row.item.menus.length !== 0 && row.item.selected.length !== 0">{{ $t("message.subMenu") }}</v-subheader>
                               <b-form-checkbox-group v-if="row.item.menus.length !== 0 && row.item.selected.length !== 0" id="checkbox-group-2" style="display: flex" v-model="row.item.selectedMenu" :aria-describedby="ariaDescribedby" name="flavour-2">
@@ -936,7 +936,7 @@ export default {
     } else {
       this.userInfo = JSON.parse(this.$store.state.userInfo);
       this.userRoles = this.userInfo.data.roles == "Admin" ? false : true;
-      
+      console.log(this.userInfo);
       this.configHeader = {
         headers: { Authorization: `Bearer ${this.userInfo.token}` },
       };
@@ -988,10 +988,16 @@ export default {
           let response = res.data;
           this.headersUser = [
             {
-              text: "Name",
-              value: "fullName",
+              text: "Emp id",
+              value: "emp_id",
               align: "start",
               sortable: true,
+            },
+            {
+              text: "Name",
+              value: "fullName",
+              // align: "start",
+              // sortable: true,
             },
             { text: "Position", value: "emp_pos_name" },
             { text: "Roles", value: "roles" },
@@ -1019,7 +1025,7 @@ export default {
               for (const [key, value] of Object.entries(item)) {
                 for (const [k, v] of Object.entries(value)) {
                   for (let ele of this.listPermission) {
-                    if (ele.name == key) {
+                    if (ele.value == key) {
                       if (v == 1) {
                         ele.selected.push(k);
                       }
@@ -1040,14 +1046,17 @@ export default {
         });
     },
     savePermission() {
+      this.listUserPermission = [];
       for (let selectedItem of this.listPermission) {
         this.lKey = [];
         for (let item of this.listUserPermission) {
           for (const [key, value] of Object.entries(item)) {
-            this.lKey.push(key);
+            if(key !== "SubMenu") {
+              this.lKey.push(key);
+            }
           }
         }
-        let selectedIndex = this.lKey.indexOf(selectedItem.name);
+        let selectedIndex = this.lKey.indexOf(selectedItem.value);
         if (selectedItem.selected.length == 0) {
           if (selectedIndex !== -1) {
             this.listUserPermission.splice(selectedIndex, 1);
@@ -1065,9 +1074,9 @@ export default {
             this.listUserPermission.splice(selectedIndex, 1);
           }
           let obj = {};
-          obj[selectedItem.name] = permission;
+          obj[selectedItem.value] = permission;
           for (let opt of selectedItem.selected) {
-            obj[selectedItem.name][opt] = 1;
+            obj[selectedItem.value][opt] = 1;
           }
           obj["SubMenu"] = selectedItem.selectedMenu;
           this.listUserPermission.push(obj);
@@ -1079,7 +1088,6 @@ export default {
         brand_id: this.editedUser.brand_id,
         permission: this.listUserPermission,
       };
-
       axios
         .post(this.url + "/user/update/permission", dataBody, this.configHeader)
         .then((res) => {

@@ -9,6 +9,8 @@ import Stock from '../views/Stock.vue'
 import Promotion from '../views/Promotion.vue'
 import PromotionDetail from '../views/PromotionDetail.vue'
 
+import Sale2 from '../views/Sale2.vue'
+
 Vue.use(VueRouter)
 
 const routes = [
@@ -21,6 +23,11 @@ const routes = [
     path: '/sale',
     name: 'Sale',
     component: Sale
+  },
+  {
+    path: '/sale2',
+    name: 'Sale2',
+    component: Sale2
   },
   {
     path: '/tools',

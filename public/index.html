@@ -24,9 +24,7 @@
       var current_window_id = Date.now() + "";//convert to string
       var time_period = 3000;//ms
 
-      //Check to see if PageVisibility API is supported or not
-      var PV_API = page_visibility_API_check();
-
+      var PV_API = page_visibility_API_check(); //Check to see if PageVisibility API is supported or not
       if (PV_API) {
         document.addEventListener(PV_API.handler, function() {
           if (document[PV_API.hidden]) {
@@ -49,6 +47,14 @@
       window.addEventListener('beforeunload', function () {
         remove_from_main_windows_list(current_window_id);
       });
+      
+      //check storage continuously
+      setInterval(function() {
+        check_current_window_status();
+      }, time_period);
+
+      //initial check
+      check_current_window_status();
 
       /************************
         ** PAGE VISIBILITY API **
@@ -56,6 +62,7 @@
       function page_visibility_API_check() {
         var page_visibility_API = false;
         var visibility_change_handler = false;
+
         if ('hidden' in document) {
           page_visibility_API = 'hidden';
           visibility_change_handler = 'visibilitychange';
@@ -230,13 +237,5 @@
 
         localStorage.last_update = Date.now();
       }
-
-      //check storage continuously
-      setInterval(function() {
-        check_current_window_status();
-      }, time_period);
-
-      //initial check
-      check_current_window_status();
   </script>
 </html>
