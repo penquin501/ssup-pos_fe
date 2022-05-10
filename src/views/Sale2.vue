@@ -1359,12 +1359,12 @@ import dayjs from "dayjs";
 import axios from "axios";
 const queryString = require("query-string");
 
-import test from "@/views/Cashier.vue";
+// import test from "@/views/Cashier.vue";
 
 export default {
-  components: {
-    test,
-  },
+  // components: {
+  //   test,
+  // },
   data() {
     return {
       tab: "",

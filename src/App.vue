@@ -1,3 +1,5 @@
+<!-- @format -->
+
 <template>
   <v-app>
     <div v-if="$store.state.is_login">
@@ -6,22 +8,29 @@
       </v-navigation-drawer>
 
       <v-app-bar app>
-        <v-app-bar-nav-icon @click="drawer = !drawer">
-          <div v-if="drawer">
-            <i class="fa fa-outdent" aria-hidden="true"></i>
-          </div>
-          <div v-else><i class="fa fa-indent" aria-hidden="true"></i></div>
-        </v-app-bar-nav-icon>
-        <v-toolbar-title></v-toolbar-title>
-        <v-spacer></v-spacer>
-        <v-col class="d-flex" sm="1">
-          <v-select v-model="selectedLang" :items="languages" dense @change="setLang()">
-            <template v-slot:item="{ item, index }">
-              <flag :iso="item.flag" /> {{ item.text }}
-            </template>
-          </v-select>
+        <v-col md="1">
+          <v-app-bar-nav-icon @click="drawer = !drawer">
+            <div v-if="drawer">
+              <i class="fa fa-outdent" aria-hidden="true"></i>
+            </div>
+            <div v-else><i class="fa fa-indent" aria-hidden="true"></i></div>
+          </v-app-bar-nav-icon>
         </v-col>
-        <Header />
+        <v-col md="8"></v-col>
+        <v-col md="2">
+          <v-chip-group
+            v-model="selectedLang"
+            mandatory
+            active-class="primary--text"
+          >
+            <v-chip v-for="item in languages" :key="item.id"
+              ><flag :iso="item.flag" /> {{ item.text }}</v-chip
+            >
+          </v-chip-group>
+        </v-col>
+        <v-col md="1">
+          <Header />
+        </v-col>
       </v-app-bar>
 
       <v-main>
