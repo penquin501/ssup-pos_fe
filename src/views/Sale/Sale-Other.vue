@@ -9,11 +9,22 @@
       md="12"
       style="padding-top: 0px; padding-bottom: 0px"
     >
-      <v-col cols="12" sm="6" md="6" center>
+      <!-- <v-col cols="12" sm="6" md="6" center>
         <b-button variant="primary" style="height: 100px; width: 100px">
           <v-icon size="48" color="white">mdi-refresh</v-icon>
           <br />
           <span style="font-size: 14px">Refresh</span>
+        </b-button>
+      </v-col> -->
+      <v-col cols="12" sm="6" md="6" center>
+        <b-button
+          variant="primary"
+          @click.prevent="dialogDeliveryInfo = true"
+          style="height: 100px; width: 100px"
+        >
+          <v-icon size="48" color="white">mdi mdi-motorbike</v-icon>
+          <br />
+          <span style="font-size: 14px">Delivery</span>
         </b-button>
       </v-col>
       <v-col cols="12" sm="6" md="6" center>
@@ -59,13 +70,6 @@
     >
       <v-col cols="12" sm="6" md="6" center>
         <b-button variant="primary" style="height: 100px; width: 100px">
-          <v-icon size="48" color="white">mdi-comment-text</v-icon>
-          <br />
-          <span style="font-size: 14px">Call Survey</span>
-        </b-button>
-      </v-col>
-      <v-col cols="12" sm="6" md="6" center>
-        <b-button variant="primary" style="height: 100px; width: 100px">
           <b-img
             style="width: 48px; height: 48px"
             src="./img/icons/alipay-brands.svg"
@@ -74,27 +78,12 @@
           <span style="font-size: 14px">Alipay</span>
         </b-button>
       </v-col>
-    </v-col>
-    <v-col
-      class="d-flex"
-      cols="12"
-      sm="12"
-      md="12"
-      style="padding-top: 0px; padding-bottom: 0px"
-    >
       <v-col cols="12" sm="6" md="6" center>
         <b-button variant="primary" style="height: 100px; width: 100px">
           <v-icon size="48" color="white">fa fa-weixin</v-icon>
           <br />
           <span style="font-size: 14px">We Chat</span>
         </b-button>
-      </v-col>
-      <v-col cols="12" sm="6" md="6" center>
-        <!-- <b-button variant="primary" style="height: 100px; width: 100px">
-          <v-icon size="48" color="white">fa fa-weixin</v-icon>
-          <br />
-          <span style="font-size: 14px">We Chat</span>
-        </b-button> -->
       </v-col>
     </v-col>
 

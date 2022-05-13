@@ -2,310 +2,348 @@
 
 <template>
   <div>
-    <v-card>
-      <v-row>
-        <v-col xs="12" sm="12" md="6" lg="9" xl="9">
-          <v-row>
-            <v-col sm="6" md="3">
-              <v-text-field
-                style="height: 24px"
-                height="10"
-                clearable
-                solo
-                dense
-                placeholder="Search Member"
-                :append-icon="'mdi-account-search'"
-                v-model="inputMemberCode"
-              ></v-text-field>
-            </v-col>
-            <v-col sm="6" md="3">
-              <v-btn color="primary"><v-icon>mdi-account-box</v-icon></v-btn>
-            </v-col>
-            <v-col sm="6" md="3">
-              <v-btn-toggle
-                color="success"
-                dense
-                rounded
-                v-model="selectedPayPromotion"
-              >
-                <v-btn value="1">Auto</v-btn>
-                <v-btn value="2">Manual</v-btn>
-              </v-btn-toggle>
-            </v-col>
-            <v-col sm="6" md="3" style="text-align: right">
-              <label
-                ><strong>{{ docDate }}</strong></label
-              >
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col sm="4" md="4">
-              <v-row>
-                <strong>ABC XXX</strong>
-              </v-row>
-              <v-row>
-                <label
-                  >Point: <span><strong>0</strong></span></label
-                >
-              </v-row>
-            </v-col>
-            <v-col sm="4" md="4">
-              <v-row>
-                <strong>White Card</strong>
-              </v-row>
-              <v-row>
-                <label
-                  >Discount: <span><strong>15 %</strong></span></label
-                >
-              </v-row>
-            </v-col>
-            <v-col sm="1" md="1"> </v-col>
-            <v-col sm="3" md="3">
-              <v-row>
-                <span>
-                  <v-switch
-                    color="green"
-                    v-model="selectedRedeemPoint"
-                    inset
-                    dense
-                    label="Redeem Point"
-                  ></v-switch>
-                </span>
-              </v-row>
-            </v-col>
-            <v-col>test text </v-col>
-          </v-row>
-          <v-row>
-            <!-- <v-col md="1"></v-col> -->
-            <v-col md="4"
-              ><label><strong>(00)บิลเงินสดอย่างย่อ</strong></label></v-col
-            >
-            <v-col md="8"></v-col>
-          </v-row>
-          <v-row>
-            <v-data-table
-              v-model="selected"
-              :search="search"
-              item-key="product_id"
-              :headers="headers"
-              :items="items"
-              class="elevation-1"
+    <v-row>
+      <v-col xs="12" sm="12" md="6" lg="9" xl="9">
+        <v-row>
+          <v-col sm="6" md="3">
+            <v-text-field
+              style="height: 24px"
+              height="10"
+              clearable
+              solo
               dense
-              show-select
-              style="background-color: #eeeeee"
+              placeholder="Search Member"
+              :append-icon="'mdi-account-search'"
+              v-model="inputMemberCode"
+            ></v-text-field>
+          </v-col>
+          <v-col sm="6" md="3">
+            <v-btn color="primary"><v-icon>mdi-account-box</v-icon></v-btn>
+          </v-col>
+          <v-col sm="6" md="3">
+            <!-- TODO waiting decition process -->
+            <!-- <v-btn-toggle
+              color="success"
+              dense
+              rounded
+              v-model="selectedPayPromotion"
             >
-              <template v-slot:top>
-                <v-toolbar flat style="background-color: #eeeeee">
-                  <v-col md="3"><label>Product Barcode:</label></v-col>
-                  <v-col md="4">
-                    <b-form-input id="input-small" size="sm"></b-form-input>
-                  </v-col>
-                  <v-col md="1"><label>Qty:</label></v-col>
-                  <v-col md="1">
-                    <b-form-input
-                      id="input-small"
-                      size="sm"
-                      type="number"
-                      v-model="qty"
-                    ></b-form-input>
-                  </v-col>
-                  <v-col md="2"></v-col>
-                  <v-col md="1" class="block-bin">
-                    <v-btn
-                      icon
-                      color="primary"
-                      class="mb-2"
-                      @click="deleteItem()"
-                      ><v-icon>fa fa-trash-o</v-icon></v-btn
-                    ></v-col
+              <v-btn value="1">Auto</v-btn>
+              <v-btn value="2">Manual</v-btn>
+            </v-btn-toggle> -->
+          </v-col>
+          <v-col sm="6" md="3" style="text-align: right">
+            <label
+              ><strong>{{ docDate }}</strong></label
+            >
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col sm="4" md="4">
+            <v-row>
+              <strong>ABC XXX</strong>
+            </v-row>
+            <v-row>
+              <label
+                >Point: <span><strong>0</strong></span></label
+              >
+            </v-row>
+          </v-col>
+          <v-col sm="4" md="4">
+            <v-row>
+              <strong>White Card</strong>
+            </v-row>
+            <v-row>
+              <label
+                >Discount: <span><strong>15 %</strong></span></label
+              >
+            </v-row>
+          </v-col>
+          <v-col sm="1" md="1"> </v-col>
+          <v-col sm="3" md="3">
+            <v-row>
+              <span>
+                <v-switch
+                  color="green"
+                  v-model="selectedRedeemPoint"
+                  inset
+                  dense
+                  label="Redeem Point"
+                ></v-switch>
+              </span>
+            </v-row>
+          </v-col>
+          <v-col>test text </v-col>
+        </v-row>
+        <v-row>
+          <v-col md="4"
+            ><label><strong>(00)บิลเงินสดอย่างย่อ</strong></label></v-col
+          >
+          <v-col md="8"></v-col>
+        </v-row>
+        <v-row>
+          <v-data-table
+            v-model="selected"
+            :search="search"
+            item-key="product_id"
+            :headers="headers"
+            :items="items"
+            class="elevation-1"
+            dense
+            show-select
+            group-by="promotion_code"
+            style="background-color: #eeeeee"
+          >
+            <template v-slot:top>
+              <v-toolbar flat style="background-color: #eeeeee">
+                <v-col md="3" class="pa-0"
+                  ><label>Product Barcode:</label></v-col
+                >
+                <v-col md="3" class="pa-0">
+                  <b-form-input id="input-small" size="sm"></b-form-input>
+                </v-col>
+                <v-col md="1"><label>Qty:</label></v-col>
+                <v-col md="1" class="pa-0">
+                  <b-form-input
+                    id="input-small"
+                    size="sm"
+                    type="number"
+                    v-model="qty"
+                  ></b-form-input>
+                </v-col>
+                <v-col md="2" class="pa-0"></v-col>
+
+                <v-col md="3" class="block-bin">
+                  <v-spacer></v-spacer>
+                  <v-btn color="primary" plain x-small
+                    ><v-icon>mdi-file-plus</v-icon> New</v-btn
                   >
-                </v-toolbar>
-              </template>
-              <template v-slot:header.product_name="{ header }">
-                <div style="text-align: center">{{ header.text }}</div>
-              </template>
-              <template v-slot:item.index="{ item, index }">
-                {{ index + 1 }}
-              </template>
-              <template v-slot:item.promotion_code="{ item, index }">
-                <div>{{ item.promotion_code }}</div>
-              </template>
-              <template v-slot:item.product_id="{ item, index }">
-                <div>{{ item.product_id }}</div>
-              </template>
-              <template v-slot:item.product_name="{ item, index }">
-                <div>{{ item.product_name }}</div>
-              </template>
-              <template v-slot:item.qty="{ item, index }">
+                  <v-btn color="primary" @click="deleteItem()" plain x-small
+                    ><v-icon>fa fa-trash-o</v-icon> Delete</v-btn
+                  ></v-col
+                >
+              </v-toolbar>
+            </template>
+
+            <template v-slot:item.index="{ item, index }">
+              {{ index + 1 }}
+            </template>
+            <template v-slot:item.product_name="{ item, index }">
+              <td class="pa-0">
+                {{ item.product_name }}
+              </td>
+            </template>
+            <template v-slot:item.qty="{ item, index }">
+              <td class="text-right">
                 {{ item.qty }}
-              </template>
-              <template v-slot:item.price="{ item, index }">
+              </td>
+            </template>
+            <template v-slot:item.price="{ item, index }">
+              <td class="text-right">
                 {{ formatPrice(item.price) }}
-              </template>
-              <template v-slot:item.amount="{ item, index }">
+              </td>
+            </template>
+            <template v-slot:item.amount="{ item, index }">
+              <td class="text-right">
                 {{ formatPrice(item.amount) }}
-              </template>
-              <template v-slot:item.discount="{ item, index }">
+              </td>
+            </template>
+            <template v-slot:item.discount="{ item, index }">
+              <td class="text-right">
                 {{ formatPrice(item.discount) }}
-              </template>
-              <template v-slot:item.total="{ item, index }">
+              </td>
+            </template>
+            <template v-slot:item.total="{ item, index }">
+              <td class="text-right">
                 {{ formatPrice(item.total) }}
-              </template>
-            </v-data-table>
-          </v-row>
-        </v-col>
-        <v-col
-          xs="12"
-          sm="12"
-          md="6"
-          lg="3"
-          xl="3"
-          style="
-            padding-top: 0px;
-            padding-bottom: 0px;
-            padding-right: 0px;
-            padding-left: 0px;
-          "
-        >
-          <v-expansion-panels v-model="panel" accordion multiple>
-            <v-expansion-panel
-              style="background-color: #cdeb8b"
-              @click.prevent="openPanelFunction()"
+              </td>
+            </template>
+          </v-data-table>
+        </v-row>
+      </v-col>
+      <v-col
+        xs="12"
+        sm="12"
+        md="6"
+        lg="3"
+        xl="3"
+        style="
+          padding-top: 0px;
+          padding-bottom: 0px;
+          padding-right: 0px;
+          padding-left: 0px;
+        "
+      >
+        <v-expansion-panels v-model="panel" accordion multiple>
+          <v-expansion-panel
+            style="background-color: #cdeb8b"
+            @click.prevent="openPanelFunction()"
+          >
+            <v-expansion-panel-header
+              style="background-color: #43a047; color: white"
             >
-              <v-expansion-panel-header
-                style="background-color: #43a047; color: white"
-              >
-                <b>Payment</b>
-              </v-expansion-panel-header>
-              <v-expansion-panel-content>
-                <v-row>
-                  <v-col>
-                    <v-row>
-                      <v-col>Point:</v-col>
-                      <v-col>{{ 300 }} pt</v-col>
-                    </v-row>
-                    <v-row>
-                      <v-col>Point Used:</v-col>
-                      <v-col>{{ 300 }} pt</v-col>
-                    </v-row>
-                    <v-row>
-                      <v-col>Point Total:</v-col>
-                      <v-col>{{ 3000 }} pt</v-col>
-                    </v-row>
-                  </v-col>
-                </v-row>
-                <v-row style="background-color: white">
-                  <v-col>
-                    <v-row>
-                      <v-col>Sub Total:</v-col>
-                      <v-col>{{ formatPrice(0) }}</v-col>
-                    </v-row>
-                    <v-row>
-                      <v-col>Discount:</v-col>
-                      <v-col>{{ formatPrice(0) }}</v-col>
-                    </v-row>
-                    <v-row>
-                      <v-col>Total:</v-col>
-                      <v-col
-                        ><div style="font-size: 48px">
-                          {{ formatPrice(0) }}
-                        </div></v-col
+              <b>Payment</b>
+            </v-expansion-panel-header>
+            <v-expansion-panel-content>
+              <v-row>
+                <v-col>
+                  <v-row>
+                    <v-col md="5">Point:</v-col>
+                    <v-col md="5" class="text-right">{{ 300 }}</v-col>
+                    <v-col md="2">pt</v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col md="5">Point Used:</v-col>
+                    <v-col md="5" class="text-right">{{ 3000 }}</v-col>
+                    <v-col md="2">pt</v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col md="5">Point Total:</v-col>
+                    <v-col md="5" class="text-right">{{ 300 }}</v-col>
+                    <v-col md="2">pt</v-col>
+                  </v-row>
+                </v-col>
+              </v-row>
+              <v-row style="background-color: white">
+                <v-col>
+                  <v-row>
+                    <v-col md="6">Sub Total:</v-col>
+                    <v-col md="6">{{ formatPrice(1000) }}</v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col md="6">Discount:</v-col>
+                    <v-col md="6">{{ formatPrice(1000) }}</v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col md="6">Total:</v-col>
+                    <v-col class="text-center"
+                      ><div style="font-size: 48px">
+                        {{ formatPrice(1000) }}
+                      </div></v-col
+                    >
+                  </v-row>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col>
+                  <v-btn block @click.prevent="dialogListChannel = true">
+                    <v-icon>mdi-blur</v-icon>
+                    Channel
+                  </v-btn>
+                  <!-- <v-expansion-panels class="mb-6">
+                    <v-expansion-panel>
+                      <v-expansion-panel-header
+                        color="primary"
+                        expand-icon="mdi-menu-down"
                       >
-                    </v-row>
-                  </v-col>
-                </v-row>
-                <v-row>
-                  <v-col>
-                    <v-expansion-panels class="mb-6">
-                      <v-expansion-panel>
-                        <v-expansion-panel-header
-                          color="primary"
-                          expand-icon="mdi-menu-down"
-                        >
-                          Payment Channel
-                        </v-expansion-panel-header>
-                        <v-expansion-panel-content
-                          style="padding-left: 0px; padding-right: 0px"
-                        >
-                          <v-item-group>
-                            <v-col
-                              v-for="(item, index) in paymentItems"
-                              :key="index"
-                              cols="12"
-                              md="12"
-                              style="padding-left: 0px; padding-right: 0px"
-                            >
-                              <v-item v-slot="{ active, toggle }">
-                                <v-btn
-                                  :color="active ? item.color : ''"
-                                  block
-                                  @click.prevent="toggle"
-                                  >{{ item.text }}</v-btn
-                                >
-                              </v-item>
-                            </v-col>
-                          </v-item-group>
-                        </v-expansion-panel-content>
-                      </v-expansion-panel>
-                    </v-expansion-panels>
-                  </v-col>
-                </v-row>
-                <v-row>
-                  <v-col class="block-tax-info">
-                    <v-checkbox
-                      block
-                      v-model="checkTaxInvoiceInfo"
-                      @change="openDialogTaxInvoiceInfo()"
-                      style="margin-top: 0px; padding-top: 0px; width: 150px"
-                    >
-                      <template v-slot:label>
-                        <div>Tax Invoice</div>
-                      </template>
-                    </v-checkbox>
-                  </v-col>
-                  <v-col class="block-tax-info">
-                    <v-btn
-                      icon
-                      style="width: 24px; height: 24px"
-                      @click.prevent="dialogTaxInvoiceInfo = true"
-                    >
-                      <v-icon>mdi-message-text-outline</v-icon>
-                    </v-btn>
-                  </v-col>
-                </v-row>
-                <v-row>
-                  <v-col>
-                    <v-btn color="success" block>Pay</v-btn>
-                  </v-col>
-                </v-row>
-                <v-row>
-                  <v-col>
-                    <v-btn color="warning" block>Pause</v-btn>
-                  </v-col>
-                  <v-col>
-                    <v-btn color="secondary" block>Re work</v-btn>
-                  </v-col>
-                </v-row>
-              </v-expansion-panel-content>
-            </v-expansion-panel>
-            <v-expansion-panel
-              style="background-color: #cdeb8b"
-              @click.prevent="openPanelFunction()"
+                        Payment Channel
+                      </v-expansion-panel-header>
+                      <v-expansion-panel-content
+                        style="padding-left: 0px; padding-right: 0px"
+                      >
+                        <v-item-group>
+                          <v-col
+                            v-for="(item, index) in paymentItems"
+                            :key="index"
+                            cols="12"
+                            md="12"
+                            style="padding-left: 0px; padding-right: 0px"
+                          >
+                            <v-item v-slot="{ active, toggle }">
+                              <v-btn
+                                :color="active ? item.color : ''"
+                                block
+                                @click.prevent="toggle"
+                                >{{ item.text }}</v-btn
+                              >
+                            </v-item>
+                          </v-col>
+                        </v-item-group>
+                      </v-expansion-panel-content>
+                    </v-expansion-panel>
+                  </v-expansion-panels> -->
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col class="block-tax-info">
+                  <v-checkbox
+                    block
+                    v-model="checkTaxInvoiceInfo"
+                    @change="openDialogTaxInvoiceInfo()"
+                    style="margin-top: 0px; padding-top: 0px; width: 150px"
+                  >
+                    <template v-slot:label>
+                      <div>Tax Invoice</div>
+                    </template>
+                  </v-checkbox>
+                </v-col>
+                <v-col class="block-tax-info">
+                  <v-btn
+                    icon
+                    style="width: 24px; height: 24px"
+                    @click.prevent="dialogTaxInvoiceInfo = true"
+                  >
+                    <v-icon>mdi-message-text-outline</v-icon>
+                  </v-btn>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col>
+                  <v-btn color="success" block
+                    ><v-icon>fa fa-money</v-icon>Pay</v-btn
+                  >
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col md="6">
+                  <v-btn color="warning" class="form-control"
+                    ><v-icon>mdi-pause</v-icon>Pause</v-btn
+                  >
+                </v-col>
+                <v-col md="6">
+                  <v-btn color="secondary" class="form-control"
+                    ><v-icon>mdi-recycle</v-icon>Re work</v-btn
+                  >
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col md="6">
+                  <v-btn color="primary" class="form-control"
+                    ><v-icon>mdi-file-plus</v-icon>New Bill</v-btn
+                  >
+                </v-col>
+                <v-col md="6">
+                  <v-btn color="error" class="form-control"
+                    ><v-icon>fa fa-trash-o</v-icon>Delete</v-btn
+                  >
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col>
+                  <v-btn color="#FFFF8D" block
+                    ><v-icon>mdi-refresh</v-icon>Refresh</v-btn
+                  >
+                </v-col>
+              </v-row>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+          <v-expansion-panel
+            style="background-color: #cdeb8b"
+            @click.prevent="openPanelFunction()"
+          >
+            <v-expansion-panel-header
+              style="background-color: #43a047; color: white"
+              ><b>Other</b></v-expansion-panel-header
             >
-              <v-expansion-panel-header
-                style="background-color: #43a047; color: white"
-                ><b>Other</b></v-expansion-panel-header
-              >
-              <v-expansion-panel-content
-                style="padding-left: 0px; padding-right: 0px"
-              >
-                <SaleOthers />
-              </v-expansion-panel-content>
-            </v-expansion-panel>
-          </v-expansion-panels>
-        </v-col>
-      </v-row>
-    </v-card>
+            <v-expansion-panel-content
+              style="padding-left: 0px; padding-right: 0px"
+            >
+              <SaleOthers />
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+        </v-expansion-panels>
+      </v-col>
+    </v-row>
     <v-dialog v-model="dialogDelete" width="500px" persistent>
       <v-card>
         <v-card-title class="text-h5"
@@ -382,6 +420,46 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-dialog v-model="dialogListChannel" max-width="550px;" persistent>
+      <v-card style="width: 500px">
+        <v-card-title class="text-h5">Channel</v-card-title>
+        <v-card-text>
+          <v-row>
+            <v-col
+              md="3"
+              v-for="(item, index) in paymentItems"
+              :key="item.value"
+            >
+              <v-btn-toggle :color="selectColor" v-model="selectChannelIndex">
+                <v-btn
+                  style="width: 100px"
+                  :value="item.value"
+                  @click.prevent="selectedChannel(item)"
+                >
+                  {{ item.text }}
+                </v-btn>
+              </v-btn-toggle>
+            </v-col>
+          </v-row>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            color="blue darken-1"
+            text
+            @click.prevent="dialogListChannel = false"
+            >Cancel</v-btn
+          >
+          <!-- <v-btn
+            color="blue darken-1"
+            text
+            @click.prevent="confirmTaxInvoiceInfo()"
+            >OK</v-btn
+          > -->
+          <v-spacer></v-spacer>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -406,14 +484,17 @@ export default {
       dialog: false,
       dialogDelete: false,
       dialogTaxInvoiceInfo: false,
+      dialogListChannel: false,
       search: "",
       qty: 1,
       checkTaxInvoiceInfo: false,
       selectedPayPromotion: "1",
+      selectChannelIndex: "",
+      selectColor: "",
       paymentItems: [
         { value: "line", text: "Line", color: "#43A047" },
         { value: "grab", text: "Grab", color: "#388E3C" },
-        { value: "panda", text: "Panda Rider", color: "#D81B60" },
+        { value: "panda", text: "Panda", color: "#D81B60" },
         { value: "lineman", text: "Line Man", color: "#2E7D32" },
       ],
       headers: [
@@ -514,14 +595,14 @@ export default {
     initialize() {
       this.items = [
         {
-          product_id: "25194",
-          product_name: "Frozen Yogurt",
+          product_id: "25237",
+          product_name: "Serum Absolute Illuminating 30",
           promotion_code: "XC0000001",
-          qty: 159,
-          price: 6,
-          amount: 1000,
-          discount: 24,
-          total: 4,
+          qty: 1,
+          price: 1305,
+          amount: 1305,
+          discount: 1305,
+          total: 1305,
         },
         {
           product_id: 2,
@@ -671,6 +752,14 @@ export default {
       }
       this.close();
     },
+    selectedChannel(item) {
+      console.log(item);
+      this.selectChannelIndex = item.value;
+      this.selectColor = item.color;
+      //   let dd = this.paymentItems[this.selectChannelIndexIndex];
+      //   console.log(dd);
+      // this.selectChannelIndex
+    },
     formatPrice(value) {
       let val = (value / 1).toFixed(2).replace(",", ".");
       return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -680,10 +769,6 @@ export default {
 </script>
 
 <style>
-/* .v-btn__content {
-    display:flex;
-    flex-direction:column;
-} */
 .block-tax-info {
   height: 30px;
   background-color: white;
@@ -695,5 +780,10 @@ export default {
   padding-top: 0px;
   padding-bottom: 0px;
   padding-left: 0px;
+  /* padding-right: 0px; */
+  /* text-align: center; */
+}
+.form-control {
+  font-family: "Roboto", sans-serif !important;
 }
 </style>
