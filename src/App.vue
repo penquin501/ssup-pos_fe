@@ -18,15 +18,21 @@
         </v-col>
         <v-col md="8"></v-col>
         <v-col md="2">
-          <v-chip-group
+          <v-btn-toggle
+            rounded
             v-model="selectedLang"
+            @change="setLang()"
             mandatory
-            active-class="primary--text"
           >
-            <v-chip v-for="item in languages" :key="item.id"
-              ><flag :iso="item.flag" /> {{ item.text }}</v-chip
+            <v-btn
+              icon
+              :value="item.value"
+              v-for="item in languages"
+              :key="item.value"
             >
-          </v-chip-group>
+              <flag :iso="item.flag" /> {{ item.text }}
+            </v-btn>
+          </v-btn-toggle>
         </v-col>
         <v-col md="1">
           <Header />
@@ -80,6 +86,7 @@ export default {
   methods: {
     setLang() {
       this.$i18n.locale = this.selectedLang;
+      this.$root.$i18n.locale = this.selectedLang;
     },
   },
 };

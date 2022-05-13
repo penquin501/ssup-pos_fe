@@ -1,3 +1,5 @@
+<!-- @format -->
+
 <template>
   <div>
     <v-menu bottom min-width="200px" rounded offset-y>
@@ -54,23 +56,24 @@ export default {
         }
       });
     } else {
-        this.userInfo = JSON.parse(this.$store.state.userInfo);
-        this.user = {
-          initials: this.userInfo.data.emp_name[0] + this.userInfo.data.emp_surname[0],
-          fullName: this.userInfo.data.emp_name + " "+ this.userInfo.data.emp_surname,
-          position: this.userInfo.data.position,
-        };
-        this.$i18n.locale = this.selectedLang;
+      this.userInfo = JSON.parse(this.$store.state.userInfo);
+      this.user = {
+        initials:
+          this.userInfo.data.emp_name[0] + this.userInfo.data.emp_surname[0],
+        fullName:
+          this.userInfo.data.emp_name + " " + this.userInfo.data.emp_surname,
+        position: this.userInfo.data.position,
+      };
     }
   },
   methods: {
-    logout()  {
+    logout() {
       axios
-        .post(this.url + "/logout", {"username" : this.userInfo.data.username})
+        .post(this.url + "/logout", { username: this.userInfo.data.username })
         .then((res) => {
           let response = res.data;
 
-          if(response.message == "success") {
+          if (response.message == "success") {
             this.$store.commit("doLogout");
             window.localStorage.removeItem("vuex");
           } else {

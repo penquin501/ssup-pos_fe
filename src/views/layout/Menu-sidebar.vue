@@ -1,3 +1,5 @@
+<!-- @format -->
+
 <template>
   <v-card class="full-height container-fuild mx-auto">
     <v-list-item class="logo">
@@ -19,8 +21,7 @@
         <v-list-item
           v-for="(item, i) in items"
           :key="item.value"
-          :to="item.link"
-          @click.prevent="goto(item.link)"
+          @click.prevent="goto(item)"
           style="margin-bottom: 2px; padding: 12px"
         >
           <v-list-item-icon>
@@ -35,12 +36,11 @@
   </v-card>
 </template>
 <script>
-import axios from 'axios';
+import axios from "axios";
 export default {
   data() {
     return {
-      selectedItem: 1,
-      right: null,
+      selectedItem: null,
       userInfo: {},
       configHeader: {},
       items: [],
@@ -72,7 +72,12 @@ export default {
     setMenu() {
       var menuItems = [];
       axios
-        .get(this.url + "/menu/listmenu?type=POS&brand_id=" + this.userInfo.data.brand_id, this.configHeader)
+        .get(
+          this.url +
+            "/menu/listmenu?type=POS&brand_id=" +
+            this.userInfo.data.brand_id,
+          this.configHeader
+        )
         .then((res) => {
           menuItems = res.data;
           this.branchName = this.userInfo.data.branch;
@@ -95,8 +100,10 @@ export default {
         });
     },
     goto(link) {
-      if (this.$route.path == link) {
+      if (this.$route.path == link.link) {
         this.$router.go();
+      } else {
+        this.$router.push({ path: link.link });
       }
     },
   },
