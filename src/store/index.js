@@ -7,6 +7,7 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     is_login: false,
+    drawer: false,
     userInfo: "",
     currentOrder: null,
     lastOrder: [],
@@ -35,6 +36,9 @@ export default new Vuex.Store({
       state.listInvoiceStockPending = [];
       state.listInvoiceTemplate = [];
       state.cashierBillInfo = null;
+    },
+    changeDrawer(state, data) {
+      state.drawer = data;
     },
     currentOrder(state, data) {
       state.currentOrder = data;

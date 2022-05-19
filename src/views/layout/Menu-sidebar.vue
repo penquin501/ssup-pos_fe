@@ -105,6 +105,8 @@ export default {
       } else {
         this.$router.push({ path: link.link });
       }
+
+      this.$store.commit("changeDrawer", false);
     },
   },
 };

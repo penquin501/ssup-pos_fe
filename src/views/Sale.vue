@@ -5,24 +5,28 @@
     <v-row>
       <v-col xs="12" sm="12" md="6" lg="9" xl="9">
         <v-row>
-          <v-col sm="6" md="3">
-            <v-text-field
-              style="height: 24px"
-              height="10"
-              clearable
-              solo
-              dense
-              placeholder="Search Member"
-              :append-icon="'mdi-account-search'"
-              v-model="inputMemberCode"
-            ></v-text-field>
-          </v-col>
-          <v-col sm="6" md="3">
-            <v-btn color="primary"><v-icon>mdi-account-box</v-icon></v-btn>
-          </v-col>
-          <v-col sm="6" md="3">
-            <!-- TODO waiting decition process -->
-            <!-- <v-btn-toggle
+          <v-col cols="12" style="margin-left: 20px; margin-right: 10px">
+            <v-row>
+              <v-col sm="6" md="3">
+                <v-text-field
+                  style="height: 24px"
+                  height="10"
+                  clearable
+                  solo
+                  dense
+                  placeholder="Search Member"
+                  :append-icon="'mdi-account-search'"
+                  v-model="memberInfo.memberId"
+                  ref="memberId"
+                  @keypress.enter="getMemberInfo()"
+                ></v-text-field>
+              </v-col>
+              <v-col sm="6" md="2">
+                <v-btn color="primary"><v-icon>mdi-account-box</v-icon></v-btn>
+              </v-col>
+              <v-col sm="6" md="3">
+                <!-- TODO waiting decition process -->
+                <!-- <v-btn-toggle
               color="success"
               dense
               rounded
@@ -31,55 +35,82 @@
               <v-btn value="1">Auto</v-btn>
               <v-btn value="2">Manual</v-btn>
             </v-btn-toggle> -->
-          </v-col>
-          <v-col sm="6" md="3" style="text-align: right">
-            <label
-              ><strong>{{ docDate }}</strong></label
-            >
+              </v-col>
+              <v-col sm="6" md="3" style="text-align: right">
+                <label
+                  ><strong>{{ docDate }}</strong></label
+                >
+              </v-col>
+            </v-row>
           </v-col>
         </v-row>
         <v-row>
-          <v-col sm="4" md="4">
+          <v-col cols="12" style="margin-left: 20px; margin-right: 20px">
             <v-row>
-              <strong>ABC XXX</strong>
+              <v-col sm="4" md="4">
+                <v-row>
+                  <strong>{{ memberInfo.name }}</strong>
+                </v-row>
+                <v-row>
+                  <label
+                    >Point:
+                    <span
+                      ><strong>{{ memberInfo.point }}</strong></span
+                    ></label
+                  >
+                </v-row>
+              </v-col>
+              <v-col sm="4" md="4">
+                <v-row v-if="memberInfo.name !== '' && memberInfo.type !== ''">
+                  <strong>{{ memberInfo.type }}</strong>
+                </v-row>
+                <v-row v-else-if="memberInfo.name == 'Walk-In Customer'">
+                  <strong>-</strong>
+                </v-row>
+                <v-row v-else>
+                  <strong></strong>
+                </v-row>
+                <v-row>
+                  <label
+                    >Discount:
+                    <span
+                      ><strong>{{ memberInfo.discount }} %</strong></span
+                    ></label
+                  >
+                </v-row>
+              </v-col>
+              <v-col sm="1" md="1"> </v-col>
+              <v-col sm="4" md="3">
+                <v-row>
+                  <span>
+                    <v-switch
+                      color="green"
+                      v-model="selectedRedeemPoint"
+                      inset
+                      dense
+                      label="Redeem Point"
+                      @change="selectToRedeemPoint()"
+                    ></v-switch>
+                  </span>
+                </v-row>
+              </v-col>
             </v-row>
             <v-row>
-              <label
-                >Point: <span><strong>0</strong></span></label
-              >
+              <v-col>text text </v-col>
             </v-row>
           </v-col>
-          <v-col sm="4" md="4">
-            <v-row>
-              <strong>White Card</strong>
-            </v-row>
-            <v-row>
-              <label
-                >Discount: <span><strong>15 %</strong></span></label
-              >
-            </v-row>
-          </v-col>
-          <v-col sm="1" md="1"> </v-col>
-          <v-col sm="3" md="3">
-            <v-row>
-              <span>
-                <v-switch
-                  color="green"
-                  v-model="selectedRedeemPoint"
-                  inset
-                  dense
-                  label="Redeem Point"
-                ></v-switch>
-              </span>
-            </v-row>
-          </v-col>
-          <v-col>test text </v-col>
         </v-row>
         <v-row>
-          <v-col md="4"
-            ><label><strong>(00)บิลเงินสดอย่างย่อ</strong></label></v-col
-          >
-          <v-col md="8"></v-col>
+          <v-col cols="12" style="margin-left: 20px; margin-right: 20px">
+            <v-row>
+              <v-col md="4"
+                ><label style="font-size: 24px"
+                  ><strong>(00)บิลเงินสดอย่างย่อ</strong></label
+                ></v-col
+              >
+              <v-col md="8"></v-col>
+            </v-row>
+          </v-col>
         </v-row>
         <v-row>
           <v-data-table
@@ -92,6 +123,7 @@
             dense
             show-select
             group-by="promotion_code"
+            show-group-by
             style="background-color: #eeeeee"
           >
             <template v-slot:top>
@@ -100,7 +132,14 @@
                   ><label>Product Barcode:</label></v-col
                 >
                 <v-col md="3" class="pa-0">
-                  <b-form-input id="input-small" size="sm"></b-form-input>
+                  <b-form-input
+                    id="input-small"
+                    size="sm"
+                    autocomplete="off"
+                    v-model="productCode"
+                    ref="productCode"
+                    @keypress.enter="getProductInfo()"
+                  ></b-form-input>
                 </v-col>
                 <v-col md="1"><label>Qty:</label></v-col>
                 <v-col md="1" class="pa-0">
@@ -109,11 +148,12 @@
                     size="sm"
                     type="number"
                     v-model="qty"
+                    @keypress.down="checkNumber()"
+                    @change="checkNumber()"
                   ></b-form-input>
                 </v-col>
-                <v-col md="2" class="pa-0"></v-col>
-
-                <v-col md="3" class="block-bin">
+                <v-col md="5" class="pa-0"> </v-col>
+                <!-- <v-col md="3" class="block-bin">
                   <v-spacer></v-spacer>
                   <v-btn color="primary" plain x-small
                     ><v-icon>mdi-file-plus</v-icon> New</v-btn
@@ -121,7 +161,7 @@
                   <v-btn color="primary" @click="deleteItem()" plain x-small
                     ><v-icon>fa fa-trash-o</v-icon> Delete</v-btn
                   ></v-col
-                >
+                > -->
               </v-toolbar>
             </template>
 
@@ -144,7 +184,7 @@
               </td>
             </template>
             <template v-slot:item.amount="{ item, index }">
-              <td class="text-right">
+              <td class="text-right" style="color: green">
                 {{ formatPrice(item.amount) }}
               </td>
             </template>
@@ -230,41 +270,9 @@
                     <v-icon>mdi-blur</v-icon>
                     Channel
                   </v-btn>
-                  <!-- <v-expansion-panels class="mb-6">
-                    <v-expansion-panel>
-                      <v-expansion-panel-header
-                        color="primary"
-                        expand-icon="mdi-menu-down"
-                      >
-                        Payment Channel
-                      </v-expansion-panel-header>
-                      <v-expansion-panel-content
-                        style="padding-left: 0px; padding-right: 0px"
-                      >
-                        <v-item-group>
-                          <v-col
-                            v-for="(item, index) in paymentItems"
-                            :key="index"
-                            cols="12"
-                            md="12"
-                            style="padding-left: 0px; padding-right: 0px"
-                          >
-                            <v-item v-slot="{ active, toggle }">
-                              <v-btn
-                                :color="active ? item.color : ''"
-                                block
-                                @click.prevent="toggle"
-                                >{{ item.text }}</v-btn
-                              >
-                            </v-item>
-                          </v-col>
-                        </v-item-group>
-                      </v-expansion-panel-content>
-                    </v-expansion-panel>
-                  </v-expansion-panels> -->
                 </v-col>
               </v-row>
-              <v-row>
+              <!-- <v-row>
                 <v-col class="block-tax-info">
                   <v-checkbox
                     block
@@ -286,7 +294,7 @@
                     <v-icon>mdi-message-text-outline</v-icon>
                   </v-btn>
                 </v-col>
-              </v-row>
+              </v-row> -->
               <v-row>
                 <v-col>
                   <v-btn color="success" block
@@ -302,7 +310,7 @@
                 </v-col>
                 <v-col md="6">
                   <v-btn color="secondary" class="form-control"
-                    ><v-icon>mdi-recycle</v-icon>Re work</v-btn
+                    ><v-icon>mdi-paperclip</v-icon>Re work</v-btn
                   >
                 </v-col>
               </v-row>
@@ -333,12 +341,13 @@
           >
             <v-expansion-panel-header
               style="background-color: #43a047; color: white"
-              ><b>Other</b></v-expansion-panel-header
-            >
+              @click.prevent="dialogMenuOther = true"
+              ><b>Other</b>
+            </v-expansion-panel-header>
             <v-expansion-panel-content
               style="padding-left: 0px; padding-right: 0px"
             >
-              <SaleOthers />
+              <!-- <SaleOthers /> -->
             </v-expansion-panel-content>
           </v-expansion-panel>
         </v-expansion-panels>
@@ -359,63 +368,22 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <v-dialog
-      v-model="dialogTaxInvoiceInfo"
-      v-if="checkTaxInvoiceInfo"
-      max-width="550px;"
-      persistent
-    >
-      <v-card>
-        <v-card-title class="text-h5">Tax Invoice Infomation</v-card-title>
+    <v-dialog v-model="dialogMenuOther" width="1000px" persistent>
+      <v-card height="500px">
+        <v-card-title class="text-h5">
+          Other
+          <v-spacer></v-spacer>
+          <v-icon @click.prevent="(dialogMenuOther = false), (panel = [0])"
+            >mdi-close</v-icon
+          >
+        </v-card-title>
         <v-card-text>
-          <v-text-field
-            v-model="taxInfo.fullname"
-            label="Full Name"
-            required
-          ></v-text-field>
-          <v-text-field
-            v-model="taxInfo.taxId"
-            label="Tax ID"
-            required
-          ></v-text-field>
-          <v-textarea
-            v-model="taxInfo.address"
-            auto-grow
-            no-resize
-            label="Address"
-            rows="3"
-            max-height="40"
-          ></v-textarea>
-          <v-radio-group v-model="taxInfo.selectTaxBranch">
-            <v-radio value="headOffice">
-              <template v-slot:label>
-                <div>Head Office</div>
-              </template>
-            </v-radio>
-            <v-radio value="branch">
-              <template v-slot:label>
-                <span>
-                  Branch No.
-                  <b-form-input v-model="taxInfo.taxBranchNo"></b-form-input>
-                </span>
-              </template>
-            </v-radio>
-          </v-radio-group>
+          <SaleOthers />
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn
-            color="blue darken-1"
-            text
-            @click.prevent="dialogTaxInvoiceInfo = false"
-            >Cancel</v-btn
-          >
-          <v-btn
-            color="blue darken-1"
-            text
-            @click.prevent="confirmTaxInvoiceInfo()"
-            >OK</v-btn
-          >
+          <!-- <v-btn color="blue darken-1" text >Cancel</v-btn> -->
+          <!-- <v-btn color="blue darken-1" text @click.prevent="deleteItemConfirm">OK</v-btn> -->
           <v-spacer></v-spacer>
         </v-card-actions>
       </v-card>
@@ -479,18 +447,26 @@ export default {
       panel: [0],
       today: dayjs().format("DD-MM-YYYY"),
       docDate: dayjs().format("DD-MM-YYYY"),
-      selectedRedeemPoint: true,
+      selectedRedeemPoint: false,
       inputMemberCode: "",
       dialog: false,
       dialogDelete: false,
       dialogTaxInvoiceInfo: false,
       dialogListChannel: false,
+      dialogMenuOther: false,
       search: "",
       qty: 1,
       checkTaxInvoiceInfo: false,
       selectedPayPromotion: "1",
       selectChannelIndex: "",
       selectColor: "",
+      memberInfo: {
+        memberId: "abc",
+        type: "Platinum Card",
+        name: "ABC DDD",
+        discount: "15",
+        point: "1000",
+      },
       paymentItems: [
         { value: "line", text: "Line", color: "#43A047" },
         { value: "grab", text: "Grab", color: "#388E3C" },
@@ -520,6 +496,7 @@ export default {
         selectTaxBranch: "",
         taxBranchNo: "",
       },
+      productCode: "",
       items: [],
       selected: [],
       editedIndex: -1,
@@ -555,7 +532,7 @@ export default {
       });
     } else {
       this.initialize();
-
+      this.$refs.memberId.focus();
       // if (this.$store.state.currentOrder !== null) {
       //     let currentOrder = JSON.parse(this.$store.state.currentOrder);
       //     this.invoiceNo = currentOrder.invoiceNo;
@@ -587,6 +564,20 @@ export default {
     }
   },
   methods: {
+    testNewWindow() {
+      // let params = `scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no,
+      // width=600,height=300,left=100,top=100`;
+      // open("/", "test", params);
+
+      let newWindow = open("/sale", "example", "width=300,height=300");
+      newWindow.focus();
+
+      // alert(newWindow.location.href); // (*) about:blank, loading hasn't started yet
+      // newWindow.onload = function () {
+      //   let html = `<div style="font-size:30px">Welcome!</div>`;
+      //   newWindow.document.body.insertAdjacentHTML("afterbegin", html);
+      // };
+    },
     openPanelFunction() {
       if (this.panel.length !== 0) {
         this.panel.shift();
@@ -696,12 +687,174 @@ export default {
         },
       ];
     },
-    editItem(item) {
-      this.editedIndex = this.items.indexOf(item);
-      this.editedItem = Object.assign({}, item);
-      this.dialog = true;
-    },
+    getMemberInfo() {
+      //   this.dialogConfirmEmp = true;
+      if (this.memberInfo.memberId.trim() == "") {
+        // this.memberInfo = {};
+        this.memberInfo.name = "Walk-In Customer";
+      } else {
+        let member = {
+          member_no: "IDX7250157688",
+          qty: "0.00",
+          amt: "0.00",
+          net: "0.00",
+          apply_date: "2014-06-21",
+          expire_date: "2100-12-31",
+          age_card: "4",
+          status: "0",
+          mem_status: "N",
+          forgot_card: "",
+          vip: "0",
+          email: "",
+          prefix_en: "Miss",
+          fname_en: "Thunchanok",
+          lname_en: "Krittayachaiwat",
+          area: "",
+          region_id: "0",
+          cust_day: "OPS4",
+          brand_id: "0",
+          cardtype_id: "0",
+          application_id: "REID",
+          customer_id: "13",
+          mobile_no: "0851512954",
+          id_card: "3101800738173",
+          prefix: "น.ส.",
+          name: "ธันย์ชนก",
+          surname: "กฤตยาไชยวัฒน",
+          sex: "2",
+          address: "357",
+          road: "",
+          province_name: "กรุงเทพมหานคร",
+          district: "คลองเตย",
+          sub_district: "คลองตัน",
+          zip: "10600",
+          birthday: "1971-07-05",
+          shop: "7467",
+          doc_no: "",
+          doc_dt: "1900-01-01",
+          send_company: "",
+          send_address: "357",
+          send_mu: "0",
+          send_home_name: "",
+          send_soi: "",
+          send_road: "",
+          send_tambon_id: "103302",
+          send_tambon_name: "คลองตัน",
+          send_amphur_id: "1033",
+          send_amphur_name: "คลองเตย",
+          send_province_id: "1",
+          send_province_name: "กรุงเทพมหานคร",
+          send_postcode: "10600",
+          send_tel: "",
+          send_mobile: "",
+          send_fax: "",
+          send_remark: "",
+          card_level: "White",
+          ops: "OPS4",
+          point: 200,
+          discount: 15,
+        };
 
+        // this.memberInfo.memberId = member.member_no;
+        this.memberInfo.memberId = "";
+        this.memberInfo.name = member.name + " " + member.surname;
+        this.memberInfo.point = member.point;
+        this.memberInfo.type = member.card_level;
+        this.memberInfo.discount = member.discount;
+
+        this.$refs.memberId.focus();
+      }
+    },
+    selectToRedeemPoint() {
+      // TODO
+      // if (selectedRedeemPoint) {
+      //  คำนวนคะแนน คะแนนเดิม คิดเป็นกี่บาท แล้วหักออก
+      // }
+    },
+    getProductInfo() {
+      // TODO
+      /*ยิง api  */
+
+      if (this.productCode == "") {
+        alert("กรุณาใส่รหัสสินค้าให้ถูกต้อง");
+        this.$refs.productCode.focus();
+        return;
+      }
+      if (parseInt(this.qty) <= 0) {
+        alert("จำนวนสินค้าไม่ถูกต้อง");
+        return;
+      }
+      alert("ok");
+      // let params = {
+      //   product: this.productCode,
+      //   invoice: this.invoiceNo !== "" ? this.invoiceNo : "",
+      //   branch: this.userInfo.data.brand_id,
+      // };
+      // let selectProduct = this.items.find(
+      //   (ele) => ele.barcode == params.product || ele.barcode == params.product
+      // );
+      // if (selectProduct) {
+      //   selectProduct.saleQty = parseInt(selectProduct.saleQty) + parseInt(this.saleQty);
+      //   params.qty = selectProduct.saleQty;
+      // } else {
+      //   params.qty = this.saleQty;
+      // }
+      // axios
+      //   .post(this.url + "/cart/product", qs, this.configHeader)
+      //   .then((res) => {
+      //     if (res.status == 200) {
+      //       var product = res.data.product;
+      //       if (product.length == 0) {
+      //         alert("ไม่พบข้อมูลสินค้า");
+      //         return;
+      //       } else {
+      //         product = product[0];
+      //         if (this.items.length !== 0) {
+      //           let selectProduct = this.items.find(
+      //             (ele) =>
+      //               ele.barcode == params.product ||
+      //               ele.barcode == params.product
+      //           );
+      //           if (selectProduct) {
+      //             let qty = parseInt(selectProduct.saleQty);
+      //             if (parseInt(this.saleQty) <= 0) {
+      //               alert("จำนวนสินค้าไม่ถูกต้อง");
+      //             } else {
+      //               // selectProduct.saleQty = qty + parseInt(this.saleQty);
+      //               selectProduct.total =
+      //                 parseInt(selectProduct.price) *
+      //                 parseInt(selectProduct.saleQty);
+      //               selectProduct.point = 0;
+      //             }
+      //           } else {
+      //             this.items.push({
+      //               ...product,
+      //               saleQty: parseInt(this.saleQty),
+      //               total: parseInt(product.price) * parseInt(this.saleQty),
+      //               point: 0,
+      //             });
+      //           }
+      //         } else {
+      //           this.items.push({
+      //             ...product,
+      //             saleQty: parseInt(this.saleQty),
+      //             total: parseInt(product.price) * parseInt(this.saleQty),
+      //             point: 0,
+      //           });
+      //         }
+      //         this.calSaleTotal();
+      //         this.calPoints();
+      //         this.productInput = "";
+      //         this.saleQty = 1;
+      //         this.$refs.productInput.focus();
+      //         this.currentOrder();
+      //       }
+      //     } else {
+      //       alert("ไม่สามารถค้นหาข้อมูลสินค้านี้ได้ กรุณาติดต่อ....");
+      //       return;
+      //     }
+      //   });
+    },
     deleteItem() {
       console.log(this.selected);
       // this.editedIndex = this.items.indexOf(item)
@@ -722,9 +875,6 @@ export default {
           taxBranchNo: "",
         };
       }
-    },
-    confirmTaxInvoiceInfo() {
-      // TODO
     },
     deleteItemConfirm() {
       this.items.splice(this.editedIndex, 1);
@@ -753,16 +903,18 @@ export default {
       this.close();
     },
     selectedChannel(item) {
-      console.log(item);
       this.selectChannelIndex = item.value;
       this.selectColor = item.color;
-      //   let dd = this.paymentItems[this.selectChannelIndexIndex];
-      //   console.log(dd);
-      // this.selectChannelIndex
     },
     formatPrice(value) {
       let val = (value / 1).toFixed(2).replace(",", ".");
       return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    },
+    checkNumber() {
+      if (this.qty <= 0) {
+        alert("กรุณาใส่จำนวนสินค้าให้ถูกต้อง");
+        this.qty = 1;
+      }
     },
   },
 };

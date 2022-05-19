@@ -1,3 +1,5 @@
+<!-- @format -->
+
 <template>
   <div v-show="!$store.state.is_login">
     <div
@@ -174,13 +176,17 @@ export default {
   },
   mounted: function () {
     this.$i18n.locale = "en";
+    // if(this.$store.state.is_login == undefined) {
+    //    this.$router.go();
+    // } else {
     if (this.$store.state.is_login == false) {
-      this.checkTypeToLogin();
+      localStorage.clear();
+      // this.checkTypeToLogin();
     }
+    // }
   },
   methods: {
     checkTypeToLogin() {
-      
       /* เรียก hostname ไปเช็ค config 
           location.toString() //http://localhost:8080/
           location.host //localhost:8080
@@ -239,10 +245,11 @@ export default {
         .then((res) => {
           if (res.status == 200 && res.data.message == "success") {
             this.$store.commit("doLogin", JSON.stringify(res.data));
+            this.$store.commit("changeDrawer", true);
           } else {
             let msg = "";
             for (const [key, value] of Object.entries(res.data.message)) {
-              for(let m of value) {
+              for (let m of value) {
                 msg += m + ", ";
               }
             }
@@ -255,7 +262,9 @@ export default {
         })
         .catch((err) => {
           console.log(err);
-          alert("ไม่สามารถใช้ username/password ได้ในตอนนี้, กรุณาติดต่อเจ้าหน้าที่");
+          alert(
+            "ไม่สามารถใช้ username/password ได้ในตอนนี้, กรุณาติดต่อเจ้าหน้าที่"
+          );
         });
     },
     skipFingerScan() {

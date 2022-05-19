@@ -1,28 +1,100 @@
+<!-- @format -->
+
 <template>
   <div>
     <b-card>
       <b-tabs content-class="mt-3">
-        <b-tab v-if="listMenu.find((name) => name == 'Permission')" title="Permission">
-          <v-data-table :headers="headersUser" :items="listUser" :search="search" sort-by="name" class="elevation-1">
+        <b-tab
+          v-if="listMenu.find((name) => name == 'Permission')"
+          title="Permission"
+        >
+          <v-data-table
+            :headers="headersUser"
+            :items="listUser"
+            :search="search"
+            sort-by="name"
+            class="elevation-1"
+          >
             <template v-slot:top>
               <v-toolbar flat>
                 <v-toolbar-title>รายชื่อ User</v-toolbar-title>
                 <v-divider class="mx-4" inset vertical></v-divider>
                 <v-spacer></v-spacer>
-                <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details ></v-text-field>
-                <v-dialog v-model="dialog" max-width="850px" :retain-focus="false" persistent>
-                  <v-card style="background-color: white; color: black; width: 200vw; height: auto; margin: 0;">
+                <v-text-field
+                  v-model="search"
+                  append-icon="mdi-magnify"
+                  label="Search"
+                  single-line
+                  hide-details
+                ></v-text-field>
+                <v-dialog
+                  v-model="dialog"
+                  max-width="850px"
+                  :retain-focus="false"
+                  persistent
+                >
+                  <v-card
+                    style="
+                      background-color: white;
+                      color: black;
+                      width: 200vw;
+                      height: auto;
+                      margin: 0;
+                    "
+                  >
                     <v-card-text>
                       <v-container>
                         <b-table :items="listPermission" :fields="headers">
-                          <template #cell(actions)="row" style="text-align: center">
+                          <template
+                            #cell(actions)="row"
+                            style="text-align: center"
+                          >
                             <b-form-group v-slot="{ ariaDescribedby }">
-                              <b-form-checkbox-group id="checkbox-group-1" style="display: flex" v-model="row.item.selected" :aria-describedby="ariaDescribedby" name="flavour-1">
-                                <b-form-checkbox :disabled="userRoles" v-for="(option, index) in options" :key="option.id" :value="option.value">&nbsp;{{ option.text }}&nbsp;&nbsp;</b-form-checkbox>
+                              <b-form-checkbox-group
+                                id="checkbox-group-1"
+                                style="display: flex"
+                                v-model="row.item.selected"
+                                :aria-describedby="ariaDescribedby"
+                                name="flavour-1"
+                              >
+                                <b-form-checkbox
+                                  :disabled="userRoles"
+                                  v-for="(option, index) in options"
+                                  :key="option.id"
+                                  :value="option.value"
+                                  >&nbsp;{{
+                                    option.text
+                                  }}&nbsp;&nbsp;</b-form-checkbox
+                                >
                               </b-form-checkbox-group>
-                              <v-subheader style="padding-left: 0px" v-if="row.item.menus.length !== 0 && row.item.selected.length !== 0">{{ $t("message.subMenu") }}</v-subheader>
-                              <b-form-checkbox-group v-if="row.item.menus.length !== 0 && row.item.selected.length !== 0" id="checkbox-group-2" style="display: flex" v-model="row.item.selectedMenu" :aria-describedby="ariaDescribedby" name="flavour-2">
-                                <b-form-checkbox :disabled="userRoles" v-for="(menu, index) in row.item.menus" :key="menu.id" :value="menu.name">&nbsp;{{ menu.name }}&nbsp;&nbsp;</b-form-checkbox>
+                              <v-subheader
+                                style="padding-left: 0px"
+                                v-if="
+                                  row.item.menus.length !== 0 &&
+                                  row.item.selected.length !== 0
+                                "
+                                >{{ $t("message.subMenu") }}</v-subheader
+                              >
+                              <b-form-checkbox-group
+                                v-if="
+                                  row.item.menus.length !== 0 &&
+                                  row.item.selected.length !== 0
+                                "
+                                id="checkbox-group-2"
+                                style="display: flex"
+                                v-model="row.item.selectedMenu"
+                                :aria-describedby="ariaDescribedby"
+                                name="flavour-2"
+                              >
+                                <b-form-checkbox
+                                  :disabled="userRoles"
+                                  v-for="(menu, index) in row.item.menus"
+                                  :key="menu.id"
+                                  :value="menu.name"
+                                  >&nbsp;{{
+                                    menu.name
+                                  }}&nbsp;&nbsp;</b-form-checkbox
+                                >
                               </b-form-checkbox-group>
                             </b-form-group>
                           </template>
@@ -31,15 +103,27 @@
                     </v-card-text>
                     <v-card-actions>
                       <v-spacer></v-spacer>
-                      <v-btn color="blue darken-1" text @click.prevent="dialog = false">Cancel</v-btn>
-                      <v-btn color="blue darken-1" text @click.prevent="savePermission()">Save</v-btn>
+                      <v-btn
+                        color="blue darken-1"
+                        text
+                        @click.prevent="dialog = false"
+                        >Cancel</v-btn
+                      >
+                      <v-btn
+                        color="blue darken-1"
+                        text
+                        @click.prevent="savePermission()"
+                        >Save</v-btn
+                      >
                     </v-card-actions>
                   </v-card>
                 </v-dialog>
               </v-toolbar>
             </template>
             <template v-slot:item.actions="{ item }">
-              <v-icon small class="mr-2" @click="editItem(item)">mdi-pencil</v-icon>
+              <v-icon small class="mr-2" @click="editItem(item)"
+                >mdi-pencil</v-icon
+              >
             </template>
           </v-data-table>
         </b-tab>
@@ -697,36 +781,77 @@
             </template>
           </v-data-table>
         </b-tab>
-        <b-tab v-if="listMenu.find((name) => name == 'Invoice Templates')" title="Invoice Templates">
-          <v-data-table style="margin-top: 10px" :headers="headersInvoiceTemp" :items="listInvoiceTemp" item-key="id" class="elevation-1">
+        <b-tab
+          v-if="listMenu.find((name) => name == 'Invoice Templates')"
+          title="Invoice Templates"
+        >
+          <v-data-table
+            style="margin-top: 10px"
+            :headers="headersInvoiceTemp"
+            :items="listInvoiceTemp"
+            item-key="id"
+            class="elevation-1"
+          >
             <!-- <template v-slot:item.empName="{ item }">
               {{ item.empName }}({{ item.children.length }})
             </template> -->
             <template v-slot:item.actions="{ item }">
-              <v-icon small class="mr-2" @click.prevent="openDialogInvoiceTemp(item)">mdi-pencil</v-icon>
+              <v-icon
+                small
+                class="mr-2"
+                @click.prevent="openDialogInvoiceTemp(item)"
+                >mdi-pencil</v-icon
+              >
             </template>
           </v-data-table>
-          <v-dialog v-model="dialogInvoiceTemp" max-width="500px" :retain-focus="false" persistent>
-            <v-overlay :absolute="absolute" :value="overlayInvoiceTemp" responsive>
+          <v-dialog
+            v-model="dialogInvoiceTemp"
+            max-width="500px"
+            :retain-focus="false"
+            persistent
+          >
+            <v-overlay
+              :absolute="absolute"
+              :value="overlayInvoiceTemp"
+              responsive
+            >
               <v-card class="mx-auto" max-width="300vw;" light>
                 <v-card-title>
                   <b>Edit Invoice Templete</b>
                   <v-spacer></v-spacer>
-                  <v-btn icon @click.prevent="dialogInvoiceTemp = false, overlayInvoiceTemp = false"><v-icon>mdi-close</v-icon></v-btn>
+                  <v-btn
+                    icon
+                    @click.prevent="
+                      (dialogInvoiceTemp = false), (overlayInvoiceTemp = false)
+                    "
+                    ><v-icon>mdi-close</v-icon></v-btn
+                  >
                 </v-card-title>
                 <v-card-text class="text--primary">
                   <v-row>
-                    <v-col >
-                        <ckeditor style="border: 1px grey solid; max-height: 240px;" :editor="editor" v-model="editorData" :config="editorConfig" @ready="onReady" ></ckeditor>
+                    <v-col>
+                      <ckeditor
+                        style="border: 1px grey solid; max-height: 240px"
+                        :editor="editor"
+                        v-model="editorData"
+                        :config="editorConfig"
+                        @ready="onReady"
+                      ></ckeditor>
                     </v-col>
                   </v-row>
                   <v-row>
                     <v-col>
-                      <p style="margin-bottom: 0px;">Header</p>
+                      <p style="margin-bottom: 0px">Header</p>
                       <div>
                         <v-tooltip top v-for="item in headChips" :key="item.id">
                           <template v-slot:activator="{ on, attrs }">
-                            <v-chip class="ma-2" v-bind="attrs" v-on="on" outlined>{ {{ item }} }</v-chip>
+                            <v-chip
+                              class="ma-2"
+                              v-bind="attrs"
+                              v-on="on"
+                              outlined
+                              >{ {{ item }} }</v-chip
+                            >
                           </template>
                           <span>{{ item }}</span>
                         </v-tooltip>
@@ -735,21 +860,37 @@
                   </v-row>
                   <v-row>
                     <v-col>
-                      <p style="margin-bottom: 0px;">Table</p>
+                      <p style="margin-bottom: 0px">Table</p>
                       <div>
-                        <v-tooltip top v-for="item in tableChips" :key="item.id">
+                        <v-tooltip
+                          top
+                          v-for="item in tableChips"
+                          :key="item.id"
+                        >
                           <template v-slot:activator="{ on, attrs }">
-                            <v-chip class="ma-2" v-bind="attrs" v-on="on" outlined>{ {{ item }} }</v-chip>
+                            <v-chip
+                              class="ma-2"
+                              v-bind="attrs"
+                              v-on="on"
+                              outlined
+                              >{ {{ item }} }</v-chip
+                            >
                           </template>
                           <span>{{ item }}</span>
                         </v-tooltip>
-                        </div>
+                      </div>
                     </v-col>
                   </v-row>
                 </v-card-text>
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn type="submit" color="success" text @click.prevent="saveInvoiceTemp()">Save</v-btn>
+                  <v-btn
+                    type="submit"
+                    color="success"
+                    text
+                    @click.prevent="saveInvoiceTemp()"
+                    >Save</v-btn
+                  >
                 </v-card-actions>
               </v-card>
             </v-overlay>
@@ -765,11 +906,11 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
 import dayjs from "dayjs";
 import moment from "moment";
 
-import DecoupledEditor from '@ckeditor/ckeditor5-build-decoupled-document';
+import DecoupledEditor from "@ckeditor/ckeditor5-build-decoupled-document";
 
 const dtFormat = "MM-DD-YYYY";
 const today = dayjs().format(dtFormat);
@@ -913,7 +1054,7 @@ export default {
       editor: DecoupledEditor,
       editorData: "",
       editorConfig: {
-          // The configuration of the editor.
+        // The configuration of the editor.
       },
       selectInvoice: "",
       headChips: [],
@@ -936,7 +1077,7 @@ export default {
     } else {
       this.userInfo = JSON.parse(this.$store.state.userInfo);
       this.userRoles = this.userInfo.data.roles == "Admin" ? false : true;
-      console.log(this.userInfo);
+      // console.log(this.userInfo);
       this.configHeader = {
         headers: { Authorization: `Bearer ${this.userInfo.token}` },
       };
@@ -951,7 +1092,7 @@ export default {
   methods: {
     defaultMenu() {
       let userMenu = this.userInfo.roles;
-      if(userMenu !== null) {
+      if (userMenu !== null) {
         for (let item of userMenu) {
           for (const [key, value] of Object.entries(item)) {
             if (key == this.$route.name && item.SubMenu !== undefined) {
@@ -961,16 +1102,26 @@ export default {
         }
       }
     },
-    onReady( editor )  {
-        editor.ui.getEditableElement().parentElement.insertBefore(editor.ui.view.toolbar.element,editor.ui.getEditableElement());
+    onReady(editor) {
+      editor.ui
+        .getEditableElement()
+        .parentElement.insertBefore(
+          editor.ui.view.toolbar.element,
+          editor.ui.getEditableElement()
+        );
     },
     defaultPermission() {
       this.listPermission = [];
       axios
-        .get(this.url + "/user/list/permission?type=POS&brand_id=" + this.userInfo.data.brand_id, this.configHeader)
+        .get(
+          this.url +
+            "/user/list/permission?type=POS&brand_id=" +
+            this.userInfo.data.brand_id,
+          this.configHeader
+        )
         .then((res) => {
           let response = res.data;
-          response.forEach(e => {
+          response.forEach((e) => {
             e.selectedMenu = [];
             e.selected = [];
             this.listPermission.push(e);
@@ -983,7 +1134,10 @@ export default {
     getListUser() {
       this.listUser = [];
       axios
-        .get(this.url + "/user/listuser?branch_id=" + this.userInfo.data.branch_id, this.configHeader)
+        .get(
+          this.url + "/user/listuser?branch_id=" + this.userInfo.data.branch_id,
+          this.configHeader
+        )
         .then((res) => {
           let response = res.data;
           this.headersUser = [
@@ -1003,7 +1157,7 @@ export default {
             { text: "Roles", value: "roles" },
             { text: "Actions", value: "actions" },
           ];
-          response.users.forEach(e => {
+          response.users.forEach((e) => {
             e.fullName = e.emp_name + " " + e.emp_surname;
             this.listUser.push(e);
           });
@@ -1014,9 +1168,16 @@ export default {
     },
     setListMenuPermission(data) {
       this.defaultPermission();
-      
+
       axios
-        .get(this.url + "/user/getUserInfo?branch_id=" + data.branch_id + "&emp_id=" + data.emp_id, this.configHeader)
+        .get(
+          this.url +
+            "/user/getUserInfo?branch_id=" +
+            data.branch_id +
+            "&emp_id=" +
+            data.emp_id,
+          this.configHeader
+        )
         .then((res) => {
           if (res.status == 200 && res.data.message == "success") {
             let response = res.data;
@@ -1051,7 +1212,7 @@ export default {
         this.lKey = [];
         for (let item of this.listUserPermission) {
           for (const [key, value] of Object.entries(item)) {
-            if(key !== "SubMenu") {
+            if (key !== "SubMenu") {
               this.lKey.push(key);
             }
           }
@@ -1094,14 +1255,17 @@ export default {
           if (res.status == 200 && res.data.message == "success") {
             if (this.editedUser.emp_id == this.userInfo.data.emp_id) {
               this.userInfo.roles = this.listUserPermission;
-              this.$store.commit("updatePermission", JSON.stringify(this.userInfo));
+              this.$store.commit(
+                "updatePermission",
+                JSON.stringify(this.userInfo)
+              );
               this.$router.go();
             }
             this.dialog = false;
           } else {
             let msg = "";
             for (const [key, value] of Object.entries(res.data.message)) {
-              for(let m of value) {
+              for (let m of value) {
                 msg += m + ", ";
               }
             }
@@ -1305,7 +1469,11 @@ export default {
       this.lastestPromotionData = [];
       for (let lPromo of this.listPromotion) {
         let checkCurrentPro = this.currentPromotionData.find(
-          (ele) => dayjs(ele.updated_at).format(dtFormat) == dayjs(lPromo.updated_at).format(dtFormat) && ele.version == lPromo.version); //check pro ที่มีอยู่ก่อนแล้ว
+          (ele) =>
+            dayjs(ele.updated_at).format(dtFormat) ==
+              dayjs(lPromo.updated_at).format(dtFormat) &&
+            ele.version == lPromo.version
+        ); //check pro ที่มีอยู่ก่อนแล้ว
         if (checkCurrentPro == undefined) {
           if (dayjs(lPromo.updated_at) >= dayjs(today)) {
             this.lastestPromotionData.push(lPromo);
@@ -1601,36 +1769,39 @@ export default {
       this.dataEmpArr = [checkMember];
     },
     getListInvoiceTemplate() {
-      this.listInvoiceTemp = this.$store.state.listInvoiceTemplate.length == 0 ? 
-        [{
-          id: "1",
-          name: "Sale Invoice",
-          type: "sale",
-          width: "70mm",
-          meta: "",
-        },
-        {
-          id: "2",
-          name: "Purchase Invoice",
-          type: "purchase",
-          width: "70mm",
-          meta: "",
-        },
-        // {
-        //   id: "3",
-        //   name: "Large Invoice",
-        //   type: "",
-        //   width: "140mm",
-        //   meta: "",
-        // },
-        // {
-        //   id: "4",
-        //   name: "Large Vat Invoice",
-        //   type: "",
-        //   width: "140mm",
-        //   meta: "",
-        // },
-        ] : this.$store.state.listInvoiceTemplate;
+      this.listInvoiceTemp =
+        this.$store.state.listInvoiceTemplate.length == 0
+          ? [
+              {
+                id: "1",
+                name: "Sale Invoice",
+                type: "sale",
+                width: "70mm",
+                meta: "",
+              },
+              {
+                id: "2",
+                name: "Purchase Invoice",
+                type: "purchase",
+                width: "70mm",
+                meta: "",
+              },
+              // {
+              //   id: "3",
+              //   name: "Large Invoice",
+              //   type: "",
+              //   width: "140mm",
+              //   meta: "",
+              // },
+              // {
+              //   id: "4",
+              //   name: "Large Vat Invoice",
+              //   type: "",
+              //   width: "140mm",
+              //   meta: "",
+              // },
+            ]
+          : this.$store.state.listInvoiceTemplate;
     },
     getInvoiceTemplate() {
       let checkListInvoiceTemplate = this.listInvoiceTemp.find(
@@ -1639,25 +1810,70 @@ export default {
       if (checkListInvoiceTemplate !== undefined) {
         this.editorData = checkListInvoiceTemplate.meta;
       }
-      if(this.selectInvoice.type == 'sale') {
+      if (this.selectInvoice.type == "sale") {
         // this.editorData = `<table><tbody><tr><td><p style="text-align:center;"><span class="text-huge" style="color:rgba(0,0,0,0.87);"><strong>{ app_logo }</strong></span></p><p style="text-align:center;"><span class="text-huge"><strong>{app_name}</strong></span></p><p style="text-align:center;"><strong>SALES INVOICE</strong></p><p style="text-align:center;"><strong>{date} - {time}</strong></p><p><strong>Invoice ID: {invoice_id}</strong></p><p><strong>Sold To: {customer_name}</strong></p><p><strong>Sold By: {employee_name}</strong></p><p><strong>Phone: {phone_number}</strong></p><p><strong>Address: {address}</strong></p><p><strong>Note: {note}</strong></p></td></tr><tr><td><table><thead><tr><th><span style="color:rgb(33,37,41);"><strong>Price</strong></span></th><th><span style="color:rgb(33,37,41);"><strong>Qty</strong></span></th><th><span style="color:rgb(33,37,41);"><strong>Disc%</strong></span></th><th><span style="color:rgb(33,37,41);"><strong>Total</strong></span></th></tr></thead><tbody><tr><td colspan="4">{item_details}</td></tr><tr><td colspan="2" rowspan="1"><p>Subtotal</p><p>Tax</p><p>Discount</p><p>Total</p><p>Exchange</p></td><td colspan="2" rowspan="1"><p style="text-align:right;">{sub_total}</p><p style="text-align:right;">{tax}</p><p style="text-align:right;">{discount}</p><p style="text-align:right;">{total}</p><p style="text-align:right;">{exchange}</p></td></tr><tr><td colspan="4"><p>{payment_details}</p><p>{shipment_address}</p></td></tr></tbody></table></td></tr><tr><td><p style="text-align:center;">{barcode}</p></td></tr></tbody></table>`;
 
-        this.headChips = ['app_logo','app_name','date','time','invoice_id','customer_name','employee_name','phone_number','address','note'];
-        this.tableChips = ['item_details','sub_total','tax','discount','total','exchange','payment_details','shipment_address','barcode'];
-      } 
-      if(this.selectInvoice.type == 'purchase') {
+        this.headChips = [
+          "app_logo",
+          "app_name",
+          "date",
+          "time",
+          "invoice_id",
+          "customer_name",
+          "employee_name",
+          "phone_number",
+          "address",
+          "note",
+        ];
+        this.tableChips = [
+          "item_details",
+          "sub_total",
+          "tax",
+          "discount",
+          "total",
+          "exchange",
+          "payment_details",
+          "shipment_address",
+          "barcode",
+        ];
+      }
+      if (this.selectInvoice.type == "purchase") {
         // this.editorData = `<table><tbody><tr><td><p style="text-align:center;"><span class="text-huge"><strong>{ app_logo }</strong></span></p><p style="text-align:center;"><span class="text-huge"><strong>{app_name}</strong></span></p><p style="text-align:center;"><strong>PURCHASE&nbsp;INVOICE</strong></p><p style="text-align:center;"><strong>{date} - {time}</strong></p><p><strong>Invoice ID: </strong>{invoice_id}</p><p><strong>Supplier: </strong>{supplier_name}</p><p><strong>Purchased By: </strong>{employee_name}</p></td></tr><tr><td><table><thead><tr><th><strong>Price</strong></th><th><strong>Qty</strong></th><th><strong>Disc%</strong></th><th><strong>Total</strong></th></tr></thead><tbody><tr><td colspan="4">{item_details}</td></tr><tr><td colspan="2" rowspan="1"><p>Subtotal</p><p>Tax</p><p>Discount</p><p>Total</p><p>Exchange</p></td><td colspan="2" rowspan="1"><p style="text-align:right;">{sub_total}</p><p style="text-align:right;">{tax}</p><p style="text-align:right;">{discount}</p><p style="text-align:right;">{total}</p><p style="text-align:right;">{exchange}</p></td></tr><tr><td colspan="4">{payment_details}</td></tr></tbody></table></td></tr><tr><td><p style="text-align:center;">{barcode}</p></td></tr></tbody></table>`;
 
-        this.headChips = ['app_logo','app_name','table_name','supplier_name','date','time','invoice_id','customer_name','employee_name','phone_number','address','note'];
-        this.tableChips = ['item_details','sub_total','tax','discount','total','exchange','payment_details','shipment_address','due','barcode'];
+        this.headChips = [
+          "app_logo",
+          "app_name",
+          "table_name",
+          "supplier_name",
+          "date",
+          "time",
+          "invoice_id",
+          "customer_name",
+          "employee_name",
+          "phone_number",
+          "address",
+          "note",
+        ];
+        this.tableChips = [
+          "item_details",
+          "sub_total",
+          "tax",
+          "discount",
+          "total",
+          "exchange",
+          "payment_details",
+          "shipment_address",
+          "due",
+          "barcode",
+        ];
       }
     },
     openDialogInvoiceTemp(invoiceType) {
-        this.dialogInvoiceTemp = true;
-        this.overlayInvoiceTemp = true;
+      this.dialogInvoiceTemp = true;
+      this.overlayInvoiceTemp = true;
 
-        this.selectInvoice = invoiceType;
-        this.getInvoiceTemplate();
+      this.selectInvoice = invoiceType;
+      this.getInvoiceTemplate();
     },
     saveInvoiceTemp() {
       let checkListInvoiceTemplate = this.listInvoiceTemp.find(
@@ -1688,18 +1904,18 @@ export default {
 
 <style>
 .ck-content .text-tiny {
-    font-size: 0.7em;
+  font-size: 0.7em;
 }
 
 .ck-content .text-small {
-    font-size: 0.85em;
+  font-size: 0.85em;
 }
 
 .ck-content .text-big {
-    font-size: 1.4em;
+  font-size: 1.4em;
 }
 
 .ck-content .text-huge {
-    font-size: 1.8em;
+  font-size: 1.8em;
 }
 </style>

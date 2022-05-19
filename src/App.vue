@@ -3,13 +3,15 @@
 <template>
   <v-app>
     <div v-if="$store.state.is_login">
-      <v-navigation-drawer v-model="drawer" app>
+      <v-navigation-drawer v-model="$store.state.drawer" app>
         <Sidebar />
       </v-navigation-drawer>
 
       <v-app-bar app>
         <v-col md="1">
-          <v-app-bar-nav-icon @click="drawer = !drawer">
+          <v-app-bar-nav-icon
+            @click="$store.state.drawer = !$store.state.drawer"
+          >
             <div v-if="drawer">
               <i class="fa fa-outdent" aria-hidden="true"></i>
             </div>
