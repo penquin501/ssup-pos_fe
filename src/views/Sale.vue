@@ -108,9 +108,9 @@
                   ><strong>(00)บิลเงินสดอย่างย่อ</strong></label
                 ></v-col
               >
-              <v-col md="8"
-                ><v-btn @click.prevent="testNewWindow()">open P2</v-btn></v-col
-              >
+              <v-col md="8">
+                <!-- <v-btn @click.prevent="openScreen2()">open P2</v-btn> -->
+              </v-col>
             </v-row>
           </v-col>
         </v-row>
@@ -526,6 +526,8 @@ export default {
     } else {
       this.initialize();
       this.$refs.memberId.focus();
+
+      this.openScreen2();
       // if (this.$store.state.currentOrder !== null) {
       //     let currentOrder = JSON.parse(this.$store.state.currentOrder);
       //     this.invoiceNo = currentOrder.invoiceNo;
@@ -557,12 +559,10 @@ export default {
     }
   },
   methods: {
-    testNewWindow() {
-      let newWindow = open(
-        "/salep2",
-        "example",
-        "scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no,width=1600vw,height=1200vh"
-      );
+    openScreen2() {
+      let opt =
+        "scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no,width=1600vw,height=1200vh";
+      let newWindow = open("/salep2", "example", opt);
       newWindow.focus();
     },
     openPanelFunction() {

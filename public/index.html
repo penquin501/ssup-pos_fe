@@ -220,16 +220,29 @@
           } else {
             active_windows_list = remove_from_active_windows(current_window_id);
           }
+
+          /*TODO check ว่า เปิดหน้า sale อยู่มั้ย 
+            ถ้า current page ไม่ใช่ หน้า /sale ให้ clear localstorage
+          */
+          let getVuex = localStorage.getItem("vuex");
+          // console.log(getVuex);
+        //  if(getVuex) {
+        //   let decodeVuex = JSON.parse(getVuex);
+        //   decodeVuex.is_login = false;
+
+        //   let setVuex = localStorage.setItem("vuex", JSON.stringify(decodeVuex));
+        //  }
+          
           //If opened window more than 1 site, then clear data and reload 
-          if(windows_list.length > 1) {
-            localStorage.clear();
-            location.reload();
-          }
-          //If opened tab more than 1 tab, then clear data and reload 
-          if(active_windows_list.length > 1) {
-            localStorage.clear();
-            location.reload();
-          }
+          // if(windows_list.length > 1) {
+          //   localStorage.clear();
+          //   location.reload();
+          // }
+          // //If opened tab more than 1 tab, then clear data and reload 
+          // if(active_windows_list.length > 1) {
+          //   localStorage.clear();
+          //   location.reload();
+          // }
           // console.log("Current Windows is " + active_status + ", " + active_windows_list.length + " window(s) is visible and active of " + windows_list.length + " windows");
         } else {
           console.log("PageVisibility API is not supported :(");
