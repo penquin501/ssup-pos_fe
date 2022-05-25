@@ -5,7 +5,7 @@
     <v-row>
       <v-col xs="12" sm="12" md="6" lg="9" xl="9">
         <v-row>
-          <v-col cols="12" style="margin-left: 20px; margin-right: 10px">
+          <v-col cols="12" class="ml-5 mr-2">
             <v-row>
               <v-col sm="6" md="3">
                 <v-text-field
@@ -36,7 +36,7 @@
               <v-btn value="2">Manual</v-btn>
             </v-btn-toggle> -->
               </v-col>
-              <v-col sm="6" md="3" style="text-align: right">
+              <v-col sm="6" md="3" class="text-right">
                 <label
                   ><strong>{{ docDate }}</strong></label
                 >
@@ -45,7 +45,7 @@
           </v-col>
         </v-row>
         <v-row>
-          <v-col cols="12" style="margin-left: 20px; margin-right: 20px">
+          <v-col cols="12" class="ml-5 mr-5">
             <v-row>
               <v-col sm="4" md="4">
                 <v-row>
@@ -96,19 +96,21 @@
               </v-col>
             </v-row>
             <v-row>
-              <v-col>text text </v-col>
+              <v-col class="pt-0 pb-0">text text </v-col>
             </v-row>
           </v-col>
         </v-row>
         <v-row>
-          <v-col cols="12" style="margin-left: 20px; margin-right: 20px">
+          <v-col cols="12" class="ml-5 mr-5">
             <v-row>
               <v-col md="4"
                 ><label style="font-size: 24px"
                   ><strong>(00)บิลเงินสดอย่างย่อ</strong></label
                 ></v-col
               >
-              <v-col md="8"></v-col>
+              <v-col md="8"
+                ><v-btn @click.prevent="testNewWindow()">open P2</v-btn></v-col
+              >
             </v-row>
           </v-col>
         </v-row>
@@ -119,11 +121,9 @@
             item-key="product_id"
             :headers="headers"
             :items="items"
-            class="elevation-1"
+            class="elevation-1 pl-2 pr-6"
             dense
             show-select
-            group-by="promotion_code"
-            show-group-by
             style="background-color: #eeeeee"
           >
             <template v-slot:top>
@@ -164,7 +164,6 @@
                 > -->
               </v-toolbar>
             </template>
-
             <template v-slot:item.index="{ item, index }">
               {{ index + 1 }}
             </template>
@@ -174,46 +173,34 @@
               </td>
             </template>
             <template v-slot:item.qty="{ item, index }">
-              <td class="text-right">
+              <td class="text-right pa-0">
                 {{ item.qty }}
               </td>
             </template>
             <template v-slot:item.price="{ item, index }">
-              <td class="text-right">
+              <td class="text-right pa-0">
                 {{ formatPrice(item.price) }}
               </td>
             </template>
             <template v-slot:item.amount="{ item, index }">
-              <td class="text-right" style="color: green">
+              <td class="text-right pa-0" style="color: green">
                 {{ formatPrice(item.amount) }}
               </td>
             </template>
             <template v-slot:item.discount="{ item, index }">
-              <td class="text-right">
+              <td class="text-right pa-0">
                 {{ formatPrice(item.discount) }}
               </td>
             </template>
             <template v-slot:item.total="{ item, index }">
-              <td class="text-right">
+              <td class="text-right pa-0">
                 {{ formatPrice(item.total) }}
               </td>
             </template>
           </v-data-table>
         </v-row>
       </v-col>
-      <v-col
-        xs="12"
-        sm="12"
-        md="6"
-        lg="3"
-        xl="3"
-        style="
-          padding-top: 0px;
-          padding-bottom: 0px;
-          padding-right: 0px;
-          padding-left: 0px;
-        "
-      >
+      <v-col xs="12" sm="12" md="6" lg="3" xl="3" class="pa-0">
         <v-expansion-panels v-model="panel" accordion multiple>
           <v-expansion-panel
             style="background-color: #cdeb8b"
@@ -248,11 +235,17 @@
                 <v-col>
                   <v-row>
                     <v-col md="6">Sub Total:</v-col>
-                    <v-col md="6">{{ formatPrice(1000) }}</v-col>
+                    <v-col md="4" class="text-right">{{
+                      formatPrice(1000)
+                    }}</v-col>
+                    <v-col md="2"></v-col>
                   </v-row>
                   <v-row>
                     <v-col md="6">Discount:</v-col>
-                    <v-col md="6">{{ formatPrice(1000) }}</v-col>
+                    <v-col md="4" class="text-right">{{
+                      formatPrice(1000)
+                    }}</v-col>
+                    <v-col md="2"></v-col>
                   </v-row>
                   <v-row>
                     <v-col md="6">Total:</v-col>
@@ -344,9 +337,7 @@
               @click.prevent="dialogMenuOther = true"
               ><b>Other</b>
             </v-expansion-panel-header>
-            <v-expansion-panel-content
-              style="padding-left: 0px; padding-right: 0px"
-            >
+            <v-expansion-panel-content class="pl-0 pr-0">
               <!-- <SaleOthers /> -->
             </v-expansion-panel-content>
           </v-expansion-panel>
@@ -368,6 +359,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
     <v-dialog v-model="dialogMenuOther" width="1000px" persistent>
       <v-card height="500px">
         <v-card-title class="text-h5">
@@ -388,6 +380,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
     <v-dialog v-model="dialogListChannel" max-width="550px;" persistent>
       <v-card style="width: 500px">
         <v-card-title class="text-h5">Channel</v-card-title>
@@ -482,12 +475,12 @@ export default {
         },
         { text: "Promotion", value: "promotion_code" },
         { text: "Product", value: "product_id" },
-        { text: "Detail", value: "product_name" },
-        { text: "Qty", value: "qty" },
-        { text: "Price", value: "price" },
-        { text: "Amount", value: "amount" },
-        { text: "Discount", value: "discount" },
-        { text: "Total", value: "total" },
+        { text: "Detail", value: "product_name", align: "center" },
+        { text: "Qty", value: "qty", align: "end" },
+        { text: "Price", value: "price", align: "end" },
+        { text: "Amount", value: "amount", align: "end" },
+        { text: "Discount", value: "discount", align: "end" },
+        { text: "Total", value: "total", align: "end" },
       ],
       taxInfo: {
         fullname: "",
@@ -565,18 +558,12 @@ export default {
   },
   methods: {
     testNewWindow() {
-      // let params = `scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no,
-      // width=600,height=300,left=100,top=100`;
-      // open("/", "test", params);
-
-      let newWindow = open("/sale", "example", "width=300,height=300");
+      let newWindow = open(
+        "/salep2",
+        "example",
+        "scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no,width=1600vw,height=1200vh"
+      );
       newWindow.focus();
-
-      // alert(newWindow.location.href); // (*) about:blank, loading hasn't started yet
-      // newWindow.onload = function () {
-      //   let html = `<div style="font-size:30px">Welcome!</div>`;
-      //   newWindow.document.body.insertAdjacentHTML("afterbegin", html);
-      // };
     },
     openPanelFunction() {
       if (this.panel.length !== 0) {

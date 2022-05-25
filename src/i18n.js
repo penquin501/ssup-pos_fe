@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
+import axios from "axios";
 
 Vue.use(VueI18n)
 
@@ -13,7 +14,29 @@ function loadLocaleMessages () {
       messages[locale] = locales(key)
     }
   })
-  return messages
+  getLocaleApi(messages);
+  return messages;
+}
+
+ function getLocaleApi(messages) {
+  return new Promise(function (resolve, reject) {
+      axios
+        .get(process.env.VUE_APP_SERVER_API + "/get/locale")
+        .then((res) => {
+          var responses = res.data;
+          for (const [key, value] of Object.entries(messages)) {
+            for (let ii of responses) {
+              if (key == ii.lang) {
+                value.message[ii.key] = ii.msg;
+              }
+            }
+          }
+          resolve(messages);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+  });
 }
 
 export default new VueI18n({

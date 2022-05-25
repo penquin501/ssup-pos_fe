@@ -26,6 +26,7 @@ export default new Vuex.Store({
     },
     doLogout(state) {
       state.is_login = false;
+      state.drawer = false;
       state.userInfo = "";
       state.currentOrder = null;
       state.lastOrder = [];

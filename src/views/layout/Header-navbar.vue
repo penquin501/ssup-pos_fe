@@ -15,11 +15,14 @@
           <div class="mx-auto text-center">
             <h5>{{ user.fullName }}</h5>
             <!-- {{ $t("message.hello", { msg: "hello" }) }} -->
+            <!-- {{ $t("message.test") }} -->
             <p class="text-caption mt-1">{{ user.position }}</p>
             <!-- <v-divider class="my-3"></v-divider>
             <v-btn depressed rounded text>Edit Account</v-btn> -->
             <v-divider class="my-3"></v-divider>
-            <v-btn depressed rounded text @click.prevent="logout()">logout</v-btn>
+            <v-btn depressed rounded text @click.prevent="logout()"
+              >logout</v-btn
+            >
           </div>
         </v-list-item-content>
       </v-card>
