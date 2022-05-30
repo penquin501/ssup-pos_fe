@@ -227,7 +227,7 @@
                   height="315"
                   src="https://www.youtube.com/embed/tgbNymZ7vqY?playlist=tgbNymZ7vqY&loop=1"
                 > 
-                </iframe>-->
+                </iframe> -->
               </v-row>
               <v-row style="height: 20%"></v-row>
             </v-col>

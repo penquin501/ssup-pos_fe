@@ -16,25 +16,27 @@
                   dense
                   placeholder="Search Member"
                   :append-icon="'mdi-account-search'"
-                  v-model="memberInfo.memberId"
+                  v-model="inputMemberCode"
                   ref="memberId"
                   @keypress.enter="getMemberInfo()"
                 ></v-text-field>
               </v-col>
               <v-col sm="6" md="2">
-                <v-btn color="primary"><v-icon>mdi-account-box</v-icon></v-btn>
+                <v-btn color="primary" @click.prevent="dialogCheckMember = true"
+                  ><v-icon>mdi-account-box</v-icon></v-btn
+                >
               </v-col>
               <v-col sm="6" md="3">
                 <!-- TODO waiting decition process -->
                 <!-- <v-btn-toggle
-              color="success"
-              dense
-              rounded
-              v-model="selectedPayPromotion"
-            >
-              <v-btn value="1">Auto</v-btn>
-              <v-btn value="2">Manual</v-btn>
-            </v-btn-toggle> -->
+                  color="success"
+                  dense
+                  rounded
+                  v-model="selectedPayPromotion"
+                >
+                  <v-btn value="1">Auto</v-btn>
+                  <v-btn value="2">Manual</v-btn>
+                </v-btn-toggle> -->
               </v-col>
               <v-col sm="6" md="3" class="text-right">
                 <label
@@ -44,7 +46,7 @@
             </v-row>
           </v-col>
         </v-row>
-        <v-row>
+        <v-row style="background-color: #e8f5e9">
           <v-col cols="12" class="ml-5 mr-5">
             <v-row>
               <v-col sm="4" md="4">
@@ -96,7 +98,19 @@
               </v-col>
             </v-row>
             <v-row>
-              <v-col class="pt-0 pb-0">text text </v-col>
+              <v-col class="pt-0 pb-0" style="color: red">{{ otherMsg }}</v-col>
+            </v-row>
+            <v-row>
+              <v-col md="2" class="pt-0 pb-0">Remark:</v-col>
+              <v-col md="10" class="pt-0 pb-0">
+                <b-form-textarea
+                  style="width: 600px; height: 60px; margin-bottom: 10px"
+                  rows="1"
+                  max-rows="2"
+                  v-model="remark"
+                  no-resize
+                ></b-form-textarea>
+              </v-col>
             </v-row>
           </v-col>
         </v-row>
@@ -421,15 +435,91 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <v-dialog v-model="dialogCheckMember" max-width="550px;" persistent>
+      <v-card style="width: 500px">
+        <v-card-title class="text-h5">
+          Select Member Scan
+          <v-spacer></v-spacer>
+          <v-icon @click.prevent="dialogCheckMember = false"
+            >mdi-close</v-icon
+          ></v-card-title
+        >
+        <v-card-text>
+          <v-row>
+            <v-col
+              md="6"
+              v-for="(item, index) in scanMemberItems"
+              :key="index"
+              :value="item.value"
+            >
+              <v-item-group mandatory v-model="active">
+                <v-item v-slot="{ active, toggle }">
+                  <v-card
+                    class="text-center"
+                    :color="active ? '#E0F7FA' : ''"
+                    height="200"
+                    @click="toggle, selectScanMember(item)"
+                  >
+                    <v-card-title v-if="active">{{ item.text }}</v-card-title>
+                    <v-card-text>
+                      <v-icon size="100px">{{ item.icon }}</v-icon>
+                    </v-card-text>
+                  </v-card>
+                </v-item>
+              </v-item-group>
+            </v-col>
+          </v-row>
+          <v-row v-if="selectScan.value == 'tel'">
+            <v-text-field
+              label="Member Tel."
+              solo
+              v-model="memberTel"
+            ></v-text-field>
+          </v-row>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            color="blue darken-1"
+            text
+            @click.prevent="confirmSelectMember(), (dialogCheckMember = false)"
+            >Submit</v-btn
+          >
+          <v-btn
+            color="blue darken-1"
+            text
+            @click.prevent="dialogCheckMember = false"
+            >Cancel</v-btn
+          >
+          <v-spacer></v-spacer>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-overlay
+      :absolute="absolute"
+      :opacity="opacity"
+      :value="overlay"
+      style="height: 100vh"
+    >
+      <v-card style="background-color: white; width: 50vw; margin: 0">
+        <v-card-text class="text-right">
+          <v-progress-linear indeterminate v-model="progressing" height="25"
+            ><strong>{{ Math.ceil(progressing) }}%</strong></v-progress-linear
+          >
+        </v-card-text>
+      </v-card>
+    </v-overlay>
   </div>
 </template>
 
 <script>
 import dayjs from "dayjs";
-// import axios from "axios";
+import axios from "axios";
 // const queryString = require("query-string");
 
 import SaleOthers from "@/views/Sale/Sale-Other.vue";
+import { threadId } from "worker_threads";
 
 export default {
   components: {
@@ -438,33 +528,58 @@ export default {
   data() {
     return {
       panel: [0],
+      remark: "",
       today: dayjs().format("DD-MM-YYYY"),
       docDate: dayjs().format("DD-MM-YYYY"),
       selectedRedeemPoint: false,
+      active: false,
       inputMemberCode: "",
+      memberTel: "",
+      absolute: true,
+      opacity: 1,
+      overlay: false,
+      progressing: 0,
       dialog: false,
       dialogDelete: false,
       dialogTaxInvoiceInfo: false,
       dialogListChannel: false,
       dialogMenuOther: false,
+      dialogCheckMember: false,
       search: "",
+      selectScan: "",
       qty: 1,
       checkTaxInvoiceInfo: false,
       selectedPayPromotion: "1",
       selectChannelIndex: "",
       selectColor: "",
+      customerInfo: {},
       memberInfo: {
-        memberId: "abc",
-        type: "Platinum Card",
-        name: "ABC DDD",
-        discount: "15",
-        point: "1000",
+        memberId: "",
+        type: "",
+        name: "",
+        discount: "",
+        point: "",
       },
+      otherMsg: "",
       paymentItems: [
         { value: "line", text: "Line", color: "#43A047" },
         { value: "grab", text: "Grab", color: "#388E3C" },
         { value: "panda", text: "Panda", color: "#D81B60" },
         { value: "lineman", text: "Line Man", color: "#2E7D32" },
+      ],
+      scanMemberItems: [
+        {
+          value: "idcard",
+          text: "ID Card",
+          color: "#43A047",
+          icon: "mdi-account-card-details",
+        },
+        {
+          value: "tel",
+          text: "Tel.",
+          color: "#388E3C",
+          icon: "mdi-cellphone-iphone",
+        },
       ],
       headers: [
         {
@@ -509,6 +624,8 @@ export default {
         discount: 0,
         total: 0,
       },
+      url: process.env.VUE_APP_SERVER_API,
+      url_crm: process.env.VUE_APP_CRM_API,
     };
   },
   mounted: function () {
@@ -524,10 +641,10 @@ export default {
         }
       });
     } else {
-      this.initialize();
       this.$refs.memberId.focus();
+      this.openScreen2(); //เปิด screen 2
 
-      this.openScreen2();
+      this.initialize();
       // if (this.$store.state.currentOrder !== null) {
       //     let currentOrder = JSON.parse(this.$store.state.currentOrder);
       //     this.invoiceNo = currentOrder.invoiceNo;
@@ -674,82 +791,86 @@ export default {
         },
       ];
     },
+    selectScanMember(data) {
+      this.selectScan = data;
+    },
+    confirmSelectMember() {
+      if (this.selectScan.value == "tel" && this.memberTel == "") {
+        alert("กรุณาใส่เบอร์โทรศัพท์สมาชิกให้ถูกต้อง");
+        return;
+      }
+
+      this.overlay = true;
+      // this.progressing = 1;
+      // setTimeout(() => {
+      //   this.progressing = 25;
+      // }, 2000);
+      // setTimeout(() => {
+      //   this.progressing = 50;
+      // }, 5000);
+      // setTimeout(() => {
+      //   this.progressing = 75;
+      // }, 8000);
+      // setTimeout(() => {
+      //   this.progressing = 100;
+      // }, 10000);
+      this.getMemberInfo();
+    },
     getMemberInfo() {
-      //   this.dialogConfirmEmp = true;
-      if (this.memberInfo.memberId.trim() == "") {
-        // this.memberInfo = {};
+      if (this.inputMemberCode.trim() == "") {
         this.memberInfo.name = "Walk-In Customer";
+        this.memberInfo.type = "";
+        this.memberInfo.point = 0;
+        this.memberInfo.discount = 0;
+        this.otherMsg = "";
       } else {
-        let member = {
-          member_no: "IDX7250157688",
-          qty: "0.00",
-          amt: "0.00",
-          net: "0.00",
-          apply_date: "2014-06-21",
-          expire_date: "2100-12-31",
-          age_card: "4",
-          status: "0",
-          mem_status: "N",
-          forgot_card: "",
-          vip: "0",
-          email: "",
-          prefix_en: "Miss",
-          fname_en: "Thunchanok",
-          lname_en: "Krittayachaiwat",
-          area: "",
-          region_id: "0",
-          cust_day: "OPS4",
-          brand_id: "0",
-          cardtype_id: "0",
-          application_id: "REID",
-          customer_id: "13",
-          mobile_no: "0851512954",
-          id_card: "3101800738173",
-          prefix: "น.ส.",
-          name: "ธันย์ชนก",
-          surname: "กฤตยาไชยวัฒน",
-          sex: "2",
-          address: "357",
-          road: "",
-          province_name: "กรุงเทพมหานคร",
-          district: "คลองเตย",
-          sub_district: "คลองตัน",
-          zip: "10600",
-          birthday: "1971-07-05",
-          shop: "7467",
-          doc_no: "",
-          doc_dt: "1900-01-01",
-          send_company: "",
-          send_address: "357",
-          send_mu: "0",
-          send_home_name: "",
-          send_soi: "",
-          send_road: "",
-          send_tambon_id: "103302",
-          send_tambon_name: "คลองตัน",
-          send_amphur_id: "1033",
-          send_amphur_name: "คลองเตย",
-          send_province_id: "1",
-          send_province_name: "กรุงเทพมหานคร",
-          send_postcode: "10600",
-          send_tel: "",
-          send_mobile: "",
-          send_fax: "",
-          send_remark: "",
-          card_level: "White",
-          ops: "OPS4",
-          point: 200,
-          discount: 15,
+        let data = {
+          member_code:
+            this.selectScan.value == "tel"
+              ? this.memberTel
+              : this.inputMemberCode,
+          brand_id: this.userInfo.data.brand_id,
+          branch_id: this.userInfo.data.branch_id,
+          type: this.selectScan.value == "" ? "" : this.selectScan.value,
         };
 
-        // this.memberInfo.memberId = member.member_no;
-        this.memberInfo.memberId = "";
-        this.memberInfo.name = member.name + " " + member.surname;
-        this.memberInfo.point = member.point;
-        this.memberInfo.type = member.card_level;
-        this.memberInfo.discount = member.discount;
+        axios
+          .post(this.url_crm + "/get/member/profile", data)
+          .then((res) => {
+            let response = res.data;
+            if (response.message == "success") {
+              var member = response.member[0];
+              this.customerInfo = response.member[0];
 
-        this.$refs.memberId.focus();
+              if (response.VIP == "VIP") {
+                this.memberInfo.name = member.name;
+                this.memberInfo.type = "VIP Card";
+                this.memberInfo.point = 0;
+                this.memberInfo.discount = member.percent1;
+                this.otherMsg =
+                  "วงเงินจำกัด " + this.formatPrice(member.limited) + " บาท";
+              } else {
+                this.memberInfo.name = member.name + " " + member.surname;
+                this.memberInfo.type = member.card_level + " Card";
+                this.memberInfo.point = 0;
+                // this.memberInfo.discount = member.percent1;
+                // this.otherMsg = "วงเงินจำกัด " + this.formatPrice(member.limited) + " บาท";
+                this.otherMsg = "";
+              }
+
+              this.overlay = false;
+              this.dialogCheckMember = true;
+            } else {
+              alert("กรุณาใส่ข้อมูลสมาชิกให้ถูกต้อง");
+            }
+            this.inputMemberCode = "";
+            this.$refs.memberId.focus();
+          })
+          .catch((err) => {
+            console.log("get member info", err);
+            this.inputMemberCode = "";
+            this.$refs.memberId.focus();
+          });
       }
     },
     selectToRedeemPoint() {
