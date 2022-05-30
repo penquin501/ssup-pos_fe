@@ -519,7 +519,6 @@ import axios from "axios";
 // const queryString = require("query-string");
 
 import SaleOthers from "@/views/Sale/Sale-Other.vue";
-import { threadId } from "worker_threads";
 
 export default {
   components: {
@@ -813,8 +812,12 @@ export default {
       // }, 8000);
       // setTimeout(() => {
       //   this.progressing = 100;
+
       // }, 10000);
       this.getMemberInfo();
+
+      // this.overlay = false;
+      // this.dialogCheckMember = true;
     },
     getMemberInfo() {
       if (this.inputMemberCode.trim() == "") {
@@ -825,13 +828,10 @@ export default {
         this.otherMsg = "";
       } else {
         let data = {
-          member_code:
-            this.selectScan.value == "tel"
-              ? this.memberTel
-              : this.inputMemberCode,
+          member_code: this.inputMemberCode,
           brand_id: this.userInfo.data.brand_id,
           branch_id: this.userInfo.data.branch_id,
-          type: this.selectScan.value == "" ? "" : this.selectScan.value,
+          type: "",
         };
 
         axios
@@ -857,7 +857,6 @@ export default {
                 // this.otherMsg = "วงเงินจำกัด " + this.formatPrice(member.limited) + " บาท";
                 this.otherMsg = "";
               }
-
               this.overlay = false;
               this.dialogCheckMember = true;
             } else {
