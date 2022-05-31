@@ -676,8 +676,14 @@ export default {
   },
   methods: {
     openScreen2() {
+      var viewportwidth = document.documentElement.clientWidth;
+      var viewportheight = document.documentElement.clientHeight;
+      window.resizeBy(-300, 0);
+      window.moveTo(0, 0);
       let opt =
-        "scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no,width=1600vw,height=1200vh";
+        "scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no,left=" +
+        (viewportwidth - 300) +
+        ",top=0,width=1600vw,height=1200vh";
       let newWindow = open("/salep2", "example", opt);
       newWindow.focus();
     },

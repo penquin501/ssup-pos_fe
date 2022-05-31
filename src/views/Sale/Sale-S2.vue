@@ -30,14 +30,14 @@
                   <v-row class="ml-5 mr-5 elevation-10">
                     <v-data-table
                       class="pl-4"
-                      fixed-header
                       dense
-                      height="315px"
-                      :items-per-page="items.length"
+                      fixed-header
+                      height="320px"
                       :headers="headers"
                       :items="items"
+                      :items-per-page="items.length"
                       hide-default-footer
-                      disable-sort="false"
+                      :disable-sort="false"
                     >
                       <template v-slot:item.product_name="{ item, index }">
                         <td class="text-left pa-0" style="font-size: 13px">
@@ -215,11 +215,15 @@
                 <!-- my image -->
                 <!-- <v-img src="https://picsum.photos/id/11/500/300"></v-img> -->
                 <!-- my video -->
-                <video autoplay controls loop>
+                <!-- <video autoplay controls loop>
                   <source
-                    src="https://file-examples.com/storage/fe6bd68931628d5b79b8f47/2017/04/file_example_MP4_480_1_5MG.mp4"
+                    src="https://file-examples.com/storage/fe5b5df86162954479a6a35/2017/04/file_example_MP4_480_1_5MG.mp4"
                     type="video/mp4"
                   />
+                </video> -->
+
+                <video autoplay controls loop>
+                  <source src="img/video/file_example.mp4" type="video/mp4" />
                 </video>
                 <!-- Youtube -->
                 <!-- <iframe
@@ -276,6 +280,7 @@ export default {
   },
   mounted: function () {
     this.initialize();
+    // console.log(<%= BASE_URL %>);
   },
   methods: {
     initialize() {
@@ -400,4 +405,8 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+.v-data-table--fixed-height .v-data-table__wrapper {
+  overflow-y: hidden;
+}
+</style>
