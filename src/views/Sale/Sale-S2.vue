@@ -33,7 +33,7 @@
                       dense
                       responsive
                       :headers="headers"
-                      :items="items"
+                      :items="displayItems"
                       disable-pagination
                       hide-default-footer
                       :disable-sort="disableSort"
@@ -79,7 +79,7 @@
                   class="text-center pt-2 pb-10 pr-5 pl-5"
                   style="border-top: 1.5px dashed black; font-size: 16px"
                 >
-                  <v-row>สินค้าทั้งหมด: {{ items.length }} รายการ</v-row>
+                  <v-row>สินค้าทั้งหมด: {{ currentItems.length }} รายการ</v-row>
                   <v-row>
                     <v-col md="3" class="text-right pb-0"
                       >คะแนนที่ได้รับ:</v-col
@@ -267,7 +267,8 @@ export default {
         { text: "Discount", value: "discount", align: "end" },
         { text: "Total", value: "total", align: "end" },
       ],
-      items: [],
+      currentItems: [],
+      displayItems: [],
     };
   },
   mounted: function () {
@@ -275,7 +276,7 @@ export default {
   },
   methods: {
     initialize() {
-      this.items = [
+      var resultItems = [
         {
           product_id: "25237",
           product_name: "Serum Absolute Illuminating 30",
@@ -387,14 +388,15 @@ export default {
           total: 6.5,
         },
       ];
+      this.currentItems = resultItems;
       let i = 1;
-      this.items.forEach((element) => {
+      resultItems.forEach((element) => {
         element.id = i++;
       });
-      this.items =
-        this.items.length < 10
-          ? this.items
-          : this.items.slice(this.items.length - 9, this.items.length);
+      this.displayItems =
+        resultItems.length < 10
+          ? resultItems
+          : resultItems.slice(resultItems.length - 9, resultItems.length);
     },
     formatPrice(value) {
       let val = (value / 1).toFixed(2).replace(",", ".");
