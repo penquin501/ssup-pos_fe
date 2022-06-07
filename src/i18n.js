@@ -18,7 +18,7 @@ function loadLocaleMessages () {
   return messages;
 }
 
- function getLocaleApi(messages) {
+function getLocaleApi(messages) {
   return new Promise(function (resolve, reject) {
       axios
         .get(process.env.VUE_APP_SERVER_API + "/get/locale")

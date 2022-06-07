@@ -22,7 +22,11 @@
                 ></v-text-field>
               </v-col>
               <v-col sm="6" md="2">
-                <v-btn color="primary" @click.prevent="dialogCheckMember = true"
+                <v-btn
+                  color="primary"
+                  @click.prevent="
+                    (dialogCheckMember = true), (selectedScan = {})
+                  "
                   ><v-icon>mdi-account-box</v-icon></v-btn
                 >
               </v-col>
@@ -107,7 +111,8 @@
                   style="width: 600px; height: 60px; margin-bottom: 10px"
                   rows="1"
                   max-rows="2"
-                  v-model="remark"
+                  maxlength="250"
+                  v-model="memberInfo.remark"
                   no-resize
                 ></b-form-textarea>
               </v-col>
@@ -122,15 +127,13 @@
                   ><strong>(00)บิลเงินสดอย่างย่อ</strong></label
                 ></v-col
               >
-              <v-col md="8">
-                <!-- <v-btn @click.prevent="openScreen2()">open P2</v-btn> -->
-              </v-col>
+              <v-col md="8"> </v-col>
             </v-row>
           </v-col>
         </v-row>
         <v-row>
           <v-data-table
-            v-model="selected"
+            v-model="selectedItems"
             :search="search"
             item-key="product_id"
             :headers="headers"
@@ -150,8 +153,8 @@
                     id="input-small"
                     size="sm"
                     autocomplete="off"
-                    v-model="productCode"
-                    ref="productCode"
+                    v-model="inputProductCode"
+                    ref="inputProductCode"
                     @keypress.enter="getProductInfo()"
                   ></b-form-input>
                 </v-col>
@@ -368,7 +371,7 @@
           <v-btn color="blue darken-1" text @click.prevent="closeDelete"
             >Cancel</v-btn
           >
-          <!-- <v-btn color="blue darken-1" text @click.prevent="deleteItemConfirm">OK</v-btn> -->
+          <!-- <v-btn color="blue darken-1" text @click.prevent="confirmDeleteItem">OK</v-btn> -->
           <v-spacer></v-spacer>
         </v-card-actions>
       </v-card>
@@ -386,18 +389,16 @@
         <v-card-text>
           <SaleOthers />
         </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <!-- <v-btn color="blue darken-1" text >Cancel</v-btn> -->
-          <!-- <v-btn color="blue darken-1" text @click.prevent="deleteItemConfirm">OK</v-btn> -->
-          <v-spacer></v-spacer>
-        </v-card-actions>
       </v-card>
     </v-dialog>
 
     <v-dialog v-model="dialogListChannel" max-width="550px;" persistent>
       <v-card style="width: 500px">
-        <v-card-title class="text-h5">Channel</v-card-title>
+        <v-card-title class="text-h5"
+          >Channel
+          <v-spacer></v-spacer>
+          <v-icon @click.prevent="dialogListChannel = false">mdi-close</v-icon>
+        </v-card-title>
         <v-card-text>
           <v-row>
             <v-col
@@ -417,22 +418,6 @@
             </v-col>
           </v-row>
         </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn
-            color="blue darken-1"
-            text
-            @click.prevent="dialogListChannel = false"
-            >Cancel</v-btn
-          >
-          <!-- <v-btn
-            color="blue darken-1"
-            text
-            @click.prevent="confirmTaxInvoiceInfo()"
-            >OK</v-btn
-          > -->
-          <v-spacer></v-spacer>
-        </v-card-actions>
       </v-card>
     </v-dialog>
 
@@ -470,11 +455,13 @@
               </v-item-group>
             </v-col>
           </v-row>
-          <v-row v-if="selectScan.value == 'tel'">
+          <v-row>
             <v-text-field
-              label="Member Tel."
+              v-if="Object.keys(selectedScan).length !== 0"
+              :label="selectedScan.value == 'tel' ? 'Member Tel.' : 'ID Card'"
               solo
-              v-model="memberTel"
+              :maxlength="selectedScan.value == 'tel' ? 10 : 13"
+              v-model="inputMemberCodeByType"
             ></v-text-field>
           </v-row>
         </v-card-text>
@@ -483,7 +470,7 @@
           <v-btn
             color="blue darken-1"
             text
-            @click.prevent="confirmSelectMember(), (dialogCheckMember = false)"
+            @click.prevent="confirmSelectMember()"
             >Submit</v-btn
           >
           <v-btn
@@ -496,20 +483,59 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <v-overlay
-      :absolute="absolute"
-      :opacity="opacity"
-      :value="overlay"
-      style="height: 100vh"
+
+    <v-dialog
+      v-model="dialogScanMember"
+      max-width="500px"
+      :retain-focus="false"
+      persistent
     >
-      <v-card style="background-color: white; width: 50vw; margin: 0">
-        <v-card-text class="text-right">
-          <v-progress-linear indeterminate v-model="progressing" height="25"
-            ><strong>{{ Math.ceil(progressing) }}%</strong></v-progress-linear
-          >
+      <v-card
+        v-if="selectedScan.value == 'tel'"
+        style="background-color: white; width: 50vw; margin: 0"
+      >
+        <v-card-title class="text-h5"
+          >OTP
+          <v-spacer></v-spacer>
+          <v-icon @click.prevent="dialogScanMember = false"
+            >mdi-close</v-icon
+          ></v-card-title
+        >
+        <v-card-text class="text-center" color="white">
+          <v-otp-input
+            v-model="otp"
+            type="password"
+            :disabled="loading"
+            @finish="onFinish"
+          ></v-otp-input>
+          <v-overlay absolute :value="loading">
+            <v-progress-circular
+              indeterminate
+              color="primary"
+            ></v-progress-circular>
+          </v-overlay>
         </v-card-text>
+        <v-snackbar v-model="snackbar" :color="snackbarColor" :timeout="2000">
+          {{ text }}
+        </v-snackbar>
       </v-card>
-    </v-overlay>
+
+      <v-overlay
+        v-if="selectedScan.value == 'idcard'"
+        :absolute="absolute"
+        :opacity="opacity"
+        :value="overlayScanIdCard"
+        responsive
+      >
+        <v-card style="background-color: white; width: 50vw; margin: 0">
+          <v-card-text class="text-right">
+            <v-progress-linear indeterminate v-model="progressing" height="25"
+              ><strong>{{ Math.ceil(progressing) }}%</strong></v-progress-linear
+            >
+          </v-card-text>
+        </v-card>
+      </v-overlay>
+    </v-dialog>
   </div>
 </template>
 
@@ -527,16 +553,15 @@ export default {
   data() {
     return {
       panel: [0],
-      remark: "",
       today: dayjs().format("DD-MM-YYYY"),
       docDate: dayjs().format("DD-MM-YYYY"),
       selectedRedeemPoint: false,
       active: false,
       inputMemberCode: "",
-      memberTel: "",
+      inputMemberCodeByType: "",
       absolute: true,
       opacity: 1,
-      overlay: false,
+      overlayScanIdCard: false,
       progressing: 0,
       dialog: false,
       dialogDelete: false,
@@ -544,11 +569,12 @@ export default {
       dialogListChannel: false,
       dialogMenuOther: false,
       dialogCheckMember: false,
+      dialogScanMember: false,
       search: "",
-      selectScan: "",
       qty: 1,
       checkTaxInvoiceInfo: false,
       selectedPayPromotion: "1",
+      selectedScan: {},
       selectChannelIndex: "",
       selectColor: "",
       customerInfo: {},
@@ -558,6 +584,7 @@ export default {
         name: "",
         discount: "",
         point: "",
+        remark: "",
       },
       otherMsg: "",
       paymentItems: [
@@ -603,9 +630,9 @@ export default {
         selectTaxBranch: "",
         taxBranchNo: "",
       },
-      productCode: "",
+      inputProductCode: "",
       items: [],
-      selected: [],
+      selectedItems: [],
       editedIndex: -1,
       editedItem: {
         product_id: 1,
@@ -623,6 +650,12 @@ export default {
         discount: 0,
         total: 0,
       },
+      loading: false,
+      snackbar: false,
+      snackbarColor: "default",
+      otp: "",
+      text: "",
+      expectedOtp: "123456",
       url: process.env.VUE_APP_SERVER_API,
       url_crm: process.env.VUE_APP_CRM_API,
     };
@@ -643,7 +676,7 @@ export default {
       this.$refs.memberId.focus();
       this.openScreen2(); //เปิด screen 2
 
-      this.initialize();
+      // this.initialize();
       // if (this.$store.state.currentOrder !== null) {
       //     let currentOrder = JSON.parse(this.$store.state.currentOrder);
       //     this.invoiceNo = currentOrder.invoiceNo;
@@ -797,47 +830,95 @@ export default {
       ];
     },
     selectScanMember(data) {
-      this.selectScan = data;
+      this.selectedScan = data;
     },
     confirmSelectMember() {
-      if (this.selectScan.value == "tel" && this.memberTel == "") {
+      if (Object.keys(this.selectedScan).length === 0) {
+        alert("กรุณาเลือกการตรวจสอบข้อมูลสมาชิกให้ถูกต้อง");
+        return;
+      }
+      if (
+        this.selectedScan.value == "tel" &&
+        !this.checkValidPhone(this.inputMemberCodeByType)
+      ) {
         alert("กรุณาใส่เบอร์โทรศัพท์สมาชิกให้ถูกต้อง");
         return;
       }
 
-      this.overlay = true;
-      // this.progressing = 1;
-      // setTimeout(() => {
-      //   this.progressing = 25;
-      // }, 2000);
-      // setTimeout(() => {
-      //   this.progressing = 50;
-      // }, 5000);
-      // setTimeout(() => {
-      //   this.progressing = 75;
-      // }, 8000);
-      // setTimeout(() => {
-      //   this.progressing = 100;
+      if (
+        this.selectedScan.value == "idcard" &&
+        !this.checkID(this.inputMemberCodeByType)
+      ) {
+        alert("กรุณาใส่เลขที่บัตรประชาชนสมาชิกให้ถูกต้อง");
+        return;
+      }
 
-      // }, 10000);
-      this.getMemberInfo();
+      if (
+        this.checkValidPhone(this.inputMemberCodeByType) ||
+        this.checkID(this.inputMemberCodeByType)
+      ) {
+        this.dialogScanMember = true;
 
-      // this.overlay = false;
-      // this.dialogCheckMember = true;
+        if (this.checkID(this.inputMemberCodeByType)) {
+          this.overlayScanIdCard = true;
+          this.scanIdCard();
+        }
+      }
+    },
+    scanIdCard() {
+      this.progressing = 1;
+
+      setTimeout(() => {
+        this.progressing = 25;
+      }, 2000);
+      setTimeout(() => {
+        this.progressing = 50;
+      }, 5000);
+      setTimeout(() => {
+        this.progressing = 75;
+      }, 8000);
+      setTimeout(() => {
+        this.progressing = 100;
+
+        this.dialogScanMember = false;
+        this.overlayScanIdCard = false;
+        this.getMemberInfo();
+      }, 3000);
+    },
+    onFinish(rsp) {
+      this.loading = true;
+      setTimeout(() => {
+        this.loading = false;
+        this.snackbarColor = rsp === this.expectedOtp ? "success" : "warning";
+        this.text = `Processed OTP with "${rsp}" (${this.snackbarColor})`;
+        this.snackbar = true;
+        if (rsp === this.expectedOtp) {
+          this.dialogScanMember = false;
+          this.getMemberInfo();
+        }
+      }, 3500);
     },
     getMemberInfo() {
-      if (this.inputMemberCode.trim() == "") {
+      if (this.inputMemberCode.trim() == "" && this.selectedScan == null) {
         this.memberInfo.name = "Walk-In Customer";
         this.memberInfo.type = "";
         this.memberInfo.point = 0;
         this.memberInfo.discount = 0;
         this.otherMsg = "";
       } else {
+        let inputCode = "";
+
+        if (this.inputMemberCode !== "") {
+          inputCode = this.inputMemberCode;
+        } else {
+          inputCode = this.inputMemberCodeByType.trim();
+        }
+
         let data = {
-          member_code: this.inputMemberCode,
+          member_code: inputCode,
           brand_id: this.userInfo.data.brand_id,
           branch_id: this.userInfo.data.branch_id,
-          type: "",
+          type: this.selectedScan == null ? "" : this.selectedScan.value,
         };
 
         axios
@@ -859,17 +940,30 @@ export default {
                 this.memberInfo.name = member.name + " " + member.surname;
                 this.memberInfo.type = member.card_level + " Card";
                 this.memberInfo.point = 0;
-                // this.memberInfo.discount = member.percent1;
+                this.memberInfo.discount = 0;
                 // this.otherMsg = "วงเงินจำกัด " + this.formatPrice(member.limited) + " บาท";
                 this.otherMsg = "";
               }
-              this.overlay = false;
-              this.dialogCheckMember = true;
+
+              this.$refs.inputProductCode.focus();
             } else {
               alert("กรุณาใส่ข้อมูลสมาชิกให้ถูกต้อง");
+              this.inputMemberCode = "";
+              this.memberInfo = {
+                memberId: "",
+                type: "",
+                name: "",
+                discount: "",
+                point: "",
+                remark: "",
+              };
+              this.$refs.memberId.focus();
             }
-            this.inputMemberCode = "";
-            this.$refs.memberId.focus();
+
+            this.overlay = false;
+            this.overlayScanIdCard = false;
+            this.inputMemberCodeByType = "";
+            this.dialogCheckMember = false;
           })
           .catch((err) => {
             console.log("get member info", err);
@@ -888,9 +982,9 @@ export default {
       // TODO
       /*ยิง api  */
 
-      if (this.productCode == "") {
+      if (this.inputProductCode == "") {
         alert("กรุณาใส่รหัสสินค้าให้ถูกต้อง");
-        this.$refs.productCode.focus();
+        this.$refs.inputProductCode.focus();
         return;
       }
       if (parseInt(this.qty) <= 0) {
@@ -899,7 +993,7 @@ export default {
       }
       alert("ok");
       // let params = {
-      //   product: this.productCode,
+      //   product: this.inputProductCode,
       //   invoice: this.invoiceNo !== "" ? this.invoiceNo : "",
       //   branch: this.userInfo.data.brand_id,
       // };
@@ -969,7 +1063,7 @@ export default {
       //   });
     },
     deleteItem() {
-      console.log(this.selected);
+      console.log(this.selectedItems);
       // this.editedIndex = this.items.indexOf(item)
       // this.editedItem = Object.assign({}, item)
       // this.dialogDelete = true
@@ -989,7 +1083,7 @@ export default {
         };
       }
     },
-    deleteItemConfirm() {
+    confirmDeleteItem() {
       this.items.splice(this.editedIndex, 1);
       this.closeDelete();
     },
@@ -1029,6 +1123,24 @@ export default {
         this.qty = 1;
       }
     },
+    checkValidPhone(phone) {
+      if (phone.length !== 10) return false;
+      if (
+        phone[0] + phone[1] !== "06" &&
+        phone[0] + phone[1] !== "08" &&
+        phone[0] + phone[1] !== "09"
+      )
+        return false;
+
+      return true;
+    },
+    checkID(id) {
+      let sum = 0;
+      if (id.length != 13) return false;
+      for (let i = 0; i < 12; i++) sum += parseFloat(id.charAt(i)) * (13 - i);
+      if ((11 - (sum % 11)) % 10 != parseFloat(id.charAt(12))) return false;
+      return true;
+    },
   },
 };
 </script>
@@ -1051,4 +1163,7 @@ export default {
 .form-control {
   font-family: "Roboto", sans-serif !important;
 }
+/* .position-relative {
+  position: relative;
+} */
 </style>

@@ -12,7 +12,7 @@
       <v-card class="pl-0 pr-0" style="width: 200vw" tile>
         <v-card-text class="pl-0 pr-0" style="background-color: #53c3ac">
           <v-row v-if="$store.state.currentOrder !== null">
-            <v-col sm="12" md="6" lg="6" class="pa-3"
+            <v-col sm="12" md="7" lg="7" class="pa-3"
               ><v-row class="ml-5 mr-5"
                 ><v-col md="12" lg="12" class="text-center">
                   <v-banner elevation="10" shaped color="white"
@@ -29,19 +29,18 @@
                 ><v-col md="12" lg="12" class="text-center pb-5">
                   <v-row class="ml-5 mr-5 elevation-10">
                     <v-data-table
-                      class="pl-4"
+                      class="pl-2"
                       dense
-                      fixed-header
-                      height="320px"
+                      responsive
                       :headers="headers"
                       :items="items"
-                      :items-per-page="items.length"
+                      disable-pagination
                       hide-default-footer
-                      :disable-sort="false"
+                      :disable-sort="disableSort"
                     >
                       <template v-slot:item.product_name="{ item, index }">
                         <td class="text-left pa-0" style="font-size: 13px">
-                          {{ index + 1 }}. {{ item.product_name }}
+                          {{ item.id }}. {{ item.product_name }}
                         </td>
                       </template>
                       <template v-slot:item.qty="{ item, index }">
@@ -118,7 +117,7 @@
                 </v-col>
               </v-row>
             </v-col>
-            <v-col sm="12" md="6" lg="6" class="pa-3">
+            <v-col sm="12" md="5" lg="5" class="pa-3">
               <v-row style="height: 50%" class="elevation-10 rounded-lg">
                 <v-col>
                   <v-row class="ml-5 mr-5"
@@ -209,7 +208,7 @@
             </v-col>
           </v-row>
           <v-row v-else>
-            <v-col sm="12" md="6" lg="6" class="elevation-10">
+            <v-col sm="12" md="7" lg="7" class="elevation-10">
               <v-row style="height: 20%"></v-row>
               <v-row class="ma-2">
                 <!-- my image -->
@@ -235,7 +234,7 @@
               </v-row>
               <v-row style="height: 20%"></v-row>
             </v-col>
-            <v-col sm="12" md="6" lg="6" class="px-3 py-0">
+            <v-col sm="12" md="5" lg="5" class="px-3 py-0">
               <v-row>
                 <v-col md="1" lg="1"></v-col>
                 <v-col md="10" lg="10"
@@ -259,15 +258,8 @@ export default {
   data() {
     return {
       dialog: true,
+      disableSort: false,
       headers: [
-        // {
-        //   text: "#",
-        //   align: "start",
-        //   sortable: false,
-        //   value: "index",
-        // },
-        // { text: "Promotion", value: "promotion_code" },
-        // { text: "Product", value: "product_id" },
         { text: "Detail", value: "product_name", align: "center" },
         { text: "Qty", value: "qty", align: "end" },
         { text: "Price", value: "price", align: "end" },
@@ -280,7 +272,6 @@ export default {
   },
   mounted: function () {
     this.initialize();
-    // console.log(<%= BASE_URL %>);
   },
   methods: {
     initialize() {
@@ -367,35 +358,43 @@ export default {
         },
         {
           product_id: 9,
-          product_name: "Donut",
-          promotion_code: "",
-          qty: 452,
-          price: 25.0,
-          amount: 51,
-          discount: 4.9,
-          total: 6.5,
+          product_name: "Jelly bean",
+          promotion_code: "XC0000003",
+          qty: 375,
+          price: 0.0,
+          amount: 1000,
+          discount: 94,
+          total: 0.0,
         },
         {
           product_id: 10,
-          product_name: "KitKat",
+          product_name: "Lollipop",
           promotion_code: "",
-          qty: 518,
-          price: 26.0,
-          amount: 51,
-          discount: 65,
-          total: 7,
+          qty: 392,
+          price: 0.2,
+          amount: 1000,
+          discount: 98,
+          total: 0,
         },
         {
           product_id: 11,
-          product_name: "KitKat",
+          product_name: "Honeycomb",
           promotion_code: "",
-          qty: 518,
-          price: 26.0,
-          amount: 51,
-          discount: 65,
-          total: 7,
+          qty: 408,
+          price: 3.2,
+          amount: 1000,
+          discount: 87,
+          total: 6.5,
         },
       ];
+      let i = 1;
+      this.items.forEach((element) => {
+        element.id = i++;
+      });
+      this.items =
+        this.items.length < 10
+          ? this.items
+          : this.items.slice(this.items.length - 9, this.items.length);
     },
     formatPrice(value) {
       let val = (value / 1).toFixed(2).replace(",", ".");
@@ -406,7 +405,8 @@ export default {
 </script>
 
 <style>
-.v-data-table--fixed-height .v-data-table__wrapper {
+.v-data-table__wrapper {
+  height: 320px;
   overflow-y: hidden;
 }
 </style>
