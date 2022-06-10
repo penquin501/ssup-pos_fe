@@ -307,7 +307,10 @@
               </v-row> -->
               <v-row>
                 <v-col>
-                  <v-btn color="success" block
+                  <v-btn
+                    color="success"
+                    block
+                    @click.prevent="dialogPayment = true"
                     ><v-icon>fa fa-money</v-icon>Pay</v-btn
                   >
                 </v-col>
@@ -361,6 +364,7 @@
         </v-expansion-panels>
       </v-col>
     </v-row>
+
     <v-dialog v-model="dialogDelete" width="500px" persistent>
       <v-card>
         <v-card-title class="text-h5"
@@ -536,6 +540,236 @@
         </v-card>
       </v-overlay>
     </v-dialog>
+
+    <v-dialog v-model="dialogPayment" max-width="550px;" persistent>
+      <v-card style="width: 80vw; background-color: #649893">
+        <v-card-title class="text-h5 pb-0">
+          Pay
+          <v-spacer></v-spacer>
+          <v-icon @click.prevent="dialogPayment = false"
+            >mdi-close</v-icon
+          ></v-card-title
+        >
+        <v-card-subtitle class="mt-2 pb-1">
+          <v-btn x-small @click.prevent="dialogPreview = true">preview</v-btn>
+        </v-card-subtitle>
+        <v-card-text class="pb-0" style="color: white">
+          <SalePay />
+        </v-card-text>
+        <v-card-actions class="pt-0">
+          <b-button class="btn-action-pay btn-color">
+            <b-img
+              style="width: 30px; height: 30px"
+              src="./img/icons/alipay-brands.svg"
+            ></b-img>
+            <br />
+            <span style="font-size: 14px">Alipay</span>
+          </b-button>
+          <b-button
+            class="btn-action-pay btn-color"
+            @click.prevent="dialogCreditCard = true"
+          >
+            <v-icon size="32" color="black">mdi-credit-card-multiple</v-icon>
+            <br />
+            <span style="font-size: 14px">Credit Card</span>
+          </b-button>
+          <!-- <b-button variant="primary" class="btn-action-pay">
+            <v-icon size="32" color="black">mdi-file-document-box</v-icon>
+            <br />
+            <span style="font-size: 14px">Tax Invoice</span>
+          </b-button> -->
+
+          <v-spacer></v-spacer>
+
+          <b-button class="btn-action-pay btn-color">
+            <v-icon size="32" color="black">mdi-content-save-all</v-icon>
+            <br />
+            <span style="font-size: 14px">Save</span>
+          </b-button>
+          <b-button
+            class="btn-action-pay btn-color"
+            @click.prevent="dialogPayment = false"
+          >
+            <v-icon size="32" color="black">mdi-close-circle</v-icon>
+            <br />
+            <span style="font-size: 14px">Cancel</span>
+          </b-button>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="dialogCreditCard" max-width="550px;" persistent>
+      <v-card style="width: 40vw">
+        <v-card-title class="text-h5">
+          Credit Card
+          <v-spacer></v-spacer>
+          <v-icon @click.prevent="dialogCreditCard = false"
+            >mdi-close</v-icon
+          ></v-card-title
+        >
+        <v-card-text>
+          <v-row style="background-color: lightyellow; font-weight: bold">
+            <v-row>
+              <v-col class="py-2" md="1"></v-col>
+              <v-col class="py-2" md="4">ชุดสมัครใหม่ OPNKSRI:</v-col>
+              <v-col class="py-2" md="7"
+                >ต้องชำระผ่านบัตรเครดิตกรุงศรีเท่านั้น</v-col
+              >
+            </v-row>
+            <v-row>
+              <v-col class="py-2" md="1"></v-col>
+              <v-col class="py-2" md="4">ชุดสมัครใหม่ OPNKTC:</v-col>
+              <v-col class="py-2" md="7"
+                >ต้องชำระผ่านบัตรเครดิตกสิกรไทยเท่านั้น</v-col
+              >
+            </v-row>
+          </v-row>
+          <v-row style="font-weight: bold">
+            <v-row>
+              <v-col class="text-right">ประเภทบัตร</v-col>
+              <v-col
+                ><v-select
+                  v-model="selectedCard"
+                  :items="optionsCard"
+                  style="height: 24px"
+                  solo
+                  dense
+                  outlined
+                ></v-select
+              ></v-col>
+            </v-row>
+            <v-row>
+              <v-col class="text-right">รหัสบัตรเครดิต</v-col>
+              <v-col
+                ><v-text-field
+                  solo
+                  height="10"
+                  style="height: 24px"
+                  dense
+                  maxlength="16"
+                  >0.00</v-text-field
+                ></v-col
+              >
+            </v-row>
+            <v-row>
+              <v-col class="text-right">จำนวนเงิน</v-col>
+              <v-col
+                ><v-text-field solo height="10" style="height: 24px" dense
+                  >0.00</v-text-field
+                ></v-col
+              >
+            </v-row>
+          </v-row>
+        </v-card-text>
+        <v-card-actions class="pt-5">
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1">OK</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="dialogPreview" max-width="550px;" persistent>
+      <v-card style="width: 50vw">
+        <v-card-title class="text-h5">
+          Sale Details
+          <v-spacer></v-spacer>
+          <v-icon @click.prevent="dialogPreview = false"
+            >mdi-close</v-icon
+          ></v-card-title
+        >
+        <v-card-text>
+          <v-row>
+            <p><b>Date:</b> {{ today }}</p>
+            <!-- <p>Sales Receipt</p> -->
+            <p>
+              <b>Sold By:</b> {{ empInfo.name }}
+              {{ empInfo.surname }}
+            </p>
+            <p>
+              <b>Sold To:</b>
+              {{ memberInfo.name }}
+            </p>
+          </v-row>
+          <v-row>
+            <v-data-table
+              dense
+              :headers="headersReceipt"
+              :items="items"
+              item-key="id"
+              height="300"
+              :items-per-page="items.length"
+              hide-default-footer
+              :disable-sort="disableSort"
+            >
+              <template v-slot:item.product_name="{ item, index }">
+                <td class="text-left pa-0" style="font-size: 13px">
+                  {{ index + 1 }}. {{ item.product_name }}
+                </td>
+              </template>
+              <template v-slot:item.qty="{ item, index }">
+                <td class="text-right pa-0" style="font-size: 13px">
+                  {{ item.qty }}
+                </td>
+              </template>
+              <template v-slot:item.price="{ item, index }">
+                <td class="text-right pa-0" style="font-size: 13px">
+                  {{ formatPrice(item.price) }}
+                </td>
+              </template>
+              <template v-slot:item.amount="{ item, index }">
+                <td class="text-right pa-0" style="font-size: 13px">
+                  {{ formatPrice(item.amount) }}
+                </td>
+              </template>
+              <template v-slot:item.discount="{ item, index }">
+                <td class="text-right pa-0" style="font-size: 13px">
+                  {{ formatPrice(item.discount) }}
+                </td>
+              </template>
+              <template v-slot:item.total="{ item, index }">
+                <td class="text-right pa-0" style="font-size: 13px">
+                  {{ formatPrice(item.total) }}
+                </td>
+              </template>
+            </v-data-table></v-row
+          >
+          <v-row>
+            <v-col
+              md="12"
+              lg="12"
+              class="text-center pt-2 pb-10 pr-5 pl-5"
+              style="border-top: 1.5px dashed black; font-size: 16px"
+            >
+              <v-row>สินค้าทั้งหมด: {{ items.length }} รายการ</v-row>
+              <v-row>
+                <v-col md="3" class="text-right pb-0">คะแนนที่ได้รับ:</v-col>
+                <v-col md="3" class="pb-0">2</v-col>
+                <v-col md="3" class="text-right pb-0">รวมเงิน:</v-col>
+                <v-col md="3" class="text-right pb-0">{{
+                  formatPrice(1000)
+                }}</v-col>
+              </v-row>
+              <v-row>
+                <v-col md="3" class="text-right pb-0">คะแนนที่ใช้:</v-col>
+                <v-col md="3" class="pb-0">2</v-col>
+                <v-col md="3" class="text-right pb-0">ส่วนลด:</v-col>
+                <v-col md="3" class="text-right pb-0">{{
+                  formatPrice(1000)
+                }}</v-col>
+              </v-row>
+              <v-row>
+                <v-col md="3" class="text-right pb-0">คะแนนสุทธิ:</v-col>
+                <v-col md="3" class="pb-0">2</v-col>
+                <v-col md="3" class="text-right pb-0">สุทธิ:</v-col>
+                <v-col md="3" class="text-right pb-0">{{
+                  formatPrice(1000)
+                }}</v-col>
+              </v-row>
+            </v-col>
+          </v-row>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -545,14 +779,18 @@ import axios from "axios";
 // const queryString = require("query-string");
 
 import SaleOthers from "@/views/Sale/Sale-Other.vue";
+import SalePay from "@/views/Sale/Sale-Pay.vue";
 
 export default {
   components: {
     SaleOthers,
+    SalePay,
   },
   data() {
     return {
       panel: [0],
+      disableSort: false,
+      userInfo: "",
       today: dayjs().format("DD-MM-YYYY"),
       docDate: dayjs().format("DD-MM-YYYY"),
       selectedRedeemPoint: false,
@@ -570,6 +808,9 @@ export default {
       dialogMenuOther: false,
       dialogCheckMember: false,
       dialogScanMember: false,
+      dialogPayment: false,
+      dialogCreditCard: false,
+      dialogPreview: false,
       search: "",
       qty: 1,
       checkTaxInvoiceInfo: false,
@@ -578,6 +819,12 @@ export default {
       selectChannelIndex: "",
       selectColor: "",
       customerInfo: {},
+      selectedCard: 0,
+      empInfo: {
+        emp_id: "",
+        name: "",
+        surname: "",
+      },
       memberInfo: {
         memberId: "",
         type: "",
@@ -623,6 +870,15 @@ export default {
         { text: "Discount", value: "discount", align: "end" },
         { text: "Total", value: "total", align: "end" },
       ],
+      headersReceipt: [
+        { text: "Detail", value: "product_name", align: "center" },
+        { text: "Qty", value: "qty", align: "end" },
+        { text: "Price", value: "price", align: "end" },
+        { text: "Amount", value: "amount", align: "end" },
+        { text: "Discount", value: "discount", align: "end" },
+        { text: "Total", value: "total", align: "end" },
+      ],
+      optionsCard: [],
       taxInfo: {
         fullname: "",
         taxId: "",
@@ -674,9 +930,9 @@ export default {
       });
     } else {
       this.$refs.memberId.focus();
-      this.openScreen2(); //เปิด screen 2
+      // this.openScreen2(); //เปิด screen 2
 
-      // this.initialize();
+      this.initialize();
       // if (this.$store.state.currentOrder !== null) {
       //     let currentOrder = JSON.parse(this.$store.state.currentOrder);
       //     this.invoiceNo = currentOrder.invoiceNo;
@@ -691,6 +947,11 @@ export default {
       // }
       this.userInfo = JSON.parse(this.$store.state.userInfo);
 
+      this.empInfo = {
+        emp_id: this.userInfo.data.emp_id,
+        name: this.userInfo.data.emp_name,
+        surname: this.userInfo.data.emp_surname,
+      };
       this.configHeader = {
         headers: { Authorization: `Bearer ${this.userInfo.token}` },
       };
@@ -699,12 +960,11 @@ export default {
         this.userInfo.doc_date !== null
           ? dayjs(this.userInfo.doc_date).format("DD-MM-YYYY")
           : this.today;
-
+      this.getCreditType();
       // this.formCashier = this.$store.state.cashierBillInfo == null ? this.formCashier : this.$store.state.cashierBillInfo;
 
       // this.defaultMenu();
       // this.checkCashier();
-      // this.getEmpInfo();
     }
   },
   methods: {
@@ -899,7 +1159,11 @@ export default {
       }, 3500);
     },
     getMemberInfo() {
-      if (this.inputMemberCode.trim() == "" && this.selectedScan == null) {
+      console.log(this.selectedScan);
+      if (
+        this.inputMemberCode.trim() == "" &&
+        Object.keys(this.selectedScan).length === 0
+      ) {
         this.memberInfo.name = "Walk-In Customer";
         this.memberInfo.type = "";
         this.memberInfo.point = 0;
@@ -977,6 +1241,22 @@ export default {
       // if (selectedRedeemPoint) {
       //  คำนวนคะแนน คะแนนเดิม คิดเป็นกี่บาท แล้วหักออก
       // }
+    },
+    getCreditType() {
+      this.optionsCard = [];
+      this.optionsCard.push({ value: 0, text: "เลือก" });
+
+      axios
+        .get(this.url + "/cart/listpaid", this.configHeader)
+        .then((res) => {
+          let response = res.data;
+          response.listCreditType.forEach((e) => {
+            this.optionsCard.push({ text: e.description, value: e.id });
+          });
+        })
+        .catch((err) => {
+          console.log("get list credit error = ", err);
+        });
     },
     getProductInfo() {
       // TODO
@@ -1113,6 +1393,7 @@ export default {
       this.selectChannelIndex = item.value;
       this.selectColor = item.color;
     },
+    confirmPayment() {},
     formatPrice(value) {
       let val = (value / 1).toFixed(2).replace(",", ".");
       return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -1163,6 +1444,18 @@ export default {
 .form-control {
   font-family: "Roboto", sans-serif !important;
 }
+.btn-action-pay {
+  height: 80px;
+  width: 100px;
+  text-align: center;
+  margin-right: 5px;
+}
+.btn-color {
+  background-color: #338787 !important;
+  color: #fff !important;
+  border-color: #338787 !important;
+}
+
 /* .position-relative {
   position: relative;
 } */

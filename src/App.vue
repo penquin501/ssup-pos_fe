@@ -18,16 +18,16 @@
             <div v-else><i class="fa fa-indent" aria-hidden="true"></i></div>
           </v-app-bar-nav-icon>
         </v-col>
-        <v-col md="8"></v-col>
+        <v-col md="8">
+          <!-- {{ $i18n.locale }} -->
+          <!-- {{ $t("message.hello", { msg: "hello" }) }} -->
+          <!-- {{ $t("message.test") }} -->
+        </v-col>
         <v-col md="2">
-          <v-btn-toggle
-            rounded
-            v-model="selectedLang"
-            @change="setLang()"
-            mandatory
-          >
+          <v-btn-toggle v-model="selectedLang" @change="setLang()" mandatory>
             <v-btn
-              icon
+              rounded
+              small
               :value="item.value"
               v-for="item in languages"
               :key="item.value"
@@ -40,7 +40,6 @@
           <Header />
         </v-col>
       </v-app-bar>
-
       <v-main>
         <router-view />
       </v-main>
@@ -65,6 +64,7 @@ export default {
     drawer: null,
     selectedLang: "en",
     languages: [
+      { flag: "cn", value: "cn", text: "CN" },
       { flag: "us", value: "en", text: "EN" },
       { flag: "th", value: "th", text: "TH" },
     ],
