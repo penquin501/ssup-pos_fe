@@ -1,7 +1,6 @@
 {
     "message": {
-        "hello": "{msg} ชาวโลก",
-        "subMenu": "เมนูย่อย"
+
     },
     "$vuetify": {
         "badge": "สัญลักษณ์",

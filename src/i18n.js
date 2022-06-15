@@ -20,14 +20,26 @@ function loadLocaleMessages () {
 
 function getLocaleApi(messages) {
   return new Promise(function (resolve, reject) {
+    let getVuex = localStorage.getItem('vuex');
+    if(getVuex !== undefined) {
+      var decodedVuex = JSON.parse(getVuex);
+      let userInfo = JSON.parse(decodedVuex.userInfo);
       axios
-        .get(process.env.VUE_APP_SERVER_API + "/get/locale")
+        .get(process.env.VUE_APP_SERVER_API + "/get/locale?brand_id="+ userInfo.data.brand_id)
         .then((res) => {
-          var responses = res.data;
+          var responses = JSON.stringify(res.data);
+          var decoded = JSON.parse(responses);
+
           for (const [key, value] of Object.entries(messages)) {
-            for (let ii of responses) {
-              if (key == ii.lang) {
-                value.message[ii.key] = ii.msg;
+            for (const [lang, pages] of Object.entries(decoded)) {
+              if (key == lang) {
+                for(const [page, v] of Object.entries(pages)) {
+                  let component = {};
+                  for(let a of v) {
+                    component[Object.keys(a)] = String(Object.values(a));
+                  }
+                  value.message[page] = component;
+                }
               }
             }
           }
@@ -36,6 +48,9 @@ function getLocaleApi(messages) {
         .catch((err) => {
           console.log(err);
         });
+    } else {
+      resolve(messages);
+    }
   });
 }
 

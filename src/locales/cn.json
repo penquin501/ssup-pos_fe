@@ -1,7 +1,5 @@
 {
   "message": {
-    "hello": "{msg} 徽章",
-    "subMenu": "Sub Menu"
   },
   "$vuetify": {
     "badge": "徽章",

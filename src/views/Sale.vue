@@ -133,18 +133,17 @@
         </v-row>
         <v-row>
           <v-data-table
-            v-model="selectedItems"
-            :search="search"
+            height="350px"
             item-key="product_id"
             :headers="headers"
             :items="items"
-            class="elevation-1 pl-2 pr-6"
             dense
             show-select
-            style="background-color: #eeeeee"
+            style="background-color: #f5f5f5"
+            v-model="selectedItems"
           >
             <template v-slot:top>
-              <v-toolbar flat style="background-color: #eeeeee">
+              <v-toolbar flat style="background-color: #f5f5f5">
                 <v-col md="3" class="pa-0"
                   ><label>Product Barcode:</label></v-col
                 >
@@ -170,49 +169,41 @@
                   ></b-form-input>
                 </v-col>
                 <v-col md="5" class="pa-0"> </v-col>
-                <!-- <v-col md="3" class="block-bin">
-                  <v-spacer></v-spacer>
-                  <v-btn color="primary" plain x-small
-                    ><v-icon>mdi-file-plus</v-icon> New</v-btn
-                  >
-                  <v-btn color="primary" @click="deleteItem()" plain x-small
-                    ><v-icon>fa fa-trash-o</v-icon> Delete</v-btn
-                  ></v-col
-                > -->
               </v-toolbar>
             </template>
-            <template v-slot:item.index="{ item, index }">
-              {{ index + 1 }}
+            <template v-slot:header.data-table-select="{ on, props }">
+              <v-checkbox
+                dense
+                v-model="isAllChecked"
+                @change="allClicked(isAllChecked)"
+              ></v-checkbox>
             </template>
-            <template v-slot:item.product_name="{ item, index }">
-              <td class="pa-0">
-                {{ item.product_name }}
-              </td>
-            </template>
-            <template v-slot:item.qty="{ item, index }">
-              <td class="text-right pa-0">
-                {{ item.qty }}
-              </td>
-            </template>
-            <template v-slot:item.price="{ item, index }">
-              <td class="text-right pa-0">
-                {{ formatPrice(item.price) }}
-              </td>
-            </template>
-            <template v-slot:item.amount="{ item, index }">
-              <td class="text-right pa-0" style="color: green">
-                {{ formatPrice(item.amount) }}
-              </td>
-            </template>
-            <template v-slot:item.discount="{ item, index }">
-              <td class="text-right pa-0">
-                {{ formatPrice(item.discount) }}
-              </td>
-            </template>
-            <template v-slot:item.total="{ item, index }">
-              <td class="text-right pa-0">
-                {{ formatPrice(item.total) }}
-              </td>
+            <template v-slot:body="{ items, index }">
+              <tr
+                v-for="item in items"
+                :key="item.id"
+                :style="{ color: item.color, fontSize: '14px' }"
+              >
+                <td class="pl-4 text-center">
+                  <v-checkbox
+                    dense
+                    v-model="selectedItems"
+                    :value="item"
+                    @change="rowClicked(selectedItems, item)"
+                  ></v-checkbox>
+                </td>
+                <td class="text-center">{{ item.id }}</td>
+                <td class="pa-0 text-center">{{ item.promotion_code }}</td>
+                <td class="pa-0 text-center">{{ item.product_id }}</td>
+                <td class="pa-0">{{ item.product_name }}</td>
+                <td class="pa-0 text-right">{{ item.qty }}</td>
+                <td class="pa-0 text-right">{{ formatPrice(item.price) }}</td>
+                <td class="pa-0 text-right">{{ formatPrice(item.amount) }}</td>
+                <td class="pa-0 text-right">
+                  {{ formatPrice(item.discount) }}
+                </td>
+                <td class="pa-0 text-right">{{ formatPrice(item.total) }}</td>
+              </tr>
             </template>
           </v-data-table>
         </v-row>
@@ -731,8 +722,8 @@
                   {{ formatPrice(item.total) }}
                 </td>
               </template>
-            </v-data-table></v-row
-          >
+            </v-data-table>
+          </v-row>
           <v-row>
             <v-col
               md="12"
@@ -814,6 +805,7 @@ export default {
       search: "",
       qty: 1,
       checkTaxInvoiceInfo: false,
+      isAllChecked: false,
       selectedPayPromotion: "1",
       selectedScan: {},
       selectChannelIndex: "",
@@ -861,8 +853,8 @@ export default {
           sortable: false,
           value: "index",
         },
-        { text: "Promotion", value: "promotion_code" },
-        { text: "Product", value: "product_id" },
+        { text: "Promotion", value: "promotion_code", align: "center" },
+        { text: "Product", value: "product_id", align: "center" },
         { text: "Detail", value: "product_name", align: "center" },
         { text: "Qty", value: "qty", align: "end" },
         { text: "Price", value: "price", align: "end" },
@@ -989,6 +981,7 @@ export default {
       this.items = [
         {
           product_id: "25237",
+          color: "green",
           product_name: "Serum Absolute Illuminating 30",
           promotion_code: "XC0000001",
           qty: 1,
@@ -999,6 +992,7 @@ export default {
         },
         {
           product_id: 2,
+          color: "yellow",
           product_name: "Ice cream sandwich",
           promotion_code: "XC0000001",
           qty: 237,
@@ -1009,6 +1003,7 @@ export default {
         },
         {
           product_id: 3,
+          color: "yellow",
           product_name: "Eclair",
           promotion_code: "XC0000001",
           qty: 262,
@@ -1088,6 +1083,10 @@ export default {
           total: 7,
         },
       ];
+      let id = 0;
+      this.items.forEach((e) => {
+        e.id = ++id;
+      });
     },
     selectScanMember(data) {
       this.selectedScan = data;
@@ -1342,6 +1341,18 @@ export default {
       //     }
       //   });
     },
+    allClicked(checked) {
+      if (checked) {
+        this.selectedItems = this.items;
+      } else {
+        this.selectedItems = [];
+      }
+      console.log(this.selectedItems);
+    },
+    rowClicked(checked, item) {
+      console.log("1 checked", checked);
+      console.log("2 item", item);
+    },
     deleteItem() {
       console.log(this.selectedItems);
       // this.editedIndex = this.items.indexOf(item)
@@ -1455,8 +1466,4 @@ export default {
   color: #fff !important;
   border-color: #338787 !important;
 }
-
-/* .position-relative {
-  position: relative;
-} */
 </style>
