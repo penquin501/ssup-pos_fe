@@ -32,6 +32,7 @@
 
 <script>
 import axios from "axios";
+import dayjs from "dayjs";
 
 export default {
   name: "Header",
@@ -60,6 +61,7 @@ export default {
       });
     } else {
       this.userInfo = JSON.parse(this.$store.state.userInfo);
+
       this.user = {
         initials:
           this.userInfo.data.emp_name[0] + this.userInfo.data.emp_surname[0],
@@ -71,22 +73,7 @@ export default {
   },
   methods: {
     logout() {
-      axios
-        .post(this.url + "/logout", { username: this.userInfo.data.username })
-        .then((res) => {
-          let response = res.data;
-
-          if (response.message == "success") {
-            this.$store.commit("doLogout");
-            window.localStorage.removeItem("vuex");
-          } else {
-            alert("ไม่สามารถออกจากระบบได้ เนื่องจาก..." + response.message);
-          }
-        })
-        .catch((err) => {
-          console.log("get error", err);
-          alert("ไม่สามารถออกจากระบบได้ เนื่องจาก..." + err);
-        });
+      this.$store.commit("doLogout", this.userInfo);
     },
   },
 };

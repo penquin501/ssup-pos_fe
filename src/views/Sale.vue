@@ -123,8 +123,13 @@
           <v-col cols="12" class="ml-5 mr-5">
             <v-row>
               <v-col md="4"
-                ><label style="font-size: 24px"
-                  ><strong>(00)บิลเงินสดอย่างย่อ</strong></label
+                ><label
+                  style="font-size: 24px"
+                  v-if="Object.keys(billType).length !== 0"
+                  ><strong
+                    >({{ billType.status_no }})
+                    {{ billType.description }}</strong
+                  ></label
                 ></v-col
               >
               <v-col md="8"> </v-col>
@@ -558,7 +563,7 @@
           </b-button>
           <b-button
             class="btn-action-pay btn-color"
-            @click.prevent="dialogCreditCard = true"
+            @click.prevent="(dialogCreditCard = true), getCreditType()"
           >
             <v-icon size="32" color="black">mdi-credit-card-multiple</v-icon>
             <br />
@@ -670,7 +675,7 @@
         >
         <v-card-text>
           <v-row>
-            <p><b>Date:</b> {{ today }}</p>
+            <p><b>Date:</b> {{ docDate }}</p>
             <!-- <p>Sales Receipt</p> -->
             <p>
               <b>Sold By:</b> {{ empInfo.name }}
@@ -782,8 +787,9 @@ export default {
       panel: [0],
       disableSort: false,
       userInfo: "",
-      today: dayjs().format("DD-MM-YYYY"),
-      docDate: dayjs().format("DD-MM-YYYY"),
+      // today: dayjs().format("DD-MM-YYYY"),
+      // docDate: dayjs().format("DD-MM-YYYY"),
+      docDate: "",
       selectedRedeemPoint: false,
       active: false,
       inputMemberCode: "",
@@ -846,6 +852,8 @@ export default {
           icon: "mdi-cellphone-iphone",
         },
       ],
+      statusNo: "",
+      billType: {},
       headers: [
         {
           text: "#",
@@ -924,7 +932,7 @@ export default {
       this.$refs.memberId.focus();
       // this.openScreen2(); //เปิด screen 2
 
-      this.initialize();
+      // this.initialize();
       // if (this.$store.state.currentOrder !== null) {
       //     let currentOrder = JSON.parse(this.$store.state.currentOrder);
       //     this.invoiceNo = currentOrder.invoiceNo;
@@ -938,6 +946,17 @@ export default {
       //     this.calPoints();
       // }
       this.userInfo = JSON.parse(this.$store.state.userInfo);
+      let doc_date = this.userInfo.doc_date;
+      if (doc_date !== "" && doc_date !== dayjs().format("YYYY-MM-DD")) {
+        alert(
+          "วันที่เปิดบิล " +
+            doc_date +
+            " ไม่ตรงกับวันที่ของระบบ กรุณาตรวจสอบอีกครั้ง"
+        );
+        this.$store.commit("doLogout", this.userInfo);
+      } else {
+        this.docDate = dayjs(this.userInfo.doc_date).format("DD-MM-YYYY");
+      }
 
       this.empInfo = {
         emp_id: this.userInfo.data.emp_id,
@@ -948,11 +967,6 @@ export default {
         headers: { Authorization: `Bearer ${this.userInfo.token}` },
       };
 
-      this.docDate =
-        this.userInfo.doc_date !== null
-          ? dayjs(this.userInfo.doc_date).format("DD-MM-YYYY")
-          : this.today;
-      this.getCreditType();
       // this.formCashier = this.$store.state.cashierBillInfo == null ? this.formCashier : this.$store.state.cashierBillInfo;
 
       // this.defaultMenu();
@@ -1158,7 +1172,6 @@ export default {
       }, 3500);
     },
     getMemberInfo() {
-      console.log(this.selectedScan);
       if (
         this.inputMemberCode.trim() == "" &&
         Object.keys(this.selectedScan).length === 0
@@ -1168,6 +1181,8 @@ export default {
         this.memberInfo.point = 0;
         this.memberInfo.discount = 0;
         this.otherMsg = "";
+        this.statusNo = "00";
+        this.checkBillType();
       } else {
         let inputCode = "";
 
@@ -1234,6 +1249,21 @@ export default {
             this.$refs.memberId.focus();
           });
       }
+    },
+    checkBillType() {
+      let body = {
+        brand_id: this.userInfo.data.brand_id,
+        status_no: this.statusNo,
+      };
+      axios
+        .post(this.url + "/cart/listbilltype", body, this.configHeader)
+        .then((res) => {
+          let response = res.data;
+          this.billType = response.listBillType[0];
+        })
+        .catch((err) => {
+          console.log("get list bill type error = ", err);
+        });
     },
     selectToRedeemPoint() {
       // TODO

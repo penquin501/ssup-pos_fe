@@ -20,8 +20,8 @@ function loadLocaleMessages () {
 
 function getLocaleApi(messages) {
   return new Promise(function (resolve, reject) {
-    let getVuex = localStorage.getItem('vuex');
-    if(getVuex !== undefined) {
+    if(localStorage.getItem('vuex') !== null) {
+      let getVuex = localStorage.getItem('vuex');
       var decodedVuex = JSON.parse(getVuex);
       let userInfo = JSON.parse(decodedVuex.userInfo);
       axios

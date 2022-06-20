@@ -153,6 +153,7 @@
 <script>
 // import HelloWorld from '../components/HelloWorld'
 import axios from "axios";
+import dayjs from "dayjs";
 
 export default {
   name: "Home",
@@ -187,11 +188,11 @@ export default {
   },
   methods: {
     checkTypeToLogin() {
-      /* เรียก hostname ไปเช็ค config 
+      /* เรียก hostname ไปเช็ค config
           location.toString() //http://localhost:8080/
           location.host //localhost:8080
           location.hostname //localhost
-          location.port //8080 
+          location.port //8080
           location.protocol //http:
       */
       let hostname = "172.63.1.24";
