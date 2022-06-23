@@ -11,12 +11,7 @@
           <v-card>
             <v-card-text class="v-application--wrap fill-height">
               <div class="layout column align-center">
-                <img
-                  src="img/auth/ssup-logo.svg"
-                  alt="Vue Vuetify Admin Logo"
-                  width="200"
-                  height="200"
-                />
+                <img src="img/auth/ssup_logo2.png" alt="SSUP Logo" />
                 <h1 class="text-center my-4 primary--text"></h1>
                 <v-form>
                   <v-text-field
