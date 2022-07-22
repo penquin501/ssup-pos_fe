@@ -497,8 +497,16 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="dialogReceipt" max-width="200px;" persistent>
-      <SaleReceipt />
+    <v-dialog v-model="dialogReceipt" max-width="450px;" persistent>
+      <v-card class="text-center" max-width="450px">
+        <v-card-text>
+          <SaleReceipt />
+        </v-card-text>
+      </v-card>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-icon @click.prevent="closeDialog()">mdi-close</v-icon>
+      </v-card-actions>
     </v-dialog>
     <v-dialog v-model="dialogDelete" max-width="500px" persistent>
       <v-card>
@@ -536,7 +544,7 @@ export default {
       dialogDelete: false,
       dialogCreditCard: false,
       dialogFreeBag: false,
-      dialogReceipt: true,
+      dialogReceipt: false,
       disableSort: false,
       singleSelect: true,
       selectedPromotion: [],
@@ -622,7 +630,7 @@ export default {
       this.calculateBalance();
       // this.$store.commit("currentOrder", null);
 
-      if (this.$store.state.receiptInfo !== undefined) {
+      if (this.$store.state.receiptInfo !== null) {
         this.dialogReceipt = true;
       }
     }
@@ -937,9 +945,6 @@ export default {
           if (response.message == "success") {
             // alert("เลขที่บิล " + response.invoice_no);
             this.printReceipt(response.invoice_no);
-            // this.dialogFreeBag = false;
-            // this.$store.commit("currentOrder", null);
-            // this.$router.go();
           } else {
             alert(
               "ไม่สามารถบันทึกรายการซื้อสินค้านี้ได้ เนื่องจาก..." +
@@ -951,11 +956,14 @@ export default {
           console.log("save bill main error = ", err);
         });
     },
+    closeDialog() {
+      this.dialogReceipt = false;
+      this.dialogFreeBag = false;
+      this.$store.commit("currentOrder", null);
+      this.$store.commit("setReceiptInfo", null);
+      this.$router.go();
+    },
     printReceipt(invoiceNo) {
-      this.dialogReceipt = true;
-      // this.dialogFreeBag = false;
-      // this.$store.commit("currentOrder", null);
-
       axios
         .get(
           this.url + "/cart/receipt?invoiceNo=" + invoiceNo,
@@ -963,6 +971,7 @@ export default {
         )
         .then((res) => {
           this.$store.commit("setReceiptInfo", res.data);
+          this.dialogReceipt = true;
         })
         .catch((err) => {
           console.log("save bill main error = ", err);
