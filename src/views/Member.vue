@@ -1,3 +1,5 @@
+<!-- @format -->
+
 <template>
   <div>
     <b-card>
@@ -333,7 +335,7 @@ export default {
       });
     } else {
       this.userInfo = JSON.parse(this.$store.state.userInfo);
-      this.defaultMenu(); 
+      this.defaultMenu();
       this.configHeader = {
         headers: { Authorization: `Bearer ${this.userInfo.token}` },
       };
@@ -343,7 +345,7 @@ export default {
   methods: {
     defaultMenu() {
       let userMenu = this.userInfo.roles;
-      if(userMenu !== null) {
+      if (userMenu !== null) {
         for (let item of userMenu) {
           for (const [key, value] of Object.entries(item)) {
             if (key == this.$route.name && item.SubMenu !== undefined) {
@@ -620,5 +622,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

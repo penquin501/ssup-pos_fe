@@ -67,10 +67,10 @@
                 </v-row>
               </v-col>
               <v-col sm="4" md="4">
-                <v-row v-if="memberInfo.name !== '' && memberInfo.type !== ''">
+                <!-- <v-row v-if="memberInfo.name !== '' && memberInfo.type !== ''">
                   <strong>{{ memberInfo.type }}</strong>
-                </v-row>
-                <v-row v-else-if="memberInfo.name == 'Walk-In Customer'">
+                </v-row> -->
+                <v-row v-if="memberInfo.name == 'Walk-In Customer'">
                   <strong>-</strong>
                 </v-row>
                 <v-row v-else>
@@ -104,7 +104,8 @@
             <v-row>
               <v-col class="pt-0 pb-0" style="color: red">{{ otherMsg }}</v-col>
             </v-row>
-            <v-row>
+            <!-- TODO: Deciding where it live -->
+            <!-- <v-row>
               <v-col md="2" class="pt-0 pb-0">Remark:</v-col>
               <v-col md="10" class="pt-0 pb-0">
                 <b-form-textarea
@@ -116,7 +117,7 @@
                   no-resize
                 ></b-form-textarea>
               </v-col>
-            </v-row>
+            </v-row> -->
           </v-col>
         </v-row>
         <v-row>
@@ -180,7 +181,7 @@
               <v-checkbox
                 dense
                 v-model="isAllChecked"
-                @change="allClicked(isAllChecked)"
+                @click.prevent="allClicked(isAllChecked)"
               ></v-checkbox>
             </template>
             <template v-slot:body="{ items, index }">
@@ -194,20 +195,20 @@
                     dense
                     v-model="selectedItems"
                     :value="item"
-                    @change="rowClicked(selectedItems, item)"
+                    @click.prevent="rowClicked()"
                   ></v-checkbox>
                 </td>
                 <td class="text-center">{{ item.id }}</td>
                 <td class="pa-0 text-center">{{ item.promotion_code }}</td>
                 <td class="pa-0 text-center">{{ item.product_id }}</td>
                 <td class="pa-0">{{ item.product_name }}</td>
-                <td class="pa-0 text-right">{{ item.qty }}</td>
+                <td class="pa-0 text-right">{{ item.quantity }}</td>
                 <td class="pa-0 text-right">{{ formatPrice(item.price) }}</td>
-                <td class="pa-0 text-right">{{ formatPrice(item.amount) }}</td>
+                <td class="pa-0 text-right">{{ formatPrice(item.total) }}</td>
                 <td class="pa-0 text-right">
                   {{ formatPrice(item.discount) }}
                 </td>
-                <td class="pa-0 text-right">{{ formatPrice(item.total) }}</td>
+                <td class="pa-0 text-right">{{ formatPrice(item.net) }}</td>
               </tr>
             </template>
           </v-data-table>
@@ -229,17 +230,34 @@
                 <v-col>
                   <v-row>
                     <v-col md="5">Point:</v-col>
-                    <v-col md="5" class="text-right">{{ 300 }}</v-col>
+                    <v-col md="5" class="text-right">{{
+                      $store.state.currentOrder == null
+                        ? 0
+                        : $store.state.currentOrder.main_temp[0].point_before
+                    }}</v-col>
                     <v-col md="2">pt</v-col>
                   </v-row>
                   <v-row>
                     <v-col md="5">Point Used:</v-col>
-                    <v-col md="5" class="text-right">{{ 3000 }}</v-col>
+                    <v-col md="5" class="text-right">{{
+                      selectedRedeemPoint == false
+                        ? 0
+                        : $store.state.currentOrder == null
+                        ? 0
+                        : $store.state.currentOrder.main_temp[0].total / 100
+                    }}</v-col>
                     <v-col md="2">pt</v-col>
                   </v-row>
                   <v-row>
                     <v-col md="5">Point Total:</v-col>
-                    <v-col md="5" class="text-right">{{ 300 }}</v-col>
+                    <v-col md="5" class="text-right">{{
+                      selectedRedeemPoint == false
+                        ? 0
+                        : $store.state.currentOrder == null
+                        ? 0
+                        : $store.state.currentOrder.main_temp[0].point_before -
+                          $store.state.currentOrder.main_temp[0].total / 100
+                    }}</v-col>
                     <v-col md="2">pt</v-col>
                   </v-row>
                 </v-col>
@@ -248,15 +266,37 @@
                 <v-col>
                   <v-row>
                     <v-col md="6">Sub Total:</v-col>
-                    <v-col md="4" class="text-right">{{
-                      formatPrice(1000)
-                    }}</v-col>
+                    <v-col md="4" class="text-right">
+                      {{
+                        $store.state.currentOrder == null
+                          ? formatPrice(0)
+                          : formatPrice(
+                              $store.state.currentOrder.main_temp[0].sub_total
+                            )
+                      }}
+                    </v-col>
                     <v-col md="2"></v-col>
                   </v-row>
                   <v-row>
                     <v-col md="6">Discount:</v-col>
                     <v-col md="4" class="text-right">{{
-                      formatPrice(1000)
+                      formatPrice(
+                        $store.state.currentOrder == null
+                          ? formatPrice(0)
+                          : $store.state.currentOrder.main_temp[0]
+                              .total_discount
+                      )
+                    }}</v-col>
+                    <v-col md="2"></v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col md="6">VAT:</v-col>
+                    <v-col md="4" class="text-right">{{
+                      formatPrice(
+                        $store.state.currentOrder == null
+                          ? formatPrice(0)
+                          : $store.state.currentOrder.main_temp[0].total_tax
+                      )
                     }}</v-col>
                     <v-col md="2"></v-col>
                   </v-row>
@@ -264,7 +304,13 @@
                     <v-col md="6">Total:</v-col>
                     <v-col class="text-center"
                       ><div style="font-size: 48px">
-                        {{ formatPrice(1000) }}
+                        {{
+                          formatPrice(
+                            $store.state.currentOrder == null
+                              ? formatPrice(0)
+                              : $store.state.currentOrder.main_temp[0].net
+                          )
+                        }}
                       </div></v-col
                     >
                   </v-row>
@@ -306,38 +352,50 @@
                   <v-btn
                     color="success"
                     block
-                    @click.prevent="dialogPayment = true"
+                    @click.prevent="openDialogPayment()"
                     ><v-icon>fa fa-money</v-icon>Pay</v-btn
                   >
                 </v-col>
               </v-row>
               <v-row>
                 <v-col md="6">
-                  <v-btn color="warning" class="form-control"
+                  <v-btn
+                    color="warning"
+                    class="form-control"
+                    @click.prevent="pause()"
                     ><v-icon>mdi-pause</v-icon>Pause</v-btn
                   >
                 </v-col>
                 <v-col md="6">
-                  <v-btn color="secondary" class="form-control"
+                  <v-btn
+                    color="secondary"
+                    class="form-control"
+                    @click.prevent="rework()"
                     ><v-icon>mdi-paperclip</v-icon>Re work</v-btn
                   >
                 </v-col>
               </v-row>
               <v-row>
                 <v-col md="6">
-                  <v-btn color="primary" class="form-control"
+                  <v-btn
+                    color="primary"
+                    class="form-control"
+                    @click.prevent="resetNewBill()"
                     ><v-icon>mdi-file-plus</v-icon>New Bill</v-btn
                   >
                 </v-col>
                 <v-col md="6">
-                  <v-btn color="error" class="form-control"
+                  <v-btn
+                    color="error"
+                    class="form-control"
+                    @click.prevent="checkSelectedItem()"
                     ><v-icon>fa fa-trash-o</v-icon>Delete</v-btn
                   >
                 </v-col>
               </v-row>
               <v-row>
                 <v-col>
-                  <v-btn color="#FFFF8D" block
+                  <v-btn color="#FFFF8D" block @click.prevent="refresh()"
                     ><v-icon>mdi-refresh</v-icon>Refresh</v-btn
                   >
                 </v-col>
@@ -363,15 +421,15 @@
 
     <v-dialog v-model="dialogDelete" width="500px" persistent>
       <v-card>
-        <v-card-title class="text-h5"
-          >ต้องการลบรายการซื้อ ใช่หรือไม่?</v-card-title
-        >
+        <v-card-title class="text-h5">ต้องการลบรายการ ใช่หรือไม่?</v-card-title>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click.prevent="closeDelete"
+          <v-btn color="blue darken-1" text @click.prevent="closeDialogDelete()"
             >Cancel</v-btn
           >
-          <!-- <v-btn color="blue darken-1" text @click.prevent="confirmDeleteItem">OK</v-btn> -->
+          <v-btn color="blue darken-1" text @click.prevent="confirmDeleteItem()"
+            >OK</v-btn
+          >
           <v-spacer></v-spacer>
         </v-card-actions>
       </v-card>
@@ -549,118 +607,7 @@
         <v-card-subtitle class="mt-2 pb-1">
           <v-btn x-small @click.prevent="dialogPreview = true">preview</v-btn>
         </v-card-subtitle>
-        <v-card-text class="pb-0" style="color: white">
-          <SalePay />
-        </v-card-text>
-        <v-card-actions class="pt-0">
-          <b-button class="btn-action-pay btn-color">
-            <b-img
-              style="width: 30px; height: 30px"
-              src="./img/icons/alipay-brands.svg"
-            ></b-img>
-            <br />
-            <span style="font-size: 14px">Alipay</span>
-          </b-button>
-          <b-button
-            class="btn-action-pay btn-color"
-            @click.prevent="(dialogCreditCard = true), getCreditType()"
-          >
-            <v-icon size="32" color="black">mdi-credit-card-multiple</v-icon>
-            <br />
-            <span style="font-size: 14px">Credit Card</span>
-          </b-button>
-          <!-- <b-button variant="primary" class="btn-action-pay">
-            <v-icon size="32" color="black">mdi-file-document-box</v-icon>
-            <br />
-            <span style="font-size: 14px">Tax Invoice</span>
-          </b-button> -->
-
-          <v-spacer></v-spacer>
-
-          <b-button class="btn-action-pay btn-color">
-            <v-icon size="32" color="black">mdi-content-save-all</v-icon>
-            <br />
-            <span style="font-size: 14px">Save</span>
-          </b-button>
-          <b-button
-            class="btn-action-pay btn-color"
-            @click.prevent="dialogPayment = false"
-          >
-            <v-icon size="32" color="black">mdi-close-circle</v-icon>
-            <br />
-            <span style="font-size: 14px">Cancel</span>
-          </b-button>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
-    <v-dialog v-model="dialogCreditCard" max-width="550px;" persistent>
-      <v-card style="width: 40vw">
-        <v-card-title class="text-h5">
-          Credit Card
-          <v-spacer></v-spacer>
-          <v-icon @click.prevent="dialogCreditCard = false"
-            >mdi-close</v-icon
-          ></v-card-title
-        >
-        <v-card-text>
-          <v-row style="background-color: lightyellow; font-weight: bold">
-            <v-row>
-              <v-col class="py-2" md="1"></v-col>
-              <v-col class="py-2" md="4">ชุดสมัครใหม่ OPNKSRI:</v-col>
-              <v-col class="py-2" md="7"
-                >ต้องชำระผ่านบัตรเครดิตกรุงศรีเท่านั้น</v-col
-              >
-            </v-row>
-            <v-row>
-              <v-col class="py-2" md="1"></v-col>
-              <v-col class="py-2" md="4">ชุดสมัครใหม่ OPNKTC:</v-col>
-              <v-col class="py-2" md="7"
-                >ต้องชำระผ่านบัตรเครดิตกสิกรไทยเท่านั้น</v-col
-              >
-            </v-row>
-          </v-row>
-          <v-row style="font-weight: bold">
-            <v-row>
-              <v-col class="text-right">ประเภทบัตร</v-col>
-              <v-col
-                ><v-select
-                  v-model="selectedCard"
-                  :items="optionsCard"
-                  style="height: 24px"
-                  solo
-                  dense
-                  outlined
-                ></v-select
-              ></v-col>
-            </v-row>
-            <v-row>
-              <v-col class="text-right">รหัสบัตรเครดิต</v-col>
-              <v-col
-                ><v-text-field
-                  solo
-                  height="10"
-                  style="height: 24px"
-                  dense
-                  maxlength="16"
-                  >0.00</v-text-field
-                ></v-col
-              >
-            </v-row>
-            <v-row>
-              <v-col class="text-right">จำนวนเงิน</v-col>
-              <v-col
-                ><v-text-field solo height="10" style="height: 24px" dense
-                  >0.00</v-text-field
-                ></v-col
-              >
-            </v-row>
-          </v-row>
-        </v-card-text>
-        <v-card-actions class="pt-5">
-          <v-spacer></v-spacer>
-          <v-btn color="blue darken-1">OK</v-btn>
-        </v-card-actions>
+        <SalePay />
       </v-card>
     </v-dialog>
 
@@ -675,8 +622,8 @@
         >
         <v-card-text>
           <v-row>
-            <p><b>Date:</b> {{ docDate }}</p>
-            <!-- <p>Sales Receipt</p> -->
+            <p><b>Date:</b> {{ userInfo.doc_date }}</p>
+            <p>Sales Receipt</p>
             <p>
               <b>Sold By:</b> {{ empInfo.name }}
               {{ empInfo.surname }}
@@ -702,9 +649,9 @@
                   {{ index + 1 }}. {{ item.product_name }}
                 </td>
               </template>
-              <template v-slot:item.qty="{ item, index }">
+              <template v-slot:item.quantity="{ item, index }">
                 <td class="text-right pa-0" style="font-size: 13px">
-                  {{ item.qty }}
+                  {{ item.quantity }}
                 </td>
               </template>
               <template v-slot:item.price="{ item, index }">
@@ -712,9 +659,9 @@
                   {{ formatPrice(item.price) }}
                 </td>
               </template>
-              <template v-slot:item.amount="{ item, index }">
+              <template v-slot:item.total="{ item, index }">
                 <td class="text-right pa-0" style="font-size: 13px">
-                  {{ formatPrice(item.amount) }}
+                  {{ formatPrice(item.total) }}
                 </td>
               </template>
               <template v-slot:item.discount="{ item, index }">
@@ -722,9 +669,9 @@
                   {{ formatPrice(item.discount) }}
                 </td>
               </template>
-              <template v-slot:item.total="{ item, index }">
+              <template v-slot:item.net="{ item, index }">
                 <td class="text-right pa-0" style="font-size: 13px">
-                  {{ formatPrice(item.total) }}
+                  {{ formatPrice(item.net) }}
                 </td>
               </template>
             </v-data-table>
@@ -739,26 +686,53 @@
               <v-row>สินค้าทั้งหมด: {{ items.length }} รายการ</v-row>
               <v-row>
                 <v-col md="3" class="text-right pb-0">คะแนนที่ได้รับ:</v-col>
-                <v-col md="3" class="pb-0">2</v-col>
+                <v-col md="3" class="pb-0">{{
+                  $store.state.currentOrder == null
+                    ? 0
+                    : $store.state.currentOrder.main_temp[0].point_before
+                }}</v-col>
                 <v-col md="3" class="text-right pb-0">รวมเงิน:</v-col>
                 <v-col md="3" class="text-right pb-0">{{
-                  formatPrice(1000)
+                  $store.state.currentOrder == null
+                    ? formatPrice(0)
+                    : formatPrice($store.state.currentOrder.main_temp[0].total)
                 }}</v-col>
               </v-row>
               <v-row>
                 <v-col md="3" class="text-right pb-0">คะแนนที่ใช้:</v-col>
-                <v-col md="3" class="pb-0">2</v-col>
+                <v-col md="3" class="pb-0">{{
+                  selectedRedeemPoint == false
+                    ? 0
+                    : $store.state.currentOrder == null
+                    ? 0
+                    : $store.state.currentOrder.main_temp[0].total / 100
+                }}</v-col>
                 <v-col md="3" class="text-right pb-0">ส่วนลด:</v-col>
                 <v-col md="3" class="text-right pb-0">{{
-                  formatPrice(1000)
+                  formatPrice(
+                    $store.state.currentOrder == null
+                      ? formatPrice(0)
+                      : $store.state.currentOrder.main_temp[0].total_discount
+                  )
                 }}</v-col>
               </v-row>
               <v-row>
                 <v-col md="3" class="text-right pb-0">คะแนนสุทธิ:</v-col>
-                <v-col md="3" class="pb-0">2</v-col>
+                <v-col md="3" class="pb-0">{{
+                  selectedRedeemPoint == false
+                    ? 0
+                    : $store.state.currentOrder == null
+                    ? 0
+                    : $store.state.currentOrder.main_temp[0].point_before -
+                      $store.state.currentOrder.main_temp[0].total / 100
+                }}</v-col>
                 <v-col md="3" class="text-right pb-0">สุทธิ:</v-col>
                 <v-col md="3" class="text-right pb-0">{{
-                  formatPrice(1000)
+                  formatPrice(
+                    $store.state.currentOrder == null
+                      ? formatPrice(0)
+                      : $store.state.currentOrder.main_temp[0].net
+                  )
                 }}</v-col>
               </v-row>
             </v-col>
@@ -772,7 +746,6 @@
 <script>
 import dayjs from "dayjs";
 import axios from "axios";
-// const queryString = require("query-string");
 
 import SaleOthers from "@/views/Sale/Sale-Other.vue";
 import SalePay from "@/views/Sale/Sale-Pay.vue";
@@ -787,8 +760,6 @@ export default {
       panel: [0],
       disableSort: false,
       userInfo: "",
-      // today: dayjs().format("DD-MM-YYYY"),
-      // docDate: dayjs().format("DD-MM-YYYY"),
       docDate: "",
       selectedRedeemPoint: false,
       active: false,
@@ -798,7 +769,6 @@ export default {
       opacity: 1,
       overlayScanIdCard: false,
       progressing: 0,
-      dialog: false,
       dialogDelete: false,
       dialogTaxInvoiceInfo: false,
       dialogListChannel: false,
@@ -806,7 +776,6 @@ export default {
       dialogCheckMember: false,
       dialogScanMember: false,
       dialogPayment: false,
-      dialogCreditCard: false,
       dialogPreview: false,
       search: "",
       qty: 1,
@@ -817,7 +786,6 @@ export default {
       selectChannelIndex: "",
       selectColor: "",
       customerInfo: {},
-      selectedCard: 0,
       empInfo: {
         emp_id: "",
         name: "",
@@ -866,19 +834,18 @@ export default {
         { text: "Detail", value: "product_name", align: "center" },
         { text: "Qty", value: "qty", align: "end" },
         { text: "Price", value: "price", align: "end" },
-        { text: "Amount", value: "amount", align: "end" },
-        { text: "Discount", value: "discount", align: "end" },
         { text: "Total", value: "total", align: "end" },
+        { text: "Discount", value: "discount", align: "end" },
+        { text: "Net", value: "net", align: "end" },
       ],
       headersReceipt: [
         { text: "Detail", value: "product_name", align: "center" },
-        { text: "Qty", value: "qty", align: "end" },
+        { text: "Qty", value: "quantity", align: "end" },
         { text: "Price", value: "price", align: "end" },
-        { text: "Amount", value: "amount", align: "end" },
-        { text: "Discount", value: "discount", align: "end" },
         { text: "Total", value: "total", align: "end" },
+        { text: "Discount", value: "discount", align: "end" },
+        { text: "Net", value: "net", align: "end" },
       ],
-      optionsCard: [],
       taxInfo: {
         fullname: "",
         taxId: "",
@@ -932,19 +899,23 @@ export default {
       this.$refs.memberId.focus();
       // this.openScreen2(); //เปิด screen 2
 
-      // this.initialize();
-      // if (this.$store.state.currentOrder !== null) {
-      //     let currentOrder = JSON.parse(this.$store.state.currentOrder);
-      //     this.invoiceNo = currentOrder.invoiceNo;
-      //     this.items = currentOrder.orderInfo;
-      //     this.memberInfo = currentOrder.memberInfo;
-      //     this.points = currentOrder.points;
-      //     this.pointsNet = currentOrder.pointsNet;
-      //     this.pointsUsed = currentOrder.pointsUsed;
+      if (this.$store.state.currentOrder !== null) {
+        // let currentOrder = JSON.parse(this.$store.state.currentOrder);
+        let currentOrder = this.$store.state.currentOrder;
+        this.invoiceNo = currentOrder.invoice_no_temp;
+        this.items = currentOrder.item_temp;
+        let id = 0;
+        this.items.forEach((e) => {
+          e.id = ++id;
+        });
 
-      //     this.calSaleTotal();
-      //     this.calPoints();
-      // }
+        this.memberInfo = currentOrder.memberInfo;
+        this.billType = currentOrder.billType;
+
+        if (currentOrder.paymentInfo !== undefined) {
+          this.dialogPayment = true;
+        }
+      }
       this.userInfo = JSON.parse(this.$store.state.userInfo);
       let doc_date = this.userInfo.doc_date;
       if (doc_date !== "" && doc_date !== dayjs().format("YYYY-MM-DD")) {
@@ -990,117 +961,6 @@ export default {
       if (this.panel.length !== 0) {
         this.panel.shift();
       }
-    },
-    initialize() {
-      this.items = [
-        {
-          product_id: "25237",
-          color: "green",
-          product_name: "Serum Absolute Illuminating 30",
-          promotion_code: "XC0000001",
-          qty: 1,
-          price: 1305,
-          amount: 1305,
-          discount: 1305,
-          total: 1305,
-        },
-        {
-          product_id: 2,
-          color: "yellow",
-          product_name: "Ice cream sandwich",
-          promotion_code: "XC0000001",
-          qty: 237,
-          price: 9.0,
-          amount: 1000,
-          discount: 37,
-          total: 4.3,
-        },
-        {
-          product_id: 3,
-          color: "yellow",
-          product_name: "Eclair",
-          promotion_code: "XC0000001",
-          qty: 262,
-          price: 16.0,
-          discount: 23,
-          amount: 1000,
-          total: 6.0,
-        },
-        {
-          product_id: 4,
-          product_name: "Cupcake",
-          promotion_code: "XC0000001",
-          qty: 305,
-          price: 3.7,
-          amount: 1000,
-          discount: 67,
-          total: 4.3,
-        },
-        {
-          product_id: 5,
-          product_name: "Gingerbread",
-          promotion_code: "XC0000002",
-          qty: 356,
-          price: 16.0,
-          amount: 1000,
-          discount: 49,
-          total: 3.9,
-        },
-        {
-          product_id: 6,
-          product_name: "Jelly bean",
-          promotion_code: "XC0000003",
-          qty: 375,
-          price: 0.0,
-          amount: 1000,
-          discount: 94,
-          total: 0.0,
-        },
-        {
-          product_id: 7,
-          product_name: "Lollipop",
-          promotion_code: "",
-          qty: 392,
-          price: 0.2,
-          amount: 1000,
-          discount: 98,
-          total: 0,
-        },
-        {
-          product_id: 8,
-          product_name: "Honeycomb",
-          promotion_code: "",
-          qty: 408,
-          price: 3.2,
-          amount: 1000,
-          discount: 87,
-          total: 6.5,
-        },
-        {
-          product_id: 9,
-          product_name: "Donut",
-          promotion_code: "",
-          qty: 452,
-          price: 25.0,
-          amount: 51,
-          discount: 4.9,
-          total: 6.5,
-        },
-        {
-          product_id: 10,
-          product_name: "KitKat",
-          promotion_code: "",
-          qty: 518,
-          price: 26.0,
-          amount: 51,
-          discount: 65,
-          total: 7,
-        },
-      ];
-      let id = 0;
-      this.items.forEach((e) => {
-        e.id = ++id;
-      });
     },
     selectScanMember(data) {
       this.selectedScan = data;
@@ -1176,21 +1036,19 @@ export default {
         this.inputMemberCode.trim() == "" &&
         Object.keys(this.selectedScan).length === 0
       ) {
+        this.memberInfo.memberId = "00";
         this.memberInfo.name = "Walk-In Customer";
-        this.memberInfo.type = "";
+        this.memberInfo.type = "00";
         this.memberInfo.point = 0;
         this.memberInfo.discount = 0;
         this.otherMsg = "";
         this.statusNo = "00";
         this.checkBillType();
       } else {
-        let inputCode = "";
-
-        if (this.inputMemberCode !== "") {
-          inputCode = this.inputMemberCode;
-        } else {
-          inputCode = this.inputMemberCodeByType.trim();
-        }
+        let inputCode =
+          this.inputMemberCode !== ""
+            ? this.inputMemberCode
+            : this.inputMemberCodeByType.trim();
 
         let data = {
           member_code: inputCode,
@@ -1271,26 +1129,20 @@ export default {
       //  คำนวนคะแนน คะแนนเดิม คิดเป็นกี่บาท แล้วหักออก
       // }
     },
-    getCreditType() {
-      this.optionsCard = [];
-      this.optionsCard.push({ value: 0, text: "เลือก" });
 
-      axios
-        .get(this.url + "/cart/listpaid", this.configHeader)
-        .then((res) => {
-          let response = res.data;
-          response.listCreditType.forEach((e) => {
-            this.optionsCard.push({ text: e.description, value: e.id });
-          });
-        })
-        .catch((err) => {
-          console.log("get list credit error = ", err);
-        });
-    },
     getProductInfo() {
-      // TODO
-      /*ยิง api  */
-
+      if (this.memberInfo.name == "") {
+        alert("กรุณาใส่ระบุสมาชิกให้ถูกต้อง");
+        this.inputProductCode = "";
+        this.$refs.memberId.focus();
+        return;
+      }
+      if (this.billType.status_no == "") {
+        alert("กรุณาใส่ระบุสมาชิกให้ถูกต้อง");
+        this.inputProductCode = "";
+        this.$refs.memberId.focus();
+        return;
+      }
       if (this.inputProductCode == "") {
         alert("กรุณาใส่รหัสสินค้าให้ถูกต้อง");
         this.$refs.inputProductCode.focus();
@@ -1300,94 +1152,132 @@ export default {
         alert("จำนวนสินค้าไม่ถูกต้อง");
         return;
       }
-      alert("ok");
-      // let params = {
-      //   product: this.inputProductCode,
-      //   invoice: this.invoiceNo !== "" ? this.invoiceNo : "",
-      //   branch: this.userInfo.data.brand_id,
-      // };
-      // let selectProduct = this.items.find(
-      //   (ele) => ele.barcode == params.product || ele.barcode == params.product
-      // );
-      // if (selectProduct) {
-      //   selectProduct.saleQty = parseInt(selectProduct.saleQty) + parseInt(this.saleQty);
-      //   params.qty = selectProduct.saleQty;
-      // } else {
-      //   params.qty = this.saleQty;
-      // }
-      // axios
-      //   .post(this.url + "/cart/product", qs, this.configHeader)
-      //   .then((res) => {
-      //     if (res.status == 200) {
-      //       var product = res.data.product;
-      //       if (product.length == 0) {
-      //         alert("ไม่พบข้อมูลสินค้า");
-      //         return;
-      //       } else {
-      //         product = product[0];
-      //         if (this.items.length !== 0) {
-      //           let selectProduct = this.items.find(
-      //             (ele) =>
-      //               ele.barcode == params.product ||
-      //               ele.barcode == params.product
-      //           );
-      //           if (selectProduct) {
-      //             let qty = parseInt(selectProduct.saleQty);
-      //             if (parseInt(this.saleQty) <= 0) {
-      //               alert("จำนวนสินค้าไม่ถูกต้อง");
-      //             } else {
-      //               // selectProduct.saleQty = qty + parseInt(this.saleQty);
-      //               selectProduct.total =
-      //                 parseInt(selectProduct.price) *
-      //                 parseInt(selectProduct.saleQty);
-      //               selectProduct.point = 0;
-      //             }
-      //           } else {
-      //             this.items.push({
-      //               ...product,
-      //               saleQty: parseInt(this.saleQty),
-      //               total: parseInt(product.price) * parseInt(this.saleQty),
-      //               point: 0,
-      //             });
-      //           }
-      //         } else {
-      //           this.items.push({
-      //             ...product,
-      //             saleQty: parseInt(this.saleQty),
-      //             total: parseInt(product.price) * parseInt(this.saleQty),
-      //             point: 0,
-      //           });
-      //         }
-      //         this.calSaleTotal();
-      //         this.calPoints();
-      //         this.productInput = "";
-      //         this.saleQty = 1;
-      //         this.$refs.productInput.focus();
-      //         this.currentOrder();
-      //       }
-      //     } else {
-      //       alert("ไม่สามารถค้นหาข้อมูลสินค้านี้ได้ กรุณาติดต่อ....");
-      //       return;
-      //     }
-      //   });
+
+      let body = {
+        product_id: this.inputProductCode,
+        qty: this.qty,
+        bill_type: {
+          doc_tp: this.billType.doc_tp,
+          status_no: this.billType.status_no,
+          description: this.billType.description,
+        },
+        branch_id: this.userInfo.data.branch_id,
+        brand_id: this.userInfo.data.brand_id,
+        member_id: this.memberInfo.memberId,
+        member_name: this.memberInfo.name,
+        member_level: this.memberInfo.type,
+        invoice_no_temp:
+          this.$store.state.currentOrder == null
+            ? "-"
+            : this.$store.state.currentOrder.invoice_no_temp,
+        emp_id: this.userInfo.data.emp_id,
+      };
+
+      axios
+        .post(this.url + "/cart/addcart/temp", body, this.configHeader)
+        .then((res) => {
+          if (res.status == 200) {
+            res.data.memberInfo = this.memberInfo;
+            res.data.billType = this.billType;
+            this.$store.commit("currentOrder", res.data);
+            this.items = this.$store.state.currentOrder.item_temp;
+            let id = 0;
+            this.items.forEach((e) => {
+              e.id = ++id;
+            });
+
+            this.selectedItems = [];
+            this.isAllChecked = false;
+            this.inputProductCode = "";
+            this.$refs.inputProductCode.focus();
+          } else {
+            alert("ไม่สามารถค้นหาข้อมูลสินค้านี้ได้ กรุณาติดต่อ....");
+            this.inputProductCode = "";
+            this.$refs.inputProductCode.focus();
+            return;
+          }
+        });
     },
     allClicked(checked) {
-      if (checked) {
-        this.selectedItems = this.items;
+      this.selectedItems = checked ? this.items : [];
+    },
+    rowClicked() {
+      this.isAllChecked =
+        this.selectedItems.length == this.items.length ? true : false;
+    },
+    checkSelectedItem() {
+      if (this.selectedItems.length == 0) {
+        alert("กรุณาเลือกรายการที่ต้องการลบให้ถูกต้อง");
       } else {
-        this.selectedItems = [];
+        this.dialogDelete = true;
       }
-      console.log(this.selectedItems);
     },
-    rowClicked(checked, item) {
-      console.log("1 checked", checked);
-      console.log("2 item", item);
+    closeDialogDelete() {
+      this.dialogDelete = false;
+      this.selectedItems = [];
+      this.isAllChecked = false;
     },
-    deleteItem() {
-      console.log(this.selectedItems);
-      // this.editedIndex = this.items.indexOf(item)
-      // this.editedItem = Object.assign({}, item)
-      // this.dialogDelete = true
+    confirmDeleteItem() {
+      let body = {
+        selectedItem: this.selectedItems,
+        bill_type: {
+          doc_tp: this.billType.doc_tp,
+          status_no: this.billType.status_no,
+          description: this.billType.description,
+        },
+        branch_id: this.userInfo.data.branch_id,
+        brand_id: this.userInfo.data.brand_id,
+        member_id: this.memberInfo.memberId,
+        member_name: this.memberInfo.name,
+        member_level: this.memberInfo.type,
+        invoice_no_temp:
+          this.$store.state.currentOrder == null
+            ? "-"
+            : this.$store.state.currentOrder.invoice_no_temp,
+        emp_id: this.userInfo.data.emp_id,
+      };
+      axios
+        .post(this.url + "/cart/delcart/temp", body, this.configHeader)
+        .then((res) => {
+          if (res.status == 200) {
+            if (res.data.main_temp.length == 0) {
+              this.$store.commit("currentOrder", null);
+              this.items = res.data.item_temp;
+            } else {
+              res.data.memberInfo = this.memberInfo;
+              res.data.billType = this.billType;
+
+              this.$store.commit("currentOrder", res.data);
+              this.items = this.$store.state.currentOrder.item_temp;
+              let id = 0;
+              this.items.forEach((e) => {
+                e.id = ++id;
+              });
+            }
+
+            this.selectedItems = []; //debug for checked item
+            this.isAllChecked = false;
+            this.inputProductCode = "";
+            this.$refs.inputProductCode.focus();
+            this.dialogDelete = false;
+          } else {
+            alert("ไม่สามารถค้นหาข้อมูลสินค้านี้ได้ กรุณาติดต่อ....");
+            this.inputProductCode = "";
+            this.$refs.inputProductCode.focus();
+            return;
+          }
+        });
+    },
+    pause() {
+      //TODO เอาเฉพาะเลขที่บิล, ข้อมูลบิล, ข้อมูลสมาชิก commit เข้าที่ store
+    },
+    openDialogPayment() {
+      if (this.$store.state.currentOrder == null) {
+        alert("ไม่มีรายการซื้อสินค้า, กรุณากรอกรายการซื้อสินค้าอีกครั้ง");
+        this.$refs.inputProductCode.focus();
+      } else {
+        this.dialogPayment = true;
+      }
     },
     openDialogTaxInvoiceInfo() {
       this.dialogTaxInvoiceInfo = !this.dialogTaxInvoiceInfo
@@ -1404,37 +1294,18 @@ export default {
         };
       }
     },
-    confirmDeleteItem() {
-      this.items.splice(this.editedIndex, 1);
-      this.closeDelete();
+    resetNewBill() {
+      //TODO ล้างค่าต่างๆ ของบิล
+      // this.$store.commit("currentOrder", null);
     },
-    close() {
-      this.dialog = false;
-      this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
-      });
-    },
-    closeDelete() {
-      this.dialogDelete = false;
-      this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
-      });
-    },
-    save() {
-      if (this.editedIndex > -1) {
-        Object.assign(this.items[this.editedIndex], this.editedItem);
-      } else {
-        this.items.push(this.editedItem);
-      }
-      this.close();
+    refresh() {
+      //TODO clear ค่าต่างๆใน local storage แล้ว refresh
     },
     selectedChannel(item) {
       this.selectChannelIndex = item.value;
       this.selectColor = item.color;
     },
-    confirmPayment() {},
+    // confirmPayment() {},
     formatPrice(value) {
       let val = (value / 1).toFixed(2).replace(",", ".");
       return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");

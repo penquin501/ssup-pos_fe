@@ -17,7 +17,7 @@
     <v-divider></v-divider>
 
     <v-list dense nav>
-      <v-list-item-group v-model="selectedItem" color="primary">
+      <v-list-item-group v-model="selectedItem" color="#649893">
         <v-list-item
           v-for="(item, i) in items"
           :key="item.value"

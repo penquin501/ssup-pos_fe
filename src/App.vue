@@ -21,7 +21,7 @@
         <v-col md="8">
           <!-- {{ $i18n.locale }} -->
           <!-- {{ $t("message.hello", { msg: "hello" }) }} -->
-          <!-- {{ $t("message.test") }} -->
+          <!-- {{ $t("message.home.test") }} -->
         </v-col>
         <v-col md="2">
           <v-btn-toggle v-model="selectedLang" @change="setLang()" mandatory>

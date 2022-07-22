@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Sale from '../views/Sale.vue'
 import SaleP2 from '../views/Sale/Sale-S2.vue'
+import Receipt from '../views/Sale/Sale-Receipt.vue'
 import Tools from '../views/Tools.vue'
 import Report from '../views/Report.vue'
 import Member from '../views/Member.vue'
@@ -29,6 +30,11 @@ const routes = [
     path: '/salep2',
     name: 'SaleP2',
     component: SaleP2
+  },
+  {
+    path: '/receipt',
+    name: 'Receipt',
+    component: Receipt
   },
   {
     path: '/sale2',

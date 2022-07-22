@@ -19,6 +19,7 @@ export default new Vuex.Store({
     listInvoiceStockPending: [],
     listInvoiceTemplate: [],
     cashierBillInfo: null,
+    receiptInfo: null,
   },
   mutations: {
     doLogin(state, data) {
@@ -87,6 +88,9 @@ export default new Vuex.Store({
     updateInvoiceTemplate(state, data) {
       state.listInvoiceTemplate = data;
     }, 
+    setReceiptInfo(state, data) {
+      state.receiptInfo = data;
+    }
   },
   actions: {
   },

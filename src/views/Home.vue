@@ -4,7 +4,8 @@
   <div v-show="!$store.state.is_login">
     <div
       v-if="loginForm.type == 'LOCK_KEYIN_LOGIN'"
-      class="container--fluid fill-height success"
+      class="container--fluid fill-height"
+      style="background-color: #12998b"
     >
       <v-row no-gutters align="center" justify="end">
         <v-col sm="12" md="6" lg="4">
@@ -36,7 +37,7 @@
                   <div>
                     <v-btn
                       class="form-control"
-                      color="success"
+                      color="#12998b"
                       @click.prevent="login"
                       >login</v-btn
                     >
@@ -50,19 +51,15 @@
     </div>
     <div
       v-if="loginForm.type == 'LOCK_FINGER_SCAN_LOGIN'"
-      class="container--fluid fill-height success"
+      class="container--fluid fill-height"
+      style="background-color: #12998b"
     >
       <v-row no-gutters align="center" justify="end">
         <v-col sm="12" md="6" lg="4">
           <v-card>
             <v-card-text class="v-application--wrap fill-height">
               <div class="layout column align-center">
-                <img
-                  src="img/auth/ssup-logo.svg"
-                  alt="Vue Vuetify Admin Logo"
-                  width="200"
-                  height="200"
-                />
+                <img src="img/auth/ssup_logo2.png" alt="SSUP Logo" />
 
                 <b-button variant="light" @click.prevent="login()"
                   ><img src="img/auth/fingerprint.png" width="200" height="200"
@@ -82,26 +79,22 @@
     </div>
     <div
       v-if="loginForm.type == 'LOCK_IDCARD_LOGIN'"
-      class="container--fluid fill-height success"
+      class="container--fluid fill-height"
+      style="background-color: #12998b"
     >
       <v-row no-gutters align="center" justify="end">
         <v-col sm="12" md="6" lg="4">
           <v-card>
             <v-card-text class="v-application--wrap fill-height">
               <div class="layout column align-center">
-                <img
-                  src="img/auth/ssup-logo.svg"
-                  alt="Vue Vuetify Admin Logo"
-                  width="200"
-                  height="200"
-                />
+                <img src="img/auth/ssup_logo2.png" alt="SSUP Logo" />
                 <img src="img/auth/cardreader.jpg" width="200" height="200" />
               </div>
               <v-form>
                 <div>
                   <v-btn
                     class="form-control"
-                    color="success"
+                    color="#12998b"
                     @click.prevent="dialogIdCard = true"
                     >Scan ID Card</v-btn
                   >
