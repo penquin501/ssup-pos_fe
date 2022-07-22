@@ -644,6 +644,15 @@
               hide-default-footer
               :disable-sort="disableSort"
             >
+              <template v-slot:header="{ props: { headers } }">
+                <thead>
+                  <tr>
+                    <th :colspan="headers.length">
+                      {{ $t("message.home.test") }}
+                    </th>
+                  </tr>
+                </thead>
+              </template>
               <template v-slot:item.product_name="{ item, index }">
                 <td class="text-left pa-0" style="font-size: 13px">
                   {{ index + 1 }}. {{ item.product_name }}
@@ -897,7 +906,7 @@ export default {
       });
     } else {
       this.$refs.memberId.focus();
-      // this.openScreen2(); //เปิด screen 2
+      this.openScreen2(); //เปิด screen 2
 
       if (this.$store.state.currentOrder !== null) {
         // let currentOrder = JSON.parse(this.$store.state.currentOrder);

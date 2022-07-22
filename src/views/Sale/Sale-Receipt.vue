@@ -40,40 +40,6 @@
     </v-row>
     <!-- Detail Part -->
     <v-row>
-      <!-- <v-data-table
-        dense
-        :headers="headersReceipt"
-        :items="receiptInfo.item"
-        item-key="id"
-        hide-default-footer
-        :disable-sort="disableSort"
-      >
-        <template v-slot:item.product_name="{ item, index }">
-          <td class="text-left pa-0" style="font-size: 13px">
-            {{ item.product_name_print }}
-          </td>
-        </template>
-        <template v-slot:item.price="{ item, index }">
-          <td class="text-right pa-0" style="font-size: 13px">
-            {{ formatPrice(item.price) }}
-          </td>
-        </template>
-        <template v-slot:item.quantity="{ item, index }">
-          <td class="text-right pa-0" style="font-size: 13px">
-            {{ item.quantity }}
-          </td>
-        </template>
-        <template v-slot:item.discount="{ item, index }">
-          <td class="text-right pa-0" style="font-size: 13px">
-            {{ formatPrice(item.discount) }}
-          </td>
-        </template>
-        <template v-slot:item.net="{ item, index }">
-          <td class="text-right pa-0" style="font-size: 13px">
-            {{ formatPrice(item.net) }}
-          </td>
-        </template>
-      </v-data-table> -->
       <table>
         <thead>
           <th style="text-align: center">Description</th>

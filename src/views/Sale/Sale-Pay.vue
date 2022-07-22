@@ -974,7 +974,7 @@ export default {
           this.dialogReceipt = true;
         })
         .catch((err) => {
-          console.log("save bill main error = ", err);
+          console.log("error receipt info = ", err);
         });
     },
     formatPrice(value) {

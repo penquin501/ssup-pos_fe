@@ -1,7 +1,5 @@
 {
-  "message": {
-
-  },
+  "message": {},
   "$vuetify": {
     "badge": "Badge",
     "close": "Close",
